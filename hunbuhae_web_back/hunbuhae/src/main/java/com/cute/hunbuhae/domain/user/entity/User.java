@@ -1,14 +1,16 @@
 package com.cute.hunbuhae.domain.user.entity;
 
 import com.cute.hunbuhae.common.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@Entity
+@Builder
+@AllArgsConstructor
+@Getter @Entity
 @Table(name = "user")
 public class User extends BaseEntity {
     @Id
@@ -27,11 +29,21 @@ public class User extends BaseEntity {
     private Integer followerNum;
     private String password;
     @Enumerated(EnumType.STRING)
-    private ROLE role;
+    private Role role;
+
+    public User() {
+
+    }
+
     public enum GENDER{
         MALE, FEMALE
     }
-    public enum ROLE{
-        ROLE_ADMIN, ROLE_USER
+
+    public User update(String name) {
+        this.name = name;
+        return this;
+    }
+    public String getRoleKey() {
+        return this.role.getKey();
     }
 }
