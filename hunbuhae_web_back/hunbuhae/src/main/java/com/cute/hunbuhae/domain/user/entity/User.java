@@ -27,6 +27,7 @@ public class User extends BaseEntity {
     private Integer followingNum;
     @Column(name = "follower_num")
     private Integer followerNum;
+    private String email;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -39,8 +40,9 @@ public class User extends BaseEntity {
         MALE, FEMALE
     }
 
-    public User update(String name) {
+    public User update(String name,String email) {
         this.name = name;
+        this.email=email;
         return this;
     }
     public String getRoleKey() {

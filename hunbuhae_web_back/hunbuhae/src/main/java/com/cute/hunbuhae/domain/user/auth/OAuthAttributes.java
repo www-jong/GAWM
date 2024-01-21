@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 
+import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Builder
@@ -19,16 +21,36 @@ public class OAuthAttributes {
     private final Map<String, Object> attributes;
     private final String nameAttributeKey;
     private final String name;
-    private final String gender;
+    private final String email;
+    private final User.GENDER gender;
+    private final Integer age;
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         if("naver".equals(registrationId)) {
             return ofNaver(userNameAttributeName, attributes);
         }
+        else if("kakao".equals(registrationId)) {
+            return ofKakao("id",attributes);
+        }
         else {
             log.error("naver가 아님");
             return ofNaver(userNameAttributeName, attributes);
         }
+    }
+
+    private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
+        Map<String, Object> kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
+
+        log.info("kakaoAccount={}",kakaoAccount);
+
+        return OAuthAttributes.builder()
+                .name(UUID.randomUUID().toString())
+                .email((String) kakaoAccount.get("email"))
+                .gender(kakaoAccount.get("gender").equals("female")? User.GENDER.FEMALE: User.GENDER.MALE)
+                .age(LocalDate.now().getYear()-Integer.parseInt(kakaoAccount.get("birthyear").toString())+1)
+                .nameAttributeKey(userNameAttributeName)
+                .attributes(attributes)
+                .build();
     }
 
 
@@ -40,7 +62,7 @@ public class OAuthAttributes {
 
         return OAuthAttributes.builder()
                 .name((String) response.get("name"))
-                .gender((String) response.get("gender"))
+//                .gender((String) response.get("gender"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
@@ -49,6 +71,9 @@ public class OAuthAttributes {
     public User toEntity() {
         return User.builder()
                 .name(name)
+                .email(email)
+                .gender(gender)
+                .age(age)
                 .role(Role.GUEST)
                 .build();
     }
