@@ -36,15 +36,11 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
-        // naver, kakao 로그인 구분
-        log.info("registrationId={}",registrationId);
-        log.info("userNameAttributeName={}",userNameAttributeName);
+
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
         httpSession.setAttribute("user", new SessionUser(user));
-
-        log.info("attributes={}",attributes);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
