@@ -11,4 +11,5 @@ public abstract class BaseEntity {
     private Timestamp updatedAt;
     private Boolean isDeleted;
 
+    //Test
 }
