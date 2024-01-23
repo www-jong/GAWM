@@ -4,7 +4,6 @@ import com.cute.hunbuhae.common.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -21,7 +20,7 @@ public class User extends BaseEntity {
     private String name;
     private Integer age;
     @Enumerated(EnumType.STRING)
-    private GENDER gender;
+    private Gender gender;
     private String nickname;
     @Column(name = "following_num")
     private Integer followingNum;
@@ -36,7 +35,7 @@ public class User extends BaseEntity {
 
     }
 
-    public enum GENDER{
+    public enum Gender {
         MALE, FEMALE
     }
 

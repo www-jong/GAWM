@@ -1,7 +1,7 @@
 package com.cute.hunbuhae.domain.user.service;
 
 
-import com.cute.hunbuhae.domain.user.auth.OAuthAttributes;
+import com.cute.hunbuhae.common.auth.OAuthAttributes;
 import com.cute.hunbuhae.domain.user.entity.SessionUser;
 import com.cute.hunbuhae.domain.user.entity.User;
 import com.cute.hunbuhae.domain.user.repository.UserRepository;

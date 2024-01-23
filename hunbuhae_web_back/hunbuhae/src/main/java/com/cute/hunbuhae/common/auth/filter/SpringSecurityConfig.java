@@ -1,4 +1,4 @@
-package com.cute.hunbuhae.domain.user.filter;
+package com.cute.hunbuhae.common.auth.filter;
 
 import com.cute.hunbuhae.domain.user.entity.Role;
 import com.cute.hunbuhae.domain.user.service.UserService;

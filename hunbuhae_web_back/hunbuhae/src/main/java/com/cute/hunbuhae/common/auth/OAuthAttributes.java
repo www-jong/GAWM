@@ -1,4 +1,4 @@
-package com.cute.hunbuhae.domain.user.auth;
+package com.cute.hunbuhae.common.auth;
 
 import com.cute.hunbuhae.domain.user.entity.Role;
 import com.cute.hunbuhae.domain.user.entity.User;
@@ -22,7 +22,7 @@ public class OAuthAttributes {
     private final String nameAttributeKey;
     private final String name;
     private final String email;
-    private final User.GENDER gender;
+    private final User.Gender gender;
     private final Integer age;
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
@@ -32,12 +32,8 @@ public class OAuthAttributes {
         else if("kakao".equals(registrationId)) {
             return ofKakao("id",attributes);
         }
-        else if("google".equals(registrationId)) {
-            return ofGoogle(userNameAttributeName,attributes);
-        }
         else {
-            log.error("naver가 아님");
-            return ofNaver(userNameAttributeName, attributes);
+            return ofGoogle(userNameAttributeName, attributes);
         }
     }
 
@@ -47,7 +43,7 @@ public class OAuthAttributes {
         return OAuthAttributes.builder()
                 .name(UUID.randomUUID().toString())
                 .email((String) kakaoAccount.get("email"))
-                .gender(kakaoAccount.get("gender").equals("female")? User.GENDER.FEMALE: User.GENDER.MALE)
+                .gender(kakaoAccount.get("gender").equals("female")? User.Gender.FEMALE: User.Gender.MALE)
                 .age(LocalDate.now().getYear()-Integer.parseInt(kakaoAccount.get("birthyear").toString())+1)
                 .nameAttributeKey(userNameAttributeName)
                 .attributes(attributes)
