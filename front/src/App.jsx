@@ -1,8 +1,8 @@
 function App() {
-  return (
-    <main>
-    </main>
-  )
+	return (
+		<main>
+		</main>
+	)
 }
 
 export default App
