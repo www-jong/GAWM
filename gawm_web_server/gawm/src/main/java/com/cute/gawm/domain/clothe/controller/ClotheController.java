@@ -1,6 +1,7 @@
 package com.cute.gawm.domain.clothe.controller;
 
 
+import com.cute.gawm.domain.clothe.document.ClotheMongo;
 import com.cute.gawm.domain.clothe.entity.Clothe;
 import com.cute.gawm.domain.clothe.repository.ClotheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class ClotheController {
     private ClotheRepository clotheRepository;
 
     @GetMapping("/list")
-    public List<Clothe> getClothes() {
+    public List<ClotheMongo> getClothes() {
         return clotheRepository.findAll();
     }
 }
