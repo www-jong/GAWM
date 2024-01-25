@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.calendar.entity;
+package com.cute.gawm.domain.stylelog.entity;
 
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.lookbook.entity.lookbook;
