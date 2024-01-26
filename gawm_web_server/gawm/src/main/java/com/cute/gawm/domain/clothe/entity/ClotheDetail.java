@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.clothe.document;
+package com.cute.gawm.domain.clothe.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Document(collection = "clothe")
-public class ClotheMongo {
+public class ClotheDetail {
     @Id
     @Field(value = "_id", targetType = FieldType.OBJECT_ID)
     private String id;

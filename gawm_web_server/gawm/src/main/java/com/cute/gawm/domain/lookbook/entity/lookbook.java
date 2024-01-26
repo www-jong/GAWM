@@ -20,18 +20,23 @@ public class lookbook extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private long id;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
+
     @ManyToOne
     @JoinColumn(name = "clothe_lookbook_id")
     @Nullable
     private ClotheLookbook clotheLookbook;
+
     private Integer view = 0;
+
     @Column(name = "lookbook_img")
     @Nullable
     private String lookbookImg;
+
     @Column(name = "is_public")
     private boolean isPublic = true;
 

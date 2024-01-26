@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "calendar")
-public class Calendar extends BaseEntity {
+@Table(name = "stylelog")
+public class Stylelog extends BaseEntity {
     @Id
     @GeneratedValue()
     private long id;
