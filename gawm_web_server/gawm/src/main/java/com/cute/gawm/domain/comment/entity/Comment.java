@@ -1,7 +1,7 @@
 package com.cute.gawm.domain.comment.entity;
 
 import com.cute.gawm.common.BaseEntity;
-import com.cute.gawm.domain.lookbook.entity.lookbook;
+import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,5 +23,5 @@ public class Comment extends BaseEntity {
     private User user;
     @ManyToOne
     @JoinColumn(name = "ootd_id")
-    private lookbook ootd;
+    private Lookbook ootd;
 }

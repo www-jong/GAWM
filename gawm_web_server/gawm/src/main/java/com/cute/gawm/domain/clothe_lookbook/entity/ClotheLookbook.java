@@ -2,7 +2,7 @@ package com.cute.gawm.domain.clothe_lookbook.entity;
 
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.clothe.entity.Clothe;
-import com.cute.gawm.domain.lookbook.entity.lookbook;
+import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +20,5 @@ public class ClotheLookbook extends BaseEntity {
     private Clothe clothe;
     @ManyToOne
     @JoinColumn(name = "lookbook_id")
-    private lookbook lookbook;
+    private Lookbook lookbook;
 }

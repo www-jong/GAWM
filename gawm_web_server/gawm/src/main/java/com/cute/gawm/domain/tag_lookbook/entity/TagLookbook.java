@@ -1,7 +1,7 @@
 package com.cute.gawm.domain.tag_lookbook.entity;
 
 import com.cute.gawm.common.BaseEntity;
-import com.cute.gawm.domain.lookbook.entity.lookbook;
+import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.tag.entity.Tag;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,10 +17,10 @@ public class TagLookbook extends BaseEntity {
     @GeneratedValue
     @Column
     private long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ootd_id")
-    private lookbook ootd;
+    private Lookbook ootd;
 }
