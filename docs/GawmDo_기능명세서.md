@@ -11,6 +11,3 @@
 ![image (10)](https://github.com/seon-dev/admin-api-server/assets/152829201/bdb04658-143b-43c0-bd43-e0691ae8b6d1)
 
 ![image (11)](https://github.com/seon-dev/admin-api-server/assets/152829201/de0d7ef3-b526-4def-b056-7fbf47ebddf0)
-
-![image (12)](https://github.com/seon-dev/admin-api-server/assets/152829201/cc9f12e2-9a7a-4e83-a6fa-4267267c32a7)
-
