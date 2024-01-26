@@ -1,3 +1,3 @@
 # GAWM° Architecture
 
-![image (5)](https://github.com/seon-dev/admin-api-server/assets/152829201/dc1e35d0-d91d-4b59-a24f-ea5aa1b7f93e)
+![gamdo-architecture drawio (3)](https://github.com/typicode/demo/assets/152829201/fe8d7c26-30f5-4158-a0c9-3605b9436146)
