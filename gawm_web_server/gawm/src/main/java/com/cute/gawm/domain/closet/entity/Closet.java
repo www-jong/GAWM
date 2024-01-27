@@ -14,6 +14,7 @@ import javax.persistence.*;
 public class Closet extends BaseEntity {
     @Id
     @GeneratedValue
+    @Column
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Table(name = "clothe_lookbook")
 public class ClotheLookbook extends BaseEntity {
     @Id @GeneratedValue
+    @Column
     private long id;
     @ManyToOne
     @JoinColumn(name = "clothe_id")
