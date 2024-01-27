@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Main Page</title>
+</head>
+<body>
+<div sec:authorize="isAuthenticated()">
+    Logged in as: <span id="user" th:text="${userName}">None</span>
+    <a href="/logout" class="btn btn-info active" role="button">Logout</a>
+</div>
+<a sec:authorize="isAnonymous()" href="/oauth2/authorization/kakao" class="btn btn-secondary active" role="button">Kakao Login</a>
+<a sec:authorize="isAnonymous()" href="/oauth2/authorization/google" class="btn btn-secondary active" role="button">Google Login</a>
+</body>
