@@ -7,7 +7,7 @@ import OpenViduSession from 'openvidu-react';
 class App extends Component {
     constructor(props) {
         super(props);
-        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://hunjangnim.site:8443/';
+        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
         this.state = {
             mySessionId: 'SessionA',
             myUserName: 'OpenVidu_User_' + Math.floor(Math.random() * 100),
