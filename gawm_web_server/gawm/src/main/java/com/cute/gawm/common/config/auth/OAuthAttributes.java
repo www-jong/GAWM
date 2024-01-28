@@ -20,10 +20,10 @@ public class OAuthAttributes {
 
     private final Map<String, Object> attributes;
     private final String nameAttributeKey;
-    private final String nickname;
     private final String email;
-    private final User.Gender gender;
     private final Integer age;
+    private final User.Gender gender;
+    private final String nickname;
     private final Integer point;
     private final Integer level;
 
@@ -53,6 +53,8 @@ public class OAuthAttributes {
 
         return OAuthAttributes.builder()
                 .email((String) attributes.get("email"))
+                .gender(User.Gender.NONE)
+                .age(0)
                 .nameAttributeKey(userNameAttributeName)
                 .attributes(attributes)
                 .build();

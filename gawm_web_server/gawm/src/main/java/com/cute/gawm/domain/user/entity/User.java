@@ -1,6 +1,7 @@
 package com.cute.gawm.domain.user.entity;
 
 
+import com.cute.gawm.domain.user.UserEditForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import com.cute.gawm.common.BaseEntity;
@@ -46,15 +47,22 @@ public class User extends BaseEntity {
     }
 
     public enum Gender {
-        MALE, FEMALE
+        MALE, FEMALE, NONE
     }
 
     public User update(String email) {
         this.email = email;
         return this;
     }
+    public void update(UserEditForm form){
+        this.nickname=form.getNickname();
+        this.gender=form.getGender();
+        this.age=form.getAge();
+    }
 
     public String getRoleKey() {
         return this.role.getKey();
     }
+
+
 }

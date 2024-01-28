@@ -2,6 +2,7 @@ package com.cute.gawm.domain.user.service;
 
 
 import com.cute.gawm.common.config.auth.OAuthAttributes;
+import com.cute.gawm.domain.user.UserEditForm;
 import com.cute.gawm.domain.user.entity.SessionUser;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
@@ -17,9 +18,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Collections;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +38,14 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
     private static final Integer maxByteLength=24;
 
     public User findOne(Integer id) {
-        Optional<User> userOptional=userRepository.findById(id);
-        userOptional.ifPresent(user -> log.info("user={}", user));
-        log.info("userOptional={}",userOptional);
-        return userOptional.orElse(null);
+        User user=userRepository.findById(id).get();
+        return user;
+    }
+    @Transactional
+    public void updateMember(Integer id, UserEditForm form) throws IOException {
+
+        User user=userRepository.findById(id).get();
+        user.update(form);
     }
 
     @Override
@@ -82,9 +88,6 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
             String randomNoun = getRandomElement(nouns);
 
             nickname = randomAdjective + " " + randomNoun;
-            log.info("nickname={}", nickname);
-            log.info("adjectives={}", adjectives.length);
-            log.info("nouns={}", nouns.length);
 
             // 중복, 길이 체크
             byte[] bytes = nickname.getBytes(java.nio.charset.StandardCharsets.UTF_8);
