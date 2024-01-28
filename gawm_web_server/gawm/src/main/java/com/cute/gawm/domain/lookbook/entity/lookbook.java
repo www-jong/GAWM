@@ -4,8 +4,7 @@ import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.clothe_lookbook.entity.ClotheLookbook;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.*;
-import org.springframework.lang.Nullable;
-
+import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -20,24 +19,20 @@ public class lookbook extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private long id;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clothe_lookbook_id")
-    @Nullable
     private ClotheLookbook clotheLookbook;
-
-    private Integer view = 0;
-
+    @Column
+    @ColumnDefault("0")
+    private Integer view;
     @Column(name = "lookbook_img")
-    @Nullable
     private String lookbookImg;
-
     @Column(name = "is_public")
-    private boolean isPublic = true;
+    @ColumnDefault("true")
+    private boolean isPublic;
 
 }

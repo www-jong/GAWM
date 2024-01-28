@@ -5,4 +5,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ClotheDetailRepository extends MongoRepository<ClotheDetail, String> {
 
+    ClotheDetail findByClotheId(long clotheId);
 }
