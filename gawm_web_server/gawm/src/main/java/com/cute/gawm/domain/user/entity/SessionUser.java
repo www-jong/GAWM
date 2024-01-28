@@ -5,6 +5,7 @@ import java.io.Serializable;
 @Getter
 public class SessionUser implements Serializable {
 
+    private Integer id;
     private String nickname;
     private String email;
     private String gender;
@@ -13,6 +14,7 @@ public class SessionUser implements Serializable {
     SessionUser(){};
 
     public SessionUser(User user) {
+        this.id=user.getId();
         this.nickname=user.getNickname();
         this.email=user.getEmail();
     }

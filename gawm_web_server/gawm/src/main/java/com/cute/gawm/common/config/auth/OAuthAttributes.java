@@ -1,4 +1,4 @@
-package com.cute.gawm.common.auth;
+package com.cute.gawm.common.config.auth;
 
 
 import com.cute.gawm.domain.user.entity.Role;
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
 @Builder
@@ -25,6 +24,8 @@ public class OAuthAttributes {
     private final String email;
     private final User.Gender gender;
     private final Integer age;
+    private final Integer point;
+    private final Integer level;
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
 
@@ -63,6 +64,8 @@ public class OAuthAttributes {
                 .email(email)
                 .gender(gender)
                 .age(age)
+                .point(0)
+                .level(1)
                 .role(Role.GUEST)
                 .build();
     }

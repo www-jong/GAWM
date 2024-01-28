@@ -16,25 +16,30 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue
     @Column
-    private long id;
-    @Column
-    private String session;
+    private Integer id;
     @Column
     private String email;
-    @Column
-    private String nickname;
     @Column
     private Integer age;
     @Enumerated(EnumType.STRING)
     @Column
     private Gender gender;
+    @Column
+    private String nickname;
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Role role;
+    @Column
+    private Integer point;
+    @Column
+    private Integer level;
+    //이거 빼나?
     @Column(name = "following_num")
     private Integer followingNum;
     @Column(name = "follower_num")
     private Integer followerNum;
-    @Enumerated(EnumType.STRING)
     @Column
-    private Role role;
+    private String session;
 
     public User() {
 

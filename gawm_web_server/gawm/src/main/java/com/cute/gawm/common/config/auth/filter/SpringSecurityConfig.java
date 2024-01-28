@@ -1,4 +1,4 @@
-package com.cute.gawm.common.auth.filter;
+package com.cute.gawm.common.config.auth.filter;
 
 
 import com.cute.gawm.domain.user.entity.Role;
