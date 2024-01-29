@@ -1,4 +1,4 @@
-package com.cute.gawm.common;
+package com.cute.gawm.common.util.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;

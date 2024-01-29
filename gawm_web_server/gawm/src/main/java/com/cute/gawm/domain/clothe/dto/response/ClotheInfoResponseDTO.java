@@ -6,7 +6,7 @@ import java.util.List;
 
 @Getter
 public class ClotheInfoResponseDTO {
-    private long id;
+    private int id;
     private String userId;
     private String clotheImg;
     private String mCategory;

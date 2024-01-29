@@ -8,21 +8,19 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.util.List;
-
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Document(collection = "clothe")
 public class ClotheDetail {
     @Id
-    @Field(value = "_id", targetType = FieldType.OBJECT_ID)
-    private String id;
+    @Field(value = "clothe_detail_id", targetType = FieldType.OBJECT_ID)
+    private int clotheDetailId;
 
     @Indexed
     @Field(value = "clothe_id")
-    private long clotheId;
+    private int clotheId;
 
     //private String userId;
 

@@ -1,4 +1,4 @@
-package com.cute.gawm.common.config.auth;
+package com.cute.gawm.common.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

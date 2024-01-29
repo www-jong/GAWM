@@ -8,7 +8,6 @@ import lombok.*;
 import javax.persistence.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -16,8 +15,9 @@ import javax.persistence.*;
 @Table(name = "clothe")
 public class Clothe extends BaseEntity {
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "clothe_id")
+    private int clotheId;
 
     //@ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "user_id")

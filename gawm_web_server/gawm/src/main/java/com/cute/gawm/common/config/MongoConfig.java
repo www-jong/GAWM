@@ -1,4 +1,4 @@
-package com.cute.gawm.config;
+package com.cute.gawm.common.config;
 
 import com.cute.gawm.common.converter.ListToStringConverter;
 import com.cute.gawm.common.converter.StringToListConverter;

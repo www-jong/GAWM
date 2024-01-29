@@ -1,20 +1,21 @@
-package com.cute.gawm.domain.user.entity;
+package com.cute.gawm.domain.user.dto;
 
+import com.cute.gawm.domain.user.entity.User;
 import lombok.Getter;
 import java.io.Serializable;
 @Getter
 public class SessionUser implements Serializable {
 
-    private Integer id;
+    private int id;
     private String nickname;
     private String email;
     private String gender;
-    private Integer age;
+    private int age;
 
     SessionUser(){};
 
     public SessionUser(User user) {
-        this.id=user.getId();
+        this.id=user.getUserId();
         this.nickname=user.getNickname();
         this.email=user.getEmail();
     }

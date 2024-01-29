@@ -1,4 +1,4 @@
-package com.cute.gawm.config;
+package com.cute.gawm.common.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

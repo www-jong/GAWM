@@ -1,6 +1,6 @@
 package com.cute.gawm.common.config;
 
-import com.cute.gawm.common.config.auth.LoginUserArgumentResolver;
+import com.cute.gawm.common.auth.LoginUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

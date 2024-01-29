@@ -1,6 +1,6 @@
-package com.cute.gawm.common.config.auth.filter;
+package com.cute.gawm.common.auth.filter;
 
-import com.cute.gawm.common.ErrorResponse;
+import com.cute.gawm.common.response.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

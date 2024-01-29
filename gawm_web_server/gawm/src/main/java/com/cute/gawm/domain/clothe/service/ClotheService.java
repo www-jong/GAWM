@@ -22,7 +22,7 @@ public class ClotheService {
     private ClotheDetailRepository clotheDetailRepository;
 
     private ClotheInfoResponseDTO convertToClotheInfoResponseDTO(Clothe clothe){
-        ClotheDetail clotheDetail = clotheDetailRepository.findByClotheId(clothe.getId());
+        ClotheDetail clotheDetail = clotheDetailRepository.findByClotheId(clothe.getClotheId());
         return new ClotheInfoResponseDTO();
     }
     public List<ClotheInfoResponseDTO> getAllClothes(){
@@ -39,7 +39,7 @@ public class ClotheService {
         clothe = clotheRepository.save(clothe);
 
         ClotheDetail clotheDetail = ClotheDetail.builder()
-                .clotheId(clothe.getId())
+                .clotheId(clothe.getClotheId())
                 //.userId(userId)
                 .mCategory(clotheCreateDTO.getMCategory())
                 .sCategory(clotheCreateDTO.getSCategory())

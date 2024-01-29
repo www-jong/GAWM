@@ -1,4 +1,4 @@
-package com.cute.gawm.common;
+package com.cute.gawm.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

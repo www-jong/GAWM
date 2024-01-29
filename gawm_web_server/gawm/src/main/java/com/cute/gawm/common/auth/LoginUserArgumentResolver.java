@@ -1,7 +1,7 @@
-package com.cute.gawm.common.config.auth;
+package com.cute.gawm.common.auth;
 
 
-import com.cute.gawm.domain.user.entity.SessionUser;
+import com.cute.gawm.domain.user.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

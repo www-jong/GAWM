@@ -1,9 +1,9 @@
 package com.cute.gawm.domain.user.service;
 
 
-import com.cute.gawm.common.config.auth.OAuthAttributes;
-import com.cute.gawm.domain.user.UserEditForm;
-import com.cute.gawm.domain.user.entity.SessionUser;
+import com.cute.gawm.common.auth.OAuthAttributes;
+import com.cute.gawm.domain.user.dto.UserEditForm;
+import com.cute.gawm.domain.user.dto.SessionUser;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

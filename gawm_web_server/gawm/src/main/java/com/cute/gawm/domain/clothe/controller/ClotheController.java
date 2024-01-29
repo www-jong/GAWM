@@ -1,14 +1,11 @@
 package com.cute.gawm.domain.clothe.controller;
 
 
-import com.cute.gawm.common.S3Uploader;
 import com.cute.gawm.common.response.BasicResponse;
+import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.clothe.dto.ClotheCreateDTO;
 import com.cute.gawm.domain.clothe.dto.response.ClotheInfoResponseDTO;
-import com.cute.gawm.domain.clothe.entity.ClotheDetail;
-import com.cute.gawm.domain.clothe.repository.ClotheDetailRepository;
 import com.cute.gawm.domain.clothe.service.ClotheService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/clothe")
@@ -69,8 +67,7 @@ public class ClotheController {
             //System.out.println(clotheCreateDTO.getMCategory());
             //System.out.println(clotheCreateDTO.getSCategory());
             //System.out.println(clotheCreateDTO.getColors());
-
-            return new ResponseEntity<>(new BasicResponse(HttpStatus.OK.value(), new HashMap<>()), HttpStatus.OK);
+            return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), new HashMap<>()));
         } catch (IOException e) {
             // 파일 업로드 실패 처리
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패: " + e.getMessage());

@@ -1,10 +1,10 @@
 package com.cute.gawm.domain.user.controller;
 
 
-import com.cute.gawm.common.Response;
-import com.cute.gawm.common.config.auth.LoginUser;
-import com.cute.gawm.domain.user.UserEditForm;
-import com.cute.gawm.domain.user.entity.SessionUser;
+import com.cute.gawm.common.response.BasicResponse;
+import com.cute.gawm.common.auth.LoginUser;
+import com.cute.gawm.domain.user.dto.UserEditForm;
+import com.cute.gawm.domain.user.dto.SessionUser;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.service.UserService;
 import lombok.Data;
@@ -27,17 +27,17 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/userInfo")
-    public Response userInfo(@LoginUser SessionUser sessionUser) {
+    public BasicResponse userInfo(@LoginUser SessionUser sessionUser) {
         User user = userService.findOne(sessionUser.getId());
         log.info("sessionUser.getId()={}",sessionUser.getId());
         log.info("user={}",user);
-        return new Response(HttpStatus.OK.value(),new UserInfoDto(user));
+        return new BasicResponse(HttpStatus.OK.value(),new UserInfoDto(user));
     }
 
     @PatchMapping("/userInfo")
-    public Response edit(UserEditForm form, @LoginUser SessionUser sessionUser) throws IOException {
+    public BasicResponse edit(UserEditForm form, @LoginUser SessionUser sessionUser) throws IOException {
         userService.updateMember(sessionUser.getId(),form);
-        return new Response(HttpStatus.OK.value(),null);
+        return new BasicResponse(HttpStatus.OK.value(),null);
     }
 
     @Data
@@ -47,8 +47,7 @@ public class UserController {
         private Integer age;
         private Integer point;
         private Integer level;
-        private Integer following_num;
-        private Integer follower_num;
+
 
         public UserInfoDto(User user) {
             this.nickname = user.getNickname();
@@ -56,8 +55,8 @@ public class UserController {
             this.age = user.getAge();
             this.point = user.getPoint();
             this.level = user.getLevel();
-            this.following_num = user.getFollowingNum();
-            this.follower_num = user.getFollowerNum();
+
+
         }
     }
 

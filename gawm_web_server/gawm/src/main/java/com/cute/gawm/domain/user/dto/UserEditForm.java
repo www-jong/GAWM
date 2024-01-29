@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.user;
+package com.cute.gawm.domain.user.dto;
 
 import com.cute.gawm.domain.user.entity.User;
 import lombok.Builder;
