@@ -38,8 +38,7 @@ public class S3Uploader {
 
         amazonS3.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
-
-        return uuid;
+        return fileName;
     }
 
     public void deleteFile(String uuid) {

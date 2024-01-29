@@ -80,6 +80,7 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
 
         User user = saveOrUpdate(attributes);
         httpSession.setAttribute("user", new SessionUser(user));
+        httpSession.setMaxInactiveInterval(14400);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),

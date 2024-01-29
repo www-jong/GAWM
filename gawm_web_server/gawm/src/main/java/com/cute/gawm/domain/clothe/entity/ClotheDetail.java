@@ -14,9 +14,10 @@ import java.util.List;
 @Builder
 @Document(collection = "clothe")
 public class ClotheDetail {
+
     @Id
-    @Field(value = "clothe_detail_id", targetType = FieldType.OBJECT_ID)
-    private int clotheDetailId;
+    @Field(value = "clothedetail_id", targetType = FieldType.OBJECT_ID)
+    private String clotheDetailId;
 
     @Indexed
     @Field(value = "clothe_id")
