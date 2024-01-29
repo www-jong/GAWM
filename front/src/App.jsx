@@ -11,7 +11,7 @@ function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route path="/" element={<Layout />}>
+				<Route path="/gawm-front/" element={<Layout />}>
 					<Route path="home" element={<Home />} />
 					<Route path="live" element={<Live />} />
 					<Route path="browse" element={<Browse />} />
