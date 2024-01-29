@@ -11,5 +11,3 @@
 - open JDK 11
 - Spring Boot 2.7.7
 - MySQL 8.0
-
-Gerrit Test 2

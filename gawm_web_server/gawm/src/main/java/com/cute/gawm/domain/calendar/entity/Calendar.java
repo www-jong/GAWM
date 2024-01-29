@@ -15,15 +15,19 @@ import java.sql.Timestamp;
 @Table(name = "calendar")
 public class Calendar extends BaseEntity {
     @Id
-    @GeneratedValue()
+    @GeneratedValue
+    @Column
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "ootd_id")
-    private Lookbook ootd;
+    @JoinColumn(name = "lookbook_id")
+    private Lookbook lookbook;
+    @Column
     private String temperature;
+    @Column
     private String location;
+    @Column
     private Timestamp date;
 }

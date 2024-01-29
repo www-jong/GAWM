@@ -5,8 +5,7 @@ import com.cute.gawm.domain.clothe_lookbook.entity.ClotheLookbook;
 import com.cute.gawm.domain.lookbook_image.entity.LookbookImage;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.*;
-import org.springframework.lang.Nullable;
-
+import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -27,12 +26,11 @@ public class Lookbook extends BaseEntity {
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clothe_lookbook_id")
-    @Nullable
     private ClotheLookbook clotheLookbook;
+    @Column
     private Integer view = 0;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lookbook_image_id")
-    @Nullable
     private LookbookImage lookbookImage;
     @Column(name = "is_public")
     private boolean isPublic = true;

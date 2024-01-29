@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Table(name = "clothe")
 public class Clothe extends BaseEntity {
     @Id @GeneratedValue
+    @Column
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -24,16 +25,23 @@ public class Clothe extends BaseEntity {
     @Column(name = "s_category")
     @Enumerated(EnumType.STRING)
     private SCATEGORY sCategory;
+    @Column
     private String brand;
+    @Column
     private String name;
     @Column(name = "clothe_img")
     private String clotheImg;
+    @Column
     private String color;
+    @Column
     private String material;
+    @Column
     private String pattern;
+
     @ManyToOne
     @JoinColumn(name = "closet_id")
     private Closet closetId;
+    @Column
     private Integer price;
 
     public enum BCATEGORY{
