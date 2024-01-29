@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.calendar.entity;
+package com.cute.gawm.domain.stylelog.entity;
 
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.lookbook.entity.lookbook;
@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "calendar")
-public class Calendar extends BaseEntity {
+@Table(name = "stylelog")
+public class Stylelog extends BaseEntity {
     @Id
     @GeneratedValue
     @Column
