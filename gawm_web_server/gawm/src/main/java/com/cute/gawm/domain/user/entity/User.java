@@ -1,44 +1,63 @@
 package com.cute.gawm.domain.user.entity;
 
+
+import com.cute.gawm.domain.user.UserEditForm;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import com.cute.gawm.common.BaseEntity;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@Entity
+@Builder
+@AllArgsConstructor
+@Getter @Entity
 @Table(name = "user")
 public class User extends BaseEntity {
     @Id
     @GeneratedValue
     @Column
-    private long id;
+    private Integer id;
     @Column
-    private String session;
-    @Column
-    private String name;
+    private String email;
     @Column
     private Integer age;
     @Enumerated(EnumType.STRING)
     @Column
-    private GENDER gender;
+    private Gender gender;
     @Column
     private String nickname;
-    @Column(name = "following_num")
-    private Integer followingNum;
-    @Column(name = "follower_num")
-    private Integer followerNum;
-    @Column
-    private String password;
     @Enumerated(EnumType.STRING)
     @Column
-    private ROLE role;
-    public enum GENDER{
-        MALE, FEMALE
+    private Role role;
+    @Column
+    private Integer point;
+    @Column
+    private Integer level;
+    @Column
+    private String session;
+
+    public User() {
+
     }
-    public enum ROLE{
-        ROLE_ADMIN, ROLE_USER
+
+    public enum Gender {
+        MALE, FEMALE, NONE
     }
+
+    public User update(String email) {
+        this.email = email;
+        return this;
+    }
+    public void update(UserEditForm form){
+        this.nickname=form.getNickname();
+        this.gender=form.getGender();
+        this.age=form.getAge();
+    }
+
+    public String getRoleKey() {
+        return this.role.getKey();
+    }
+
+
 }
