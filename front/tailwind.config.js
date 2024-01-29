@@ -11,7 +11,9 @@ export default {
 				'secondary': '#56423d',
 				'tertiary': '#bea6a0',
 				'quaternary': '#00a8f5',
-				'quinary': '#0074bc'
+				'quinary': '#0074bc',
+
+				'main': '#352b29'
 			},
 			fontFamily: {
 				'pretendard': [ 'Pretendard Variable', 'sans-serif' ],
