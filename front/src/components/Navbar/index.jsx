@@ -11,10 +11,10 @@ function Navbar() {
 		<nav className="container mx-auto">
 			<div className="flex flex-row justify-around">
 				<NavItem icon={HomeIcon} name="홈" href="/" />
-				<NavItem icon={ActivityIcon} name="내감어때" href="/" />
-				<NavItem icon={GawmIcon} name="26°C 라이브" href="/" />
-				<NavItem icon={ClosetIcon} name="내 옷장" href="/" />
-				<NavItem icon={ProfileIcon} name="MY" href="/" />
+				<NavItem icon={ActivityIcon} name="내감어때" href="/browse" />
+				<NavItem icon={GawmIcon} name="26°C 라이브" href="/live" />
+				<NavItem icon={ClosetIcon} name="내 옷장" href="/closet" />
+				<NavItem icon={ProfileIcon} name="MY" href="/mypage" />
 			</div>
 		</nav>
 	);
