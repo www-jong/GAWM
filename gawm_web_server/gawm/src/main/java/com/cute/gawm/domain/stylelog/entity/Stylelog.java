@@ -1,27 +1,28 @@
-package com.cute.gawm.domain.calendar.entity;
+package com.cute.gawm.domain.stylelog.entity;
 
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.user.entity.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "calendar")
-public class Calendar extends BaseEntity {
+@Table(name = "stylelog")
+public class Stylelog extends BaseEntity {
     @Id
-    @GeneratedValue
-    @Column
-    private long id;
-    @ManyToOne
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "stylelog_id")
+    private int stylelogId;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lookbook_id")
     private Lookbook lookbook;
     @Column

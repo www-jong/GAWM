@@ -6,3 +6,4 @@ public class ClotheMiniResponse {
     private String brand;
     private String clotheImg;
 }
+

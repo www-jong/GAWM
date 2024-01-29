@@ -18,7 +18,7 @@ import javax.persistence.*;
 public class LookbookImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "lookbook_image_id")
     private int lookbookImageId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lookbook_id")

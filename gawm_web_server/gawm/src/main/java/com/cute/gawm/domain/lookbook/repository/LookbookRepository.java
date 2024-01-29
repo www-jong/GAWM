@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.lookbook.respository;
+package com.cute.gawm.domain.lookbook.repository;
 
 import org.springframework.stereotype.Repository;
 

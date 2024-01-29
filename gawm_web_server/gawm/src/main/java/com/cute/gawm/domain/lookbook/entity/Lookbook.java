@@ -18,8 +18,8 @@ import javax.validation.constraints.NotNull;
 public class Lookbook extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
+    @Column(name = "lookbook_id")
+    private int lookbookId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @NotNull

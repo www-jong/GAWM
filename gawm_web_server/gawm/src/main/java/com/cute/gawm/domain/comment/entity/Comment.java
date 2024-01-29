@@ -3,25 +3,27 @@ package com.cute.gawm.domain.comment.entity;
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.user.entity.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Getter
-@Setter
+@Builder
 @Entity
 @Table(name = "comment")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Comment extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
+    private int commentId;
     @Column
-    private long id;
     private String content;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
-    @JoinColumn(name = "ootd_id")
-    private Lookbook ootd;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stylelog_id")
+    private Lookbook stylelog;
 }
