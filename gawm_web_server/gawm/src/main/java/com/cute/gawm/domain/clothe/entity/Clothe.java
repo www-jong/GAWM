@@ -8,6 +8,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -19,10 +20,12 @@ public class Clothe extends BaseEntity {
     @Column(name = "clothe_id")
     private int clotheId;
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "user_id")
-    //private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
+    @Column(name = "order_num")
+    private int orderNum;  // 정렬 순서를 위한 필드
     @Column(name = "clothe_img")
     private String clotheImg;
 

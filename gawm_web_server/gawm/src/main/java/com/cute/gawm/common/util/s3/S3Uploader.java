@@ -30,8 +30,14 @@ public class S3Uploader {
     }
 
     public String uploadFile(MultipartFile file) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = Optional.ofNullable(originalFilename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(originalFilename.lastIndexOf(".") + 1))
+                .orElse("");
+
         String uuid = UUID.randomUUID().toString();
-        String fileName = uuid + "_" + file.getOriginalFilename();
+        String fileName = uuid + (fileExtension.isEmpty() ? "" : "." + fileExtension);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());

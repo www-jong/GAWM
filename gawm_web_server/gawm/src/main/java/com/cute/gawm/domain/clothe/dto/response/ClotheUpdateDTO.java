@@ -1,16 +1,15 @@
 package com.cute.gawm.domain.clothe.dto.response;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
-public class ClotheInfoResponseDTO {
-    private int clotheId;
-    private int userId;
-    private int orderNum;
+@Data
+@Builder
+public class ClotheUpdateDTO {
     private String clotheImg;
     private String mCategory;
     private String sCategory;
@@ -19,5 +18,4 @@ public class ClotheInfoResponseDTO {
     private List<String> colors;
     private List<String> materials;
     private List<String> patterns;
-
 }
