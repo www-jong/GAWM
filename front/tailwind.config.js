@@ -18,6 +18,7 @@ export default {
 			fontFamily: {
 				'pretendard': [ 'Pretendard Variable', 'sans-serif' ],
 				'sans': [ 'Pretendard Variable', 'sans-serif' ],
+				'nps': [ '국민연금체', 'sans-serif' ]
 			}
 		}
 	},
