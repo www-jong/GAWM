@@ -21,10 +21,10 @@ public class LookbookImage {
     @Column
     private int lookbookImageId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "lookbook_id")
+    @JoinColumn(name = "lookbook_id")
     private Lookbook lookbook;
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "image_id")
+    @JoinColumn(name = "image_id")
     private Image image;
 
 }

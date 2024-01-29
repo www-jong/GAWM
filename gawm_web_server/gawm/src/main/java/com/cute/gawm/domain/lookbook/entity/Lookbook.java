@@ -31,7 +31,7 @@ public class Lookbook extends BaseEntity {
     private ClotheLookbook clotheLookbook;
     private Integer view = 0;
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "lookbook_image_id")
+    @JoinColumn(name = "lookbook_image_id")
     @Nullable
     private LookbookImage lookbookImage;
     @Column(name = "is_public")
