@@ -34,11 +34,6 @@ public class User extends BaseEntity {
     private Integer point;
     @Column
     private Integer level;
-    //이거 빼나?
-    @Column(name = "following_num")
-    private Integer followingNum;
-    @Column(name = "follower_num")
-    private Integer followerNum;
     @Column
     private String session;
 
