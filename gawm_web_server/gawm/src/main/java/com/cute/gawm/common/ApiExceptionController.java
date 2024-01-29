@@ -12,7 +12,7 @@ public class ApiExceptionController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse illegalExHandle(IllegalArgumentException e) {
-        log.error("[exceptionHandle] ex", e);
+        log.error("[exceptionHandle] ex={}", e.getMessage());
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),"IllegalArgumentException", e.getMessage());
     }
 
