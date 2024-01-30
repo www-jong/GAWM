@@ -47,8 +47,7 @@ public class ClotheService {
     public ClotheInfoResponseDTO getClotheInfo(int clotheId) {
         Clothe clothe = clotheRepository.findById(clotheId).orElseThrow(() -> new RuntimeException("Clothe not found"));
         ClotheDetail clotheDetail = clotheDetailRepository.findByClotheId(clotheId);
-        //return new ClotheInfoResponseDTO(clothe.getUser(), clothe.getOrderNum(), clothe.getClotheImg(), clotheDetail);
-        return convertToClotheInfoResponseDTO(clothe);
+       return convertToClotheInfoResponseDTO(clothe);
     }
 
     private ClotheInfoResponseDTO convertToClotheInfoResponseDTO(Clothe clothe) {
@@ -96,7 +95,7 @@ public class ClotheService {
 
     public boolean deleteClothe(Integer clotheId, Integer userId) {
         // clotheId와 userId를 사용하여 삭제 권한 확인 및 삭제 로직 구현
-        Clothe clothe = clotheRepository.findById(clotheId).orElseThrow(() -> new RuntimeException("옷을 찾을 수 없습니다."));
+        Clothe clothe = clotheRepository.findById(clotheId).orElseThrow(() -> new RuntimeException("본인의 옷만 삭제할 수 있습니다."));
         if (clothe.getUser().getUserId() != userId) {
             return false;
         }
@@ -113,10 +112,15 @@ public class ClotheService {
         if (clothe.getUser().getUserId() != userId) {
             throw new RuntimeException("권한이 없습니다.");
         }
-        if (!clothe.getClotheImg().equals(image.getOriginalFilename())) {
-            if (s3Uploader.deleteFile(clothe.getClotheImg())) {//기존 파일명과 다를경우(사진이 변경되었을 경우, 기존사진 삭제 후 재업로드)
-                String imageUrl = s3Uploader.uploadFile(image);
-                clothe.setClotheImg(imageUrl);
+        if (!clothe.getClotheImg().equals(image.getOriginalFilename())) { // 기존 파일명과 다를경우(사진이 변경되었을 경우)
+            if (s3Uploader.deleteFile(clothe.getClotheImg())) { //기존파일 삭제
+                if(!image.isEmpty()) {
+                    String imageUrl = s3Uploader.uploadFile(image);
+                    clothe.setClotheImg(imageUrl);
+                }
+                else{ //이미지가 비어있을 경우,
+                    clothe.setClotheImg(null);
+                }
             } else {
                 throw new RuntimeException("삭제에 실패했습니다.");
             }

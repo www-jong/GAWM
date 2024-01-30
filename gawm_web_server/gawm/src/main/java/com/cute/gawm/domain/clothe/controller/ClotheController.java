@@ -3,6 +3,7 @@ package com.cute.gawm.domain.clothe.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.response.BasicResponse;
+import com.cute.gawm.common.response.ErrorResponse;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.clothe.dto.ClotheCreateDTO;
@@ -44,8 +45,7 @@ public class ClotheController {
             Integer userId = sessionUser.getId();
             List<ClotheInfoResponseDTO> clothes = clotheService.getAllClothesInfo(userId);
 
-            // 페이징 처리가 필요한 경우 여기서 처리하십시오.
-            // 예시 코드는 모든 데이터를 반환하고, 페이징 정보는 하드코딩합니다.
+            //페이징 임시처리?
             PagingResponse pagingResponse = new PagingResponse(
                     HttpStatus.OK.value(),
                     clothes,
@@ -62,7 +62,7 @@ public class ClotheController {
             return ResponseEntity.ok(pagingResponse);
         } catch (Exception e) {
             // 예외 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터 처리 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"NotFoundException","데이터 처리 실패: " + e.getMessage()));
         }
     }
 
@@ -86,13 +86,11 @@ public class ClotheController {
             System.out.println(userId);
             clotheService.createClothe(clotheCreateDTO, userId);
 
-            return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), new HashMap<>()));
+            return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "옷 생성 완료."));
         } catch (IOException e) {
-            // 파일 업로드 실패 처리
-            return BasicResponse.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"NotFoundException","파일 업로드 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"FileUploadException","파일 업로드 실패: " + e.getMessage()));
         } catch (Exception e) {
-            // 기타 예외 처리
-            return BasicResponse.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"NotFoundException","데이터 처리 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"DataProcessingException","데이터 처리 실패: " + e.getMessage()));
         }
     }
 
@@ -101,7 +99,7 @@ public class ClotheController {
         HttpSession session = request.getSession();
         SessionUser sessionUser = (SessionUser) session.getAttribute("user");
         if (sessionUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 인증이 필요합니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse( HttpStatus.UNAUTHORIZED.value(),"AuthenticationException","사용자 인증이 필요합니다."));
         }
         Integer userId = sessionUser.getId();
 
@@ -109,13 +107,13 @@ public class ClotheController {
             // 옷 삭제 서비스 호출
             boolean isDeleted = clotheService.deleteClothe(clotheId, userId);
             if (!isDeleted) {
-                return BasicResponse.buildErrorResponse(HttpStatus.FORBIDDEN,"NotFoundException", "옷을 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(HttpStatus.FORBIDDEN.value(),"NotFoundException", "옷을 찾을 수 없습니다."));
             }
 
             return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "옷이 성공적으로 삭제되었습니다."));
         } catch (Exception e) {
-            // 기타 예외 처리
-            return BasicResponse.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"NotFoundException", "데이터 처리 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"DataProcessingException", "데이터 처리 실패: " + e.getMessage()));
         }
     }
 
@@ -126,7 +124,8 @@ public class ClotheController {
             ClotheInfoResponseDTO clotheInfo = clotheService.getClotheInfo(clotheId);
             return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), clotheInfo));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터 조회 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"DataRetrievalException", "데이터 조회 실패: " + e.getMessage()));
         }
     }
 
@@ -143,7 +142,8 @@ public class ClotheController {
 
             return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "옷 정보가 업데이트되었습니다."));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업데이트 처리 실패: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"UpdateFailureException", "업데이트 처리 실패: " + e.getMessage()));
         }
     }
 
