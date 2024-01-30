@@ -1,4 +1,8 @@
 function getRelativeTime(from) {
+    if (!(from instanceof Date) || isNaN(from)) {
+        return 'Invalid date';
+    }
+
     const units = {
         "day": 24 * 60 * 60 * 1000,
         "hour": 60 * 60 * 1000,
