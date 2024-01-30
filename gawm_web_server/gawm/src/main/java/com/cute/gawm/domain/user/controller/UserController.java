@@ -47,8 +47,6 @@ public class UserController {
         private Integer age;
         private Integer point;
         private Integer level;
-        private Integer following_num;
-        private Integer follower_num;
 
         public UserInfoDto(User user) {
             this.nickname = user.getNickname();
@@ -56,8 +54,6 @@ public class UserController {
             this.age = user.getAge();
             this.point = user.getPoint();
             this.level = user.getLevel();
-            this.following_num = user.getFollowingNum();
-            this.follower_num = user.getFollowerNum();
         }
     }
 

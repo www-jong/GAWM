@@ -47,24 +47,16 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
     @Transactional
     public void updateMember(Integer id, UserEditForm form) throws IOException {
         if (!validateNickname(form.getNickname())) {
-            log.info("form.getNickname()={}", form.getNickname());
             throw new IllegalArgumentException("올바르지 않은 닉네임입니다.");
         }
-        log.info("form.getNickname()={}", form.getNickname());
-        System.out.println("닉네임이 유효합니다.");
         User user = userRepository.findById(id).get();
         user.update(form);
 
     }
 
     private static boolean validateNickname(String nickname) {
-        // 공백 연속 금지, 한글로 이루어져 있는 지 검사하는 정규표현식
-        String regex = "^[0-9|a-z|A-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(nickname);
-
-        // 매칭 여부 반환
-        return Pattern.matches(regex, nickname);
+        String regex = "^[a-z|A-Z|가-힣| |_]*$";
+        return Pattern.matches(regex,nickname)&&!nickname.contains("  ")&&!nickname.endsWith(" ")&&!nickname.startsWith(" ");
     }
 
     @Override
