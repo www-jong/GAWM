@@ -1,11 +1,13 @@
 package com.cute.gawm.domain.clothe.entity;
 
 import com.cute.gawm.common.BaseEntity;
-import com.cute.gawm.domain.closet.entity.Closet;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -28,6 +30,5 @@ public class Clothe extends BaseEntity {
     private int orderNum;  // 정렬 순서를 위한 필드
     @Column(name = "clothe_img")
     private String clotheImg;
-
 
 }

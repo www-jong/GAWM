@@ -81,6 +81,7 @@ public class ClotheService {
 
         ClotheDetail clotheDetail = ClotheDetail.builder()
                 .clotheId(clothe.getClotheId())
+                //.clotheId(clothe)
                 //.userId(userId)
                 .mCategory(clotheCreateDTO.getMCategory())
                 .sCategory(clotheCreateDTO.getSCategory())
