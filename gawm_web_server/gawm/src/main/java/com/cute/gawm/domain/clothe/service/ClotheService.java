@@ -1,5 +1,6 @@
 package com.cute.gawm.domain.clothe.service;
 
+import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.clothe.dto.ClotheCreateDTO;
 import com.cute.gawm.domain.clothe.dto.response.ClotheInfoResponseDTO;
 import com.cute.gawm.domain.clothe.dto.response.ClotheUpdateDTO;
@@ -11,13 +12,18 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ClotheService {
+
+    @Autowired
+    private S3Uploader s3Uploader;
 
     @Autowired
     private UserRepository userRepository;
@@ -30,7 +36,7 @@ public class ClotheService {
 
 
     // 유저의 모든 옷 조회(세션에서 유저 id로)
-    public List<ClotheInfoResponseDTO> getAllClothesInfo(Integer userId){
+    public List<ClotheInfoResponseDTO> getAllClothesInfo(Integer userId) {
         List<Clothe> clothes = clotheRepository.findByUserUserId(userId);
         return clothes.stream()
                 .map(this::convertToClotheInfoResponseDTO)
@@ -44,7 +50,8 @@ public class ClotheService {
         //return new ClotheInfoResponseDTO(clothe.getUser(), clothe.getOrderNum(), clothe.getClotheImg(), clotheDetail);
         return convertToClotheInfoResponseDTO(clothe);
     }
-    private ClotheInfoResponseDTO convertToClotheInfoResponseDTO(Clothe clothe){
+
+    private ClotheInfoResponseDTO convertToClotheInfoResponseDTO(Clothe clothe) {
         ClotheDetail clotheDetail = clotheDetailRepository.findByClotheId(clothe.getClotheId());
         // 여기에 ClotheInfoResponseDTO 객체 생성 로직 추가
         return new ClotheInfoResponseDTO(
@@ -63,8 +70,7 @@ public class ClotheService {
     }
 
 
-
-    public void createClothe(ClotheCreateDTO clotheCreateDTO, Integer userId){
+    public void createClothe(ClotheCreateDTO clotheCreateDTO, Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         int lastOrder = clotheRepository.findLastOrderValueByUserId(userId);
         Clothe clothe = Clothe.builder()
@@ -90,7 +96,7 @@ public class ClotheService {
 
     public boolean deleteClothe(Integer clotheId, Integer userId) {
         // clotheId와 userId를 사용하여 삭제 권한 확인 및 삭제 로직 구현
-        Clothe clothe = clotheRepository.findById(clotheId).orElseThrow(()-> new RuntimeException("옷을 찾을 수 없습니다."));
+        Clothe clothe = clotheRepository.findById(clotheId).orElseThrow(() -> new RuntimeException("옷을 찾을 수 없습니다."));
         if (clothe.getUser().getUserId() != userId) {
             return false;
         }
@@ -99,31 +105,36 @@ public class ClotheService {
         return true;
     }
 
-    /*
-    public void updateClothe(int clotheId, ClotheUpdateDTO clotheUpdateDTO, int userId) {
-        Optional<Clothe> clotheOptional = clotheRepository.findById(clotheId);
 
-        if (clotheOptional.isPresent() && clotheOptional.get().getUser().getUserId() == userId) {
-            Clothe clothe = clotheOptional.get();
+    public void updateClothe(int clotheId, MultipartFile image, ClotheUpdateDTO clotheUpdateDTO, int userId) throws IOException {
+        Clothe clothe = clotheRepository.findById(clotheId).orElseThrow(() -> new RuntimeException("옷을 찾을수 없습니다."));
+        ClotheDetail clotheDetail = clotheDetailRepository.findByClotheId(clotheId);
 
-            // 빌더를 이용한 업데이트
-            Clothe updatedClothe = Clothe.builder()
-                    .clotheImg(clotheUpdateDTO.getClotheImg())
-                    .mCategory(clotheUpdateDTO.getmCategory())
-                    .sCategory(clotheUpdateDTO.getsCategory())
-                    .brand(clotheUpdateDTO.getBrand())
-                    .name(clotheUpdateDTO.getName())
-                    .colors(clotheUpdateDTO.getColors())
-                    .materials(clotheUpdateDTO.getMaterials())
-                    .patterns(clotheUpdateDTO.getPatterns())
-                    .build();
-
-            // 데이터베이스에 업데이트
-            clotheRepository.save(updatedClothe);
-        } else {
-            throw new CustomException("옷 정보를 찾을 수 없거나 권한이 없습니다.");
+        if (clothe.getUser().getUserId() != userId) {
+            throw new RuntimeException("권한이 없습니다.");
         }
+        if (!clothe.getClotheImg().equals(image.getOriginalFilename())) {
+            if (s3Uploader.deleteFile(clothe.getClotheImg())) {//기존 파일명과 다를경우(사진이 변경되었을 경우, 기존사진 삭제 후 재업로드)
+                String imageUrl = s3Uploader.uploadFile(image);
+                clothe.setClotheImg(imageUrl);
+            } else {
+                throw new RuntimeException("삭제에 실패했습니다.");
+            }
+        }
+        clotheDetail.setMCategory(clotheUpdateDTO.getMCategory());
+        clotheDetail.setSCategory(clotheUpdateDTO.getSCategory());
+        clotheDetail.setBrand(clotheUpdateDTO.getBrand());
+        clotheDetail.setName(clotheUpdateDTO.getName());
+        clotheDetail.setColors(clotheUpdateDTO.getColors());
+        clotheDetail.setMaterials(clotheUpdateDTO.getMaterials());
+        clotheDetail.setPatterns(clotheUpdateDTO.getPatterns());
+
+
+        // 데이터베이스에 업데이트
+        clotheRepository.save(clothe);
+        clotheDetailRepository.save(clotheDetail);
+
     }
 
-     */
+
 }

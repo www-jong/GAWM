@@ -9,6 +9,7 @@ import com.cute.gawm.domain.clothe.dto.ClotheCreateDTO;
 import com.cute.gawm.domain.clothe.dto.response.ClotheInfoResponseDTO;
 import com.cute.gawm.domain.clothe.dto.response.ClotheUpdateDTO;
 import com.cute.gawm.domain.clothe.entity.Clothe;
+import com.cute.gawm.domain.clothe.entity.ClotheDetail;
 import com.cute.gawm.domain.clothe.service.ClotheService;
 import com.cute.gawm.domain.user.controller.UserController;
 import com.cute.gawm.domain.user.dto.SessionUser;
@@ -88,10 +89,10 @@ public class ClotheController {
             return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), new HashMap<>()));
         } catch (IOException e) {
             // 파일 업로드 실패 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 실패: " + e.getMessage());
+            return BasicResponse.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"NotFoundException","파일 업로드 실패: " + e.getMessage());
         } catch (Exception e) {
             // 기타 예외 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터 처리 실패: " + e.getMessage());
+            return BasicResponse.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"NotFoundException","데이터 처리 실패: " + e.getMessage());
         }
     }
 
@@ -108,12 +109,13 @@ public class ClotheController {
             // 옷 삭제 서비스 호출
             boolean isDeleted = clotheService.deleteClothe(clotheId, userId);
             if (!isDeleted) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 권한이 없습니다.");
+                return BasicResponse.buildErrorResponse(HttpStatus.FORBIDDEN,"NotFoundException", "옷을 찾을 수 없습니다.");
             }
+
             return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "옷이 성공적으로 삭제되었습니다."));
         } catch (Exception e) {
             // 기타 예외 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("데이터 처리 실패: " + e.getMessage());
+            return BasicResponse.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"NotFoundException", "데이터 처리 실패: " + e.getMessage());
         }
     }
 
@@ -128,18 +130,16 @@ public class ClotheController {
         }
     }
 
-    /*
+
     @PatchMapping("/{clotheId}")
     public ResponseEntity<?> updateClothe(
             @PathVariable("clotheId") int clotheId,
-            @RequestBody ClotheUpdateDTO clotheUpdateDTO,
+            @RequestPart("image") MultipartFile image,
+            @RequestPart("data") ClotheUpdateDTO clotheUpdateDTO,
             @LoginUser SessionUser sessionUser) {
         try {
-            Integer userId = sessionUser.getId();
-            // 옷 정보 조회 및 권한 확인
-
-            // 서비스 레이어에 옷 정보 업데이트 요청
-            clotheService.updateClothe(clotheId, clotheUpdateDTO, userId);
+            int userId = sessionUser.getId();
+            clotheService.updateClothe(clotheId, image,clotheUpdateDTO, userId);
 
             return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "옷 정보가 업데이트되었습니다."));
         } catch (Exception e) {
@@ -147,6 +147,4 @@ public class ClotheController {
         }
     }
 
-
-     */
 }

@@ -47,8 +47,13 @@ public class S3Uploader {
         return fileName;
     }
 
-    public void deleteFile(String uuid) {
-        String fileName = uuid + "_*"; // 파일 이름 패턴을 사용하여 삭제
-        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+    public boolean deleteFile(String fileName) {
+        try {
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+            return true; // 삭제 성공
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // 삭제 실패
+        }
     }
 }

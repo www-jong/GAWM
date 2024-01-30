@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 @Builder
 public class ClotheUpdateDTO {
-    private String clotheImg;
     private String mCategory;
     private String sCategory;
     private String brand;

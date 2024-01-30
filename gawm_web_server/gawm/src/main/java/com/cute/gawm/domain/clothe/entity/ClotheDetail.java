@@ -9,10 +9,11 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.util.List;
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "clothe")
+@Document(collection = "clothedetail")
 public class ClotheDetail {
 
     @Id
