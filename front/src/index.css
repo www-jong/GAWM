@@ -21,6 +21,13 @@
 	src: url("assets/fonts/NPSfont_extrabold.ttf");
 }
 
+@layer utilities {
+    .h2-nps {
+        @apply font-bold ml-2.5; /* Tailwind CSS의 볼드 스타일 */
+        font-family: "국민연금체", sans-serif; /* 국민연금체와 폴백 글꼴 지정 */
+    }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

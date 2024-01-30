@@ -1,4 +1,5 @@
 function getRelativeTime(from) {
+    // Date값 예외처리
     if (!(from instanceof Date) || isNaN(from)) {
         return 'Invalid date';
     }
