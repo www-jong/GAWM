@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import logoImage from '../../assets/images/HomeLogo.svg';
 import LiveImg from './LiveImg.png';
 
@@ -11,10 +12,26 @@ export default function Browse() {
         );
     }
 
-    const TodayLookComponent = () => {
+    const TodayLookSection = ({ title }) => {
         return (
-            <div className="today-look-component">
-                <div className="image-placeholder">TodayLook Component</div>
+            <div className="today-look-section mt-4">
+                <h2 className="h2-nps">{title}</h2>
+                <div className="grid grid-cols-2 gap-4">
+                    <TodayLookComponent lookImage="path_to_look_image_1.jpg" userId="user_id_1" />
+                    <TodayLookComponent lookImage="path_to_look_image_2.jpg" userId="user_id_2" />
+                </div>
+            </div>
+        );
+    };
+    
+    const TodayLookComponent = ({ lookImage, userId }) => {
+        return (
+            <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow-md">
+                <img className="w-full h-60 object-cover rounded-lg" src={lookImage} alt="Lookbook" />
+                <div className="flex items-center mt-2">
+                    <img className="w-10 h-10 object-cover rounded-full border-2 border-gray-300" src={`path_to_profile_images/${userId}.jpg`} alt={userId} />
+                    <span className="ml-2 text-sm font-semibold">{userId}</span>
+                </div>
             </div>
         );
     };
@@ -66,8 +83,8 @@ export default function Browse() {
 
     const LiveComponent = ({ image, title, createdDate, points }) => {
         return (
-            <div className="size-32 rounded-lg relative">
-            <img className="size-32 object-cover rounded-lg" src={image} />
+            <div className="size-28 rounded-lg relative">
+            <img className="size-28 object-cover rounded-lg" src={image} />
             <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
                 <span className="inline-block text-sm text-white">{title}</span>
                 <span className="inline-block text-[0.6rem] text-tertiary">
@@ -75,18 +92,6 @@ export default function Browse() {
                 </span>
             </div>
         </div>
-        );
-    };
-
-    const TodayLookSection = ({ title }) => {
-        return (
-            <div className="today-look-section">
-                <h2 className="h2-nps mt-4">{title}</h2>
-                <div className="component-container">
-                    <TodayLookComponent />
-                    <TodayLookComponent />
-                </div>
-            </div>
         );
     };
 
