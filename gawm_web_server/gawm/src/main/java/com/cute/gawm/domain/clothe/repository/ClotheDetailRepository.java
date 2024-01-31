@@ -5,5 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ClotheDetailRepository extends MongoRepository<ClotheDetail, String> {
 
+    void deleteByClotheId(int clotheId);
     ClotheDetail findByClotheId(int clotheId);
 }

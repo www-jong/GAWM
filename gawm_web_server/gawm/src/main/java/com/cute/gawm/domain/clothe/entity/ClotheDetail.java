@@ -9,14 +9,16 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.util.List;
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "clothe")
+@Document(collection = "clothedetail")
 public class ClotheDetail {
+
     @Id
-    @Field(value = "clothe_detail_id", targetType = FieldType.OBJECT_ID)
-    private int clotheDetailId;
+    @Field(value = "clothedetail_id", targetType = FieldType.OBJECT_ID)
+    private String clotheDetailId;
 
     @Indexed
     @Field(value = "clothe_id")

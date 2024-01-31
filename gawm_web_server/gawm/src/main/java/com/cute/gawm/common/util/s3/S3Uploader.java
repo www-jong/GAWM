@@ -30,20 +30,30 @@ public class S3Uploader {
     }
 
     public String uploadFile(MultipartFile file) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = Optional.ofNullable(originalFilename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(originalFilename.lastIndexOf(".") + 1))
+                .orElse("");
+
         String uuid = UUID.randomUUID().toString();
-        String fileName = uuid + "_" + file.getOriginalFilename();
+        String fileName = uuid + (fileExtension.isEmpty() ? "" : "." + fileExtension);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
 
         amazonS3.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
-
-        return uuid;
+        return fileName;
     }
 
-    public void deleteFile(String uuid) {
-        String fileName = uuid + "_*"; // 파일 이름 패턴을 사용하여 삭제
-        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+    public boolean deleteFile(String fileName) {
+        try {
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+            return true; // 삭제 성공
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // 삭제 실패
+        }
     }
 }
