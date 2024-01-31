@@ -1,8 +1,8 @@
-package com.cute.gawm.domain.clothe_stylelog.entity;
+package com.cute.gawm.domain.clothes_stylelog.entity;
 
 
 import com.cute.gawm.common.BaseEntity;
-import com.cute.gawm.domain.clothe.entity.Clothe;
+import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.stylelog.entity.Stylelog;
 import lombok.*;
 
@@ -13,16 +13,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "clothe_stylelog")
-public class ClotheStylelog  extends BaseEntity {
+@Table(name = "clothes_stylelog")
+public class ClothesStylelog  extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "clothe_stylelog_id")
-    private int clotheStylelogId;
+    @Column(name = "clothes_stylelog_id")
+    private int clothesStylelogId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "clothe_id")
-    private Clothe clothe;
+    @JoinColumn(name = "clothes_id")
+    private Clothes clothe;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stylelog_id")
     private Stylelog stylelog;

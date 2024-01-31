@@ -25,8 +25,8 @@ public class StylelogDetail {
     private String temperature;
     private String weather;
 
-    @Field("clothes")
-    private List<Clothe> clothes;
+    @Field("clothess")
+    private List<clothes> clothess;
 
 
     @Getter
@@ -34,9 +34,9 @@ public class StylelogDetail {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class Clothe {
-        @Field("clothe_id")
-        private String clotheId;
+    public static class clothes {
+        @Field("clothes_id")
+        private String clothesId;
         private Double x;
         private Double y;
         private Double rotate = 0.0;

@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.clothe.dto.response;
+package com.cute.gawm.domain.clothes.dto.request;
 
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Data
 @Builder
-public class ClotheUpdateDTO {
+public class ClothesUpdateResponse {
     private String mCategory;
     private String sCategory;
     private String brand;
