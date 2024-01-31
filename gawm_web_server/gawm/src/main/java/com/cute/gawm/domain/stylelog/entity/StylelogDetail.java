@@ -30,7 +30,7 @@ public class StylelogDetail {
     private String weather;
 
     @Field("clothess")
-    private List<clothes> clothess;
+    private List<clothes> clothes;
 
 
     @Getter
@@ -40,11 +40,12 @@ public class StylelogDetail {
     @Builder
     public static class clothes {
         @Field("clothes_id")
-        private String clothesId;
+        private int clothesId;
         private Double x;
         private Double y;
         private Double rotate = 0.0;
         private Double size;
+
 
         // getters, setters, constructor
     }

@@ -5,5 +5,5 @@ import com.cute.gawm.domain.stylelog.entity.StylelogDetail;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface StylelogDetailRepository extends MongoRepository<StylelogDetail, String> {
-
+    StylelogDetail findByStylelogId(String stylelogId);
 }

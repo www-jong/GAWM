@@ -1,6 +1,8 @@
 package com.cute.gawm.domain.stylelog.service;
 
-import com.cute.gawm.domain.stylelog.dto.response.StylelogCreateRequest;
+import com.cute.gawm.domain.stylelog.dto.request.StylelogCreateRequest;
+
+import com.cute.gawm.domain.stylelog.dto.response.StylelogsByYearResponse;
 import com.cute.gawm.domain.stylelog.entity.Stylelog;
 import com.cute.gawm.domain.stylelog.entity.StylelogDetail;
 import com.cute.gawm.domain.stylelog.repository.StylelogDetailRepository;
@@ -27,14 +29,27 @@ public class StylelogService {
     @Autowired
     private StylelogDetailRepository stylelogDetailRepository;
 
-    public List<Stylelog> getStylelogsByMonth(int year, int month, Integer userId) {
-        LocalDate startDate = LocalDate.of(year, month, 1).minusMonths(1);
-        LocalDate endDate = LocalDate.of(year, month, 1).plusMonths(2).minusDays(1);
+    public List<StylelogsByYearResponse> getStylelogsByYear(int year, Integer userId) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year + 1, 1, 1).minusDays(1);
 
         Timestamp startTimestamp = Timestamp.valueOf(startDate.atStartOfDay());
         Timestamp endTimestamp = Timestamp.valueOf(endDate.atStartOfDay());
 
-        return stylelogRepository.findByUserUserIdAndCreatedAtBetween(userId, startTimestamp, endTimestamp);
+        List<Stylelog> stylelogs = stylelogRepository.findByUserUserIdAndDateBetween(userId, startTimestamp, endTimestamp);
+
+        return stylelogs.stream()
+                .map(stylelog -> {
+                    StylelogDetail detail = stylelogDetailRepository.findByStylelogId(String.valueOf(stylelog.getStylelogId()));
+                    return new StylelogsByYearResponse(
+                            stylelog.getStylelogId(),
+                            detail.getLocation(),
+                            detail.getTemperature(),
+                            stylelog.getDate(),
+                            detail.getClothes()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     public void createStylelog(StylelogCreateRequest request, Integer userId) {
@@ -54,7 +69,7 @@ public class StylelogService {
                 .location(request.getLocation())
                 .temperature(request.getTemperature())
                 .weather(request.getWeather())
-                .clothess(request.getClothes().stream()
+                .clothes(request.getClothes().stream()
                         .map(c -> new StylelogDetail.clothes(
                                 c.getClothesId(), c.getX(), c.getY(), c.getRotate(), c.getSize()))
                         .collect(Collectors.toList()))

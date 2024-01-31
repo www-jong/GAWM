@@ -2,11 +2,10 @@ package com.cute.gawm.domain.stylelog.controller;
 
 
 import com.cute.gawm.common.auth.LoginUser;
-import com.cute.gawm.common.response.BasicResponse;
 import com.cute.gawm.common.response.ErrorResponse;
-import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.ResponseUtil;
-import com.cute.gawm.domain.stylelog.dto.response.StylelogCreateRequest;
+import com.cute.gawm.domain.stylelog.dto.request.StylelogCreateRequest;
+import com.cute.gawm.domain.stylelog.dto.response.StylelogsByYearResponse;
 import com.cute.gawm.domain.stylelog.entity.Stylelog;
 import com.cute.gawm.domain.stylelog.service.StylelogService;
 import com.cute.gawm.domain.user.dto.SessionUser;
@@ -24,27 +23,17 @@ public class StylelogController {
     @Autowired
     private StylelogService stylelogService;
 
+
+    // 해당 년도의 모든 데이터 주기
     @GetMapping("/list")
-    public ResponseEntity<?> getStylelogsByMonth(
+    public ResponseEntity<?> getStylelogsByYear(
             @RequestParam("year") int year,
-            @RequestParam("month") int month,
             @LoginUser SessionUser sessionUser) {
         try {
-            List<Stylelog> stylelogs = stylelogService.getStylelogsByMonth(year, month,sessionUser.getId());
-
-            return ResponseUtil.buildPagingResponse(HttpStatus.OK,
-                    stylelogs,
-                    true, // isFirst
-                    true, // isLast
-                    0, // page
-                    1, // totalPage
-                    stylelogs.size(), // size
-                    false, // sorted
-                    false, // asc
-                    false // filtered
-                    );
+            List<StylelogsByYearResponse> stylelogs = stylelogService.getStylelogsByYear(year, sessionUser.getId());
+            return ResponseUtil.buildBasicResponse(HttpStatus.OK,stylelogs); // isFirst, isLast 등의 값 설정
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"NotFoundException","데이터 처리 실패" + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"NotFoundException","데이터 처리 실패: " + e.getMessage()));
         }
     }
 

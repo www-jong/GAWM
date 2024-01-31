@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.stylelog.dto.response;
+package com.cute.gawm.domain.stylelog.dto.request;
 
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class StylelogCreateRequest {
     private List<ClothesData> clothes;
     @Data
     public static class ClothesData {
-        private String clothesId;
+        private int clothesId;
         private Double x;
         private Double y;
         private Double rotate;
