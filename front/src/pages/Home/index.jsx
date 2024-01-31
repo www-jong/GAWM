@@ -6,7 +6,9 @@ import LiveThumbnail from "../../components/LiveThumbnail";
 function Home() {
 	return (
 		<>
-			<TopBar title={<Title />} />
+			<div className="px-4 my-2">
+				<TopBar title={<Title />} />
+			</div>
 
 			<div className="flex flex-col gap-2 pt-4">
 				<LiveScrollPane
