@@ -7,7 +7,7 @@ function Layout() {
 			<header className="fixed bottom-0 left-0 right-0 px-8 py-2 bg-[#efefef]">
 				<Navbar />
 			</header>
-			<main>
+			<main className="font-pretendard">
 				<Outlet />
 			</main>
 		</>
