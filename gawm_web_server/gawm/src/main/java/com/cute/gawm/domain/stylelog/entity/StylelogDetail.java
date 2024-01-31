@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
 import java.util.List;
 
 @Getter
@@ -19,10 +19,10 @@ public class StylelogDetail {
 
     @Id
     @Field(value = "stylelogdetail_id", targetType = FieldType.OBJECT_ID)
-    private String id;
+    private String stylelogdetailId;
 
-    @Field("stylelog_id")
     @Indexed
+    @Field("stylelog_id")
     private int stylelogId;
 
     private String location;

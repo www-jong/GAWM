@@ -13,6 +13,7 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -94,6 +95,7 @@ public class ClothesService {
     }
 
     // 옷 수정
+    @Transactional
     public void updateClothes(int clothesId, MultipartFile image, ClothesUpdateResponse clothesUpdateResponse, int userId) throws IOException {
         Clothes clothes = clothesRepository.findById(clothesId)
                 .orElseThrow(() -> new RuntimeException("옷을 찾을수 없습니다."));
@@ -111,11 +113,9 @@ public class ClothesService {
                 throw new RuntimeException("Failed to delete the existing image");
             }
         }
+        // clothes.setClothesId(clothesId); // 더티체킹용(updated_at갱신) -> 안됨. 실제로 변화가 없다.
         clothesDetail.updateDetails(clothesUpdateResponse);
         clothesDetailRepository.save(clothesDetail);
-
-
-
     }
 
 

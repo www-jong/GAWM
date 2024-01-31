@@ -11,6 +11,7 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -134,6 +135,23 @@ public class StylelogService {
                                 c.getClothesId(), c.getX(), c.getY(), c.getRotate(), c.getSize()))
                         .collect(Collectors.toList()))
                 .build();
+        stylelogDetailRepository.save(stylelogDetail);
+    }
+
+    @Transactional
+    public void updateStylelog(int stylelogId, StylelogsResponse stylelogsResponse) {
+        Stylelog stylelog = stylelogRepository.findById(stylelogId)
+                .orElseThrow(() -> new RuntimeException("Stylelog not found"));
+        //stylelog.setStylelogId(stylelog.getStylelogId()); //더티체킹용(updated_at 갱신)
+        StylelogDetail stylelogDetail = stylelogDetailRepository.findByStylelogId(stylelogId);
+        if (stylelogDetail == null) {
+            throw new RuntimeException("StylelogDetail not found");
+        }
+
+        stylelogDetail.setLocation(stylelogsResponse.getLocation());
+        stylelogDetail.setWeather(stylelogsResponse.getWeather());
+        stylelogDetail.setTemperature(stylelogsResponse.getTemperature());
+        stylelogDetail.setClothes(stylelogsResponse.getClothes());
         stylelogDetailRepository.save(stylelogDetail);
     }
 }
