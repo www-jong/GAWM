@@ -2,6 +2,7 @@ import TopBar from "../../components/TopBar";
 import LiveScrollPane from "./LiveScrollPane";
 import Title from "./Title";
 import LiveThumbnail from "../../components/LiveThumbnail";
+import TodaysLook from "./TodaysLook";
 
 function Home() {
 	return (
@@ -81,6 +82,10 @@ function Home() {
 						]
 					}
 				/>
+			</div>
+
+			<div className="pt-4 mx-4">
+				<TodaysLook />
 			</div>
 		</>
 	);
