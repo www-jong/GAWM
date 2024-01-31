@@ -1,13 +1,10 @@
-package com.cute.gawm.domain.clothe.entity;
+package com.cute.gawm.domain.clothes.entity;
 
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,12 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "clothe")
-public class Clothe extends BaseEntity {
+@Table(name = "clothes")
+public class Clothes extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "clothe_id")
-    private int clotheId;
+    @Column(name = "clothes_id")
+    private int clothesId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -28,7 +25,7 @@ public class Clothe extends BaseEntity {
 
     @Column(name = "order_num")
     private int orderNum;  // 정렬 순서를 위한 필드
-    @Column(name = "clothe_img")
-    private String clotheImg;
+    @Column(name = "clothes_img")
+    private String clothesImg;
 
 }

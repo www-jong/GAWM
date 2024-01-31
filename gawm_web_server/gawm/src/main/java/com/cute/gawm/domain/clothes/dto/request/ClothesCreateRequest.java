@@ -1,10 +1,9 @@
-package com.cute.gawm.domain.clothe.dto;
+package com.cute.gawm.domain.clothes.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -12,9 +11,9 @@ import java.util.List;
 @Getter
 @Data
 @Builder
-public class ClotheCreateDTO {
+public class ClothesCreateRequest {
     private String userId;
-    private String clotheImg;
+    private String clothesImg;
 
     @JsonProperty("m_category")
     private String mCategory;
