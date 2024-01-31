@@ -1,13 +1,11 @@
+import { Link } from "react-router-dom";
+import HomeLogo from "../../assets/images/HomeLogo.svg";
+
 function Title() {
 	return (
-		<>
-			<h1>
-				<span className="font-extrabold text-3xl">G<span className="text-primary">A</span>WM</span><span className="font-normal text-base">&deg;</span>
-			</h1>
-			<span className="text-xs">
-				Get we<span className="text-primary">A</span>r With Me
-			</span>
-		</>
+		<Link to="/gawm-front/">
+			<img src={HomeLogo} />
+		</Link>
 	);
 }
 
