@@ -1,11 +1,15 @@
 package com.cute.gawm.domain.following.service;
 
+import com.cute.gawm.common.exception.DataMismatchException;
+import com.cute.gawm.common.response.ErrorResponse;
 import com.cute.gawm.domain.following.entity.Follower;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowerRepository;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,34 +22,71 @@ public class FollowService {
     private final FollowerRepository followerRepository;
 
     public void saveFollow(Integer userId, int followId) {
-        //조회 or 생성
-        Following user_following = followingRepository.findByUserId(userId);
-        if (user_following == null) {
-            user_following = new Following(userId, new ArrayList<>());
+        if(userId==followId){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"자신을 팔로우할 수 없습니다.");
         }
+        Following userFollowing = getOrCreateFollowing(userId);
+        Follower followFollower = getOrCreateFollower(followId);
 
-        Follower follow_follower = followerRepository.findByUserId(followId);
-        if (follow_follower == null) {
-            follow_follower = new Follower(followId, new ArrayList<>());
+        List<Integer> followingList = userFollowing.getFollowingList();
+        List<Integer> followerList = followFollower.getFollowerList();
+
+        if (followingList.contains(followId)) {
+            unfollow(userId, followId, followerList, followingList, userFollowing, followFollower);
+        } else {
+            follow(userId, followId, followingList, userFollowing, followerList, followFollower);
         }
+    }
 
-        //추가
-        ArrayList<Integer> followingList = user_following.getFollowingList();
-        if (followingList == null) {
-            followingList = new ArrayList<>();
+    private Following getOrCreateFollowing(Integer userId) {
+        Following userFollowing = followingRepository.findByUserId(userId);
+        return userFollowing != null ? userFollowing : new Following(userId, new ArrayList<>());
+    }
+
+    private Follower getOrCreateFollower(int followId) {
+        Follower followFollower = followerRepository.findByUserId(followId);
+        return followFollower != null ? followFollower : new Follower(followId, new ArrayList<>());
+    }
+
+    private void follow(Integer userId, int followId, List<Integer> followingList, Following userFollowing,
+                        List<Integer> followerList, Follower followFollower) {
+        if(followerList.contains(userId)){
+            throw new DataMismatchException("해당 팔로우 관계가 존재하지 않습니다.");
         }
         followingList.add(followId);
-        user_following.update(followingList);
+        userFollowing.update(followingList);
 
-        ArrayList<Integer> followerList = follow_follower.getFollowerList();
-        if (followerList == null) {
-            followerList = new ArrayList<>();
-        }
         followerList.add(userId);
-        follow_follower.update(followerList);
+        followFollower.update(followerList);
 
-        //갱신
-        followingRepository.save(user_following);
-        followerRepository.save(follow_follower);
+        saveFollowingAndFollower(userFollowing, followFollower);
+    }
+
+    private void unfollow(Integer userId, int followId, List<Integer> followerList, List<Integer> followingList,
+                          Following userFollowing, Follower followFollower) {
+        if (!followerList.remove(Integer.valueOf(userId))) {
+            throw new DataMismatchException("해당 팔로우 관계가 존재하지 않습니다.");
+        }
+
+        followingList.remove(Integer.valueOf(followId));
+
+        userFollowing.update(followingList);
+        saveFollowing(userFollowing);
+
+        followFollower.update(followerList);
+        saveFollower(followFollower);
+    }
+
+    private void saveFollowingAndFollower(Following userFollowing, Follower followFollower) {
+        saveFollowing(userFollowing);
+        saveFollower(followFollower);
+    }
+
+    public void saveFollowing(Following userFollowing) {
+        followingRepository.save(userFollowing);
+    }
+
+    public void saveFollower(Follower followFollower) {
+        followerRepository.save(followFollower);
     }
 }

@@ -5,6 +5,7 @@ import com.cute.gawm.common.response.BasicResponse;
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.domain.user.dto.UserEditForm;
 import com.cute.gawm.domain.user.dto.SessionUser;
+import com.cute.gawm.domain.user.dto.UserInfoDto;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.service.UserService;
 import lombok.Data;
@@ -28,36 +29,15 @@ public class UserController {
 
     @GetMapping("/userInfo")
     public BasicResponse userInfo(@LoginUser SessionUser sessionUser) {
-        User user = userService.findOne(sessionUser.getId());
+        UserInfoDto userInfo = userService.getUserInfo(sessionUser.getId());
         log.info("sessionUser.getId()={}", sessionUser.getId());
-        log.info("user={}", user);
-        return new BasicResponse(HttpStatus.OK.value(), new UserInfoDto(user));
+        log.info("userInfo={}", userInfo);
+        return new BasicResponse(HttpStatus.OK.value(), userInfo);
     }
 
     @PatchMapping("/userInfo")
     public BasicResponse edit(UserEditForm form, @LoginUser SessionUser sessionUser) throws IOException {
         userService.updateMember(sessionUser.getId(), form);
         return new BasicResponse(HttpStatus.OK.value(), null);
-    }
-
-    @Data
-    static class UserInfoDto {
-        private String nickname;
-        private String gender;
-        private Integer age;
-        private Integer point;
-        private Integer level;
-        private Integer following_num;
-        private Integer follower_num;
-
-        public UserInfoDto(User user) {
-            this.nickname = user.getNickname();
-            this.gender = (user.getGender() != null) ? user.getGender().toString() : null;
-            this.age = user.getAge();
-            this.point = user.getPoint();
-            this.level = user.getLevel();
-            this.following_num = 0;
-            this.follower_num = 0;
-        }
     }
 }

@@ -20,7 +20,14 @@ public class ApiExceptionController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
     @ExceptionHandler(IllegalStateException.class)
     public ErrorResponse illegalExHandle(IllegalStateException e) {
-        log.error("[exceptionHandle] ex", e);
+        log.error("[exceptionHandle] ex={}", e.getMessage());
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "IllegalStateException",e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
+    @ExceptionHandler(DataMismatchException.class)
+    public ErrorResponse datamismatchExHandle(DataMismatchException e) {
+        log.error("[exceptionHandle] ex={}", e.getMessage());
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "DataMismatchException",e.getMessage());
     }
 }

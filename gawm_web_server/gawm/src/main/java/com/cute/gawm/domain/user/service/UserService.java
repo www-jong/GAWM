@@ -2,10 +2,14 @@ package com.cute.gawm.domain.user.service;
 
 
 import com.cute.gawm.common.auth.OAuthAttributes;
+import com.cute.gawm.domain.following.entity.Follower;
+import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowerRepository;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
+import com.cute.gawm.domain.following.service.FollowService;
 import com.cute.gawm.domain.user.dto.UserEditForm;
 import com.cute.gawm.domain.user.dto.SessionUser;
+import com.cute.gawm.domain.user.dto.UserInfoDto;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +40,7 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
     private final FollowerRepository followerRepository;
+    private final FollowService followService;
 
     private final HttpSession httpSession;
 
@@ -43,24 +49,31 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
 
     private static final Integer maxByteLength = 24;
 
-    public User findOne(Integer id) {
-        User user = userRepository.findById(id).get();
+    public User findOne(Integer userId) {
+        User user = userRepository.findById(userId).get();
         return user;
     }
 
+    public UserInfoDto getUserInfo(Integer userId) {
+        UserInfoDto userInfoDto = new UserInfoDto(findOne(userId));
+        userInfoDto.setFollowing_num(followingRepository.findByUserId(userId).getFollowingList().size());
+        userInfoDto.setFollower_num(followerRepository.findByUserId(userId).getFollowerList().size());
+        return userInfoDto;
+    }
+
     @Transactional
-    public void updateMember(Integer id, UserEditForm form) throws IOException {
+    public void updateMember(Integer userId, UserEditForm form) throws IOException {
         if (!validateNickname(form.getNickname())) {
             throw new IllegalArgumentException("올바르지 않은 닉네임입니다.");
         }
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(userId).get();
         user.update(form);
 
     }
 
     private static boolean validateNickname(String nickname) {
         String regex = "^[a-z|A-Z|가-힣| |_]*$";
-        return Pattern.matches(regex,nickname)&&!nickname.contains("  ")&&!nickname.endsWith(" ")&&!nickname.startsWith(" ");
+        return Pattern.matches(regex, nickname) && !nickname.contains("  ") && !nickname.endsWith(" ") && !nickname.startsWith(" ");
     }
 
     @Override
@@ -75,6 +88,8 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
+        followService.saveFollowing(getOrCreateFollowing(user.getUserId()));
+        followService.saveFollower(getOrCreateFollower(user.getUserId()));
         httpSession.setAttribute("user", new SessionUser(user));
         httpSession.setMaxInactiveInterval(14400);
 
@@ -93,6 +108,16 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
                 });
 
         return userRepository.save(user);
+    }
+
+    private Following getOrCreateFollowing(Integer userId) {
+        Following userFollowing = followingRepository.findByUserId(userId);
+        return userFollowing != null ? userFollowing : new Following(userId, new ArrayList<>());
+    }
+
+    private Follower getOrCreateFollower(int followId) {
+        Follower followFollower = followerRepository.findByUserId(followId);
+        return followFollower != null ? followFollower : new Follower(followId, new ArrayList<>());
     }
 
     private String generateRandomNickname() {
