@@ -3,7 +3,36 @@ import axios from 'axios';
 import logoImage from '../../assets/images/HomeLogo.svg';
 import LiveImg from './LiveImg.png';
 
+const TodayLookComponent = ({ lookImage, userId, profileImage }) => {
+    return (
+        <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow-md">
+            <img className="w-full h-60 object-cover rounded-lg" src={lookImage} alt="Lookbook" />
+            <div className="flex items-center mt-2">
+                <img className="w-10 h-10 object-cover rounded-full border-2 border-gray-300" src={profileImage} alt={userId} />
+                <span className="ml-2 text-sm font-semibold">{userId}</span>
+            </div>
+        </div>
+    );
+};
+
+
 export default function Browse() {
+    const [todayLooks, setTodayLooks] = useState([]);
+
+    useEffect(() => {
+        const fetchTodayLooks = async () => {
+            try {
+                const response = await axios.get('https://ssafyfood-www-jong.koyeb.app/webapp/look-book/top_list/');
+                setTodayLooks(response.data.content);
+            } catch (error) {
+                console.error('Today Looks 데이터를 불러오는데 실패했습니다.', error);
+            }
+        };
+
+        fetchTodayLooks();
+    }, []);
+
+
     const Header = () => {
         return (
             <div className="fixed mt-1.5 ml-2.5">
@@ -17,24 +46,19 @@ export default function Browse() {
             <div className="today-look-section mt-4">
                 <h2 className="h2-nps">{title}</h2>
                 <div className="grid grid-cols-2 gap-4">
-                    <TodayLookComponent lookImage="path_to_look_image_1.jpg" userId="user_id_1" />
-                    <TodayLookComponent lookImage="path_to_look_image_2.jpg" userId="user_id_2" />
+                    {todayLooks.map((look) => (
+                        <TodayLookComponent
+                            key={look.lookbook_id}
+                            lookImage={look.lookbook_img}
+                            userId={look.user_id}
+                            profileImage={look.profile_img}
+                        />
+                    ))}
                 </div>
             </div>
         );
     };
-    
-    const TodayLookComponent = ({ lookImage, userId }) => {
-        return (
-            <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow-md">
-                <img className="w-full h-60 object-cover rounded-lg" src={lookImage} alt="Lookbook" />
-                <div className="flex items-center mt-2">
-                    <img className="w-10 h-10 object-cover rounded-full border-2 border-gray-300" src={`path_to_profile_images/${userId}.jpg`} alt={userId} />
-                    <span className="ml-2 text-sm font-semibold">{userId}</span>
-                </div>
-            </div>
-        );
-    };
+
 
     const LiveSection = ({ title }) => {
         return (
