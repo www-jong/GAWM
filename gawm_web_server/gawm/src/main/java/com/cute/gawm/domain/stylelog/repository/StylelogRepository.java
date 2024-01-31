@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface StylelogRepository extends JpaRepository<Stylelog, Long> {
 
-    List<Stylelog> findByCreatedAtBetween(Timestamp startDate, Timestamp endDate);
+    List<Stylelog> findByUserUserIdAndCreatedAtBetween(Integer userId, Timestamp startDate, Timestamp endDate);
 }

@@ -19,16 +19,12 @@ public class Stylelog extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stylelog_id")
     private int stylelogId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lookbook_id")
-    private Lookbook lookbook;
-    @Column
-    private String temperature;
-    @Column
-    private String location;
+
+
     @Column
     private Timestamp date;
 }
