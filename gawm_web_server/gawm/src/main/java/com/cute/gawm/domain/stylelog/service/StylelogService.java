@@ -2,7 +2,7 @@ package com.cute.gawm.domain.stylelog.service;
 
 import com.cute.gawm.domain.stylelog.dto.request.StylelogCreateRequest;
 
-import com.cute.gawm.domain.stylelog.dto.response.StylelogsByYearResponse;
+import com.cute.gawm.domain.stylelog.dto.response.StylelogsResponse;
 import com.cute.gawm.domain.stylelog.entity.Stylelog;
 import com.cute.gawm.domain.stylelog.entity.StylelogDetail;
 import com.cute.gawm.domain.stylelog.repository.StylelogDetailRepository;
@@ -32,7 +32,7 @@ public class StylelogService {
     @Autowired
     private StylelogDetailRepository stylelogDetailRepository;
 
-    public Map<String, List<StylelogsByYearResponse>> getStylelogsByYear(int year, Integer userId) {
+    public Map<String, List<StylelogsResponse>> getStylelogsByYear(int year, Integer userId) {
         LocalDate startDate = LocalDate.of(year, 1, 1);
         LocalDate endDate = LocalDate.of(year + 1, 1, 1).minusDays(1);
 
@@ -46,8 +46,8 @@ public class StylelogService {
                 .collect(Collectors.groupingBy(
                         stylelog -> new SimpleDateFormat("yyyyMM").format(stylelog.getDate()),
                         Collectors.mapping(stylelog -> {
-                            StylelogDetail detail = stylelogDetailRepository.findByStylelogId(String.valueOf(stylelog.getStylelogId()));
-                            return new StylelogsByYearResponse(
+                            StylelogDetail detail = stylelogDetailRepository.findByStylelogId(stylelog.getStylelogId());
+                            return new StylelogsResponse(
                                     stylelog.getStylelogId(),
                                     detail.getLocation(),
                                     detail.getWeather(),
@@ -59,6 +59,57 @@ public class StylelogService {
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+    }
+
+    public List<StylelogsResponse> getStylelogByYearAndMonth(int year, int month, Integer userId) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        Timestamp startTimestamp = Timestamp.valueOf(startDate.atStartOfDay());
+        Timestamp endTimestamp = Timestamp.valueOf(endDate.atStartOfDay());
+
+        List<Stylelog> stylelogs = stylelogRepository.findByUserUserIdAndDateBetween(userId, startTimestamp, endTimestamp);
+
+        return stylelogs.stream()
+                .map(stylelog -> {
+                    StylelogDetail detail = stylelogDetailRepository.findByStylelogId(stylelog.getStylelogId());
+                    return new StylelogsResponse(
+                            stylelog.getStylelogId(),
+                            detail.getLocation(),
+                            detail.getWeather(),
+                            detail.getTemperature(),
+                            stylelog.getDate(),
+                            detail.getClothes()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    public StylelogsResponse getStylelogDetail(int calendarId) {
+        Stylelog stylelog = stylelogRepository.findById(calendarId)
+                .orElseThrow(() -> new RuntimeException("스타일로그를 찾을 수 없습니다."));
+        StylelogDetail stylelogDetail = stylelogDetailRepository.findByStylelogId(stylelog.getStylelogId());
+
+        // DTO 생성 및 필요한 데이터 매핑
+        return new StylelogsResponse(
+                stylelog.getStylelogId(),
+                stylelogDetail.getLocation(),
+                stylelogDetail.getWeather(),
+                stylelogDetail.getTemperature(),
+                stylelog.getDate(),
+                stylelogDetail.getClothes()
+        );
+    }
+
+    public void deleteStylelog(int stylelogId) throws Exception{
+        // JPA를 사용하여 Stylelog 삭제
+        try {
+            stylelogRepository.deleteById(stylelogId);
+            stylelogDetailRepository.deleteByStylelogId(stylelogId);
+        }
+        catch (Exception e){
+            throw new Exception("Error deleting stylelog with ID: " + stylelogId, e);
+        }
     }
 
     public void createStylelog(StylelogCreateRequest request, Integer userId) {
@@ -74,7 +125,7 @@ public class StylelogService {
         stylelogRepository.save(stylelog);
 
         StylelogDetail stylelogDetail = StylelogDetail.builder()
-                .stylelogId(String.valueOf(stylelog.getStylelogId()))
+                .stylelogId(stylelog.getStylelogId())
                 .location(request.getLocation())
                 .temperature(request.getTemperature())
                 .weather(request.getWeather())

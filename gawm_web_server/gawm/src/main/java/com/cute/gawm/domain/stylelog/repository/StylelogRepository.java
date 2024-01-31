@@ -6,7 +6,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface StylelogRepository extends JpaRepository<Stylelog, Long> {
+public interface StylelogRepository extends JpaRepository<Stylelog, Integer> {
 
     List<Stylelog> findByUserUserIdAndDateBetween(Integer userId, Timestamp startDate, Timestamp endDate);
+
 }

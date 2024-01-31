@@ -23,7 +23,7 @@ public class StylelogDetail {
 
     @Field("stylelog_id")
     @Indexed
-    private String stylelogId;
+    private int stylelogId;
 
     private String location;
     private int temperature;
