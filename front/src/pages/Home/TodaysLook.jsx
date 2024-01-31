@@ -20,36 +20,6 @@ function TodaysLook() {
 			/>
 
 			<div className="flex justify-around">
-				<LookThumbnail
-					image="https://upload.wikimedia.org/wikipedia/commons/1/19/Giant_Panda.jpg"
-					post="#post"
-					user={
-						<ThumbnailUser
-							username="감없는 판다"
-							href="#user"
-							image="https://upload.wikimedia.org/wikipedia/commons/c/cd/Panda_Cub_from_Wolong%2C_Sichuan%2C_China.JPG"
-						/>
-					}
-					badge={
-						<ThumbnailBadge count={25567} />
-					}
-					action={<Action active={false} />}
-				/>
-				<LookThumbnail
-					image="https://upload.wikimedia.org/wikipedia/commons/1/19/Giant_Panda.jpg"
-					post="#post"
-					user={
-						<ThumbnailUser
-							username="감없는 판다"
-							href="#user"
-							image="https://upload.wikimedia.org/wikipedia/commons/c/cd/Panda_Cub_from_Wolong%2C_Sichuan%2C_China.JPG"
-						/>
-					}
-					badge={
-						<ThumbnailBadge count={36678} />
-					}
-					action={<Action active={true} />}
-				/>
 			</div>
 		</div>
 	);
