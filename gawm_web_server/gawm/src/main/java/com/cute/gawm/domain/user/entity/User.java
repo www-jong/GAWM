@@ -1,27 +1,29 @@
 package com.cute.gawm.domain.user.entity;
 
 
-import com.cute.gawm.domain.user.UserEditForm;
+import com.cute.gawm.domain.user.dto.UserEditForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import com.cute.gawm.common.BaseEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter @Entity
 @Table(name = "user")
 public class User extends BaseEntity {
     @Id
-    @GeneratedValue
-    @Column
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private int userId;
     @Column
     private String email;
     @Column
-    private Integer age;
+    private int age;
     @Enumerated(EnumType.STRING)
     @Column
     private Gender gender;
@@ -31,15 +33,13 @@ public class User extends BaseEntity {
     @Column
     private Role role;
     @Column
-    private Integer point;
+    private int point = 0;
     @Column
-    private Integer level;
+    private int level = 1;
     @Column
     private String session;
-
-    public User() {
-
-    }
+    @Column(name = "profile_img")
+    private String profileImg;
 
     public enum Gender {
         MALE, FEMALE, NONE

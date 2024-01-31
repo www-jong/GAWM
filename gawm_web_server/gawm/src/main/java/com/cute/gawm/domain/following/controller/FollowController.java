@@ -1,11 +1,11 @@
 package com.cute.gawm.domain.following.controller;
 
-import com.cute.gawm.common.Response;
-import com.cute.gawm.common.config.auth.LoginUser;
-import com.cute.gawm.domain.clothe.service.ClotheService;
+
+import com.cute.gawm.common.auth.LoginUser;
+import com.cute.gawm.common.response.BasicResponse;
 import com.cute.gawm.domain.following.service.FollowService;
 import com.cute.gawm.domain.user.controller.UserController;
-import com.cute.gawm.domain.user.entity.SessionUser;
+import com.cute.gawm.domain.user.dto.SessionUser;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,9 @@ public class FollowController {
     private final FollowService followService;
 
     @PostMapping("/follow")
-    public Response follow(@LoginUser SessionUser sessionUser,int FollowId){
-        followService.saveFollow(sessionUser.getId(),FollowId);
-        return new Response(HttpStatus.OK.value(),null);
+    public BasicResponse follow(@LoginUser SessionUser sessionUser, int followId){
+        log.info("followId={}",followId);
+        followService.saveFollow(sessionUser.getId(),followId);
+        return new BasicResponse(HttpStatus.OK.value(),null);
     }
 }
