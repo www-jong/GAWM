@@ -26,7 +26,7 @@ function LiveThumbnail({ image, title, createdDate, points }) {
     return (
         <div className="size-32 rounded-lg relative">
             <img className="size-32 object-cover rounded-lg" src={image} />
-            <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
+            <div className="absolute bottom-0 left-0 right-0 h-9 bg-black/70 rounded-b-lg leading-[0.5rem] px-0.5">
                 <span className="inline-block text-sm text-white">{title}</span>
                 <span className="inline-block text-[0.6rem] text-tertiary">
                     {getRelativeTime(createdDate)} · {points} 감 포인트
