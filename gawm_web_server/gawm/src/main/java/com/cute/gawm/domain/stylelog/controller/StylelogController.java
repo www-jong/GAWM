@@ -6,15 +6,15 @@ import com.cute.gawm.common.response.ErrorResponse;
 import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.domain.stylelog.dto.request.StylelogCreateRequest;
 import com.cute.gawm.domain.stylelog.dto.response.StylelogsByYearResponse;
-import com.cute.gawm.domain.stylelog.entity.Stylelog;
 import com.cute.gawm.domain.stylelog.service.StylelogService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/stylelog")
@@ -24,14 +24,14 @@ public class StylelogController {
     private StylelogService stylelogService;
 
 
-    // 해당 년도의 모든 데이터 주기
+    // 해당 유저의 해당년도 stylelog 데이터 모아주기
     @GetMapping("/list")
     public ResponseEntity<?> getStylelogsByYear(
-            @RequestParam("year") int year,
+            @RequestParam(value = "year" ,defaultValue = "#{T(java.time.LocalDate).now().getYear()}") int year,
             @LoginUser SessionUser sessionUser) {
         try {
-            List<StylelogsByYearResponse> stylelogs = stylelogService.getStylelogsByYear(year, sessionUser.getId());
-            return ResponseUtil.buildBasicResponse(HttpStatus.OK,stylelogs); // isFirst, isLast 등의 값 설정
+            Map<String, List<StylelogsByYearResponse>> stylelogs = stylelogService.getStylelogsByYear(year, sessionUser.getId());
+            return ResponseUtil.buildBasicResponse(HttpStatus.OK, stylelogs);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),"NotFoundException","데이터 처리 실패: " + e.getMessage()));
         }

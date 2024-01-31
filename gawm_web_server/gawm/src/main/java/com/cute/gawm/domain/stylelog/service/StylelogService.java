@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +32,7 @@ public class StylelogService {
     @Autowired
     private StylelogDetailRepository stylelogDetailRepository;
 
-    public List<StylelogsByYearResponse> getStylelogsByYear(int year, Integer userId) {
+    public Map<String, List<StylelogsByYearResponse>> getStylelogsByYear(int year, Integer userId) {
         LocalDate startDate = LocalDate.of(year, 1, 1);
         LocalDate endDate = LocalDate.of(year + 1, 1, 1).minusDays(1);
 
@@ -38,18 +41,24 @@ public class StylelogService {
 
         List<Stylelog> stylelogs = stylelogRepository.findByUserUserIdAndDateBetween(userId, startTimestamp, endTimestamp);
 
+        // 그룹화 및 변환
         return stylelogs.stream()
-                .map(stylelog -> {
-                    StylelogDetail detail = stylelogDetailRepository.findByStylelogId(String.valueOf(stylelog.getStylelogId()));
-                    return new StylelogsByYearResponse(
-                            stylelog.getStylelogId(),
-                            detail.getLocation(),
-                            detail.getTemperature(),
-                            stylelog.getDate(),
-                            detail.getClothes()
-                    );
-                })
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(
+                        stylelog -> new SimpleDateFormat("yyyyMM").format(stylelog.getDate()),
+                        Collectors.mapping(stylelog -> {
+                            StylelogDetail detail = stylelogDetailRepository.findByStylelogId(String.valueOf(stylelog.getStylelogId()));
+                            return new StylelogsByYearResponse(
+                                    stylelog.getStylelogId(),
+                                    detail.getLocation(),
+                                    detail.getWeather(),
+                                    detail.getTemperature(),
+                                    stylelog.getDate(),
+                                    detail.getClothes()
+                            );
+                        }, Collectors.toList())))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     public void createStylelog(StylelogCreateRequest request, Integer userId) {

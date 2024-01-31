@@ -15,6 +15,7 @@ import java.util.Map;
 public class StylelogsByYearResponse {
     private int stylelogId;
     private String location;
+    private String weather;
     private int temperature;
     private Timestamp date;
     private List<StylelogDetail.clothes> clothes;
