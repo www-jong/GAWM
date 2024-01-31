@@ -56,17 +56,15 @@ public class ClothesController {
     public ResponseEntity<?> createClothes(
             @RequestPart("image") MultipartFile image,
             @RequestPart("data") ClothesCreateRequest clothesCreateRequest,
-            @LoginUser SessionUser sessionUser
-    ) {
+            @LoginUser SessionUser sessionUser) {
         try {
             Integer userId = sessionUser.getId();
-            String imageName = s3Uploader.uploadFile(image);
-            clothesCreateRequest.setClothesImg(imageName); // 이미지 URL 설정
-            System.out.println(userId);
-            clothesService.createClothes(clothesCreateRequest, userId);
+            clothesService.createClothes(clothesCreateRequest, userId, image);
             return ResponseUtil.buildBasicResponse(HttpStatus.OK, "옷 생성 완료.");
         } catch (IOException e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "FileUploadException", "파일 업로드 실패: " + e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, "InvalidInputException", e.getMessage());
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "DataProcessingException", "데이터 처리 실패: " + e.getMessage());
         }

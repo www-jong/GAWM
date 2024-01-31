@@ -52,16 +52,22 @@ public class ClothesService {
     }
 
     // 옷 생성
-    public void createClothes(ClothesCreateRequest clothesCreateRequest, Integer userId) {
+    public void createClothes(ClothesCreateRequest clothesCreateRequest, Integer userId, MultipartFile image) throws IOException {
+        if (image.isEmpty()) {
+            throw new RuntimeException("이미지가 없습니다.");
+        }
+        String imageName = s3Uploader.uploadFile(image);
+        clothesCreateRequest.setClothesImg(imageName); // 업로드된 이미지 URL 설정
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         int lastOrder = clothesRepository.findLastOrderValueByUserId(userId);
+
         Clothes clothes = Clothes.builder()
                 .user(user)
-                .clothesImg(clothesCreateRequest.getClothesImg())
-                .orderNum(lastOrder + 1) // 해당 회원의 옷 order중 가장 마지막에 + 1
+                .clothesImg(imageName)
+                .orderNum(lastOrder + 1)
                 .build();
-        clothes = clothesRepository.save(clothes);
+        clothesRepository.save(clothes);
 
         ClothesDetail clothesDetail = ClothesDetail.builder()
                 .clothesId(clothes.getClothesId())
