@@ -15,16 +15,13 @@ public class StylelogUpdateRequest {
     private Timestamp date;
     private List<ClothesStylelogData> clotheset;
 
-    // Constructor, Getters, Setters
     @Getter
     @AllArgsConstructor
     public static class ClothesStylelogData {
         private int clothesId;
-        private Double x;
-        private Double y;
-        private Double rotate;
-        private Double size;
-
-        // Constructor, Getters, Setters
+        private double x;
+        private double y;
+        private double rotate;
+        private double size;
     }
 }

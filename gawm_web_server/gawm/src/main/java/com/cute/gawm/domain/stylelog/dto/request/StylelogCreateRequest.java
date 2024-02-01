@@ -1,6 +1,5 @@
 package com.cute.gawm.domain.stylelog.dto.request;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,14 +9,11 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class StylelogCreateRequest {
-
     private String location;
     private int temperature;
     private String weather;
     private Timestamp date; // Timestamp 포맷의 문자열로 받을 예정
     private List<ClothesStylelogCreateRequest> clotheset;
-
-    // Getters, setters 및 생성자
 
     @Getter
     @AllArgsConstructor
@@ -27,7 +23,5 @@ public class StylelogCreateRequest {
         private double y;
         private double rotate;
         private double size;
-
-        // Getters, setters 및 생성자
     }
 }

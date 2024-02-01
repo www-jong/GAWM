@@ -1,4 +1,4 @@
-package com.cute.gawm.domain.clothes_lookbook.entity;
+package com.cute.gawm.domain.clothes_stylelog.entity;
 
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.clothes.entity.Clothes;

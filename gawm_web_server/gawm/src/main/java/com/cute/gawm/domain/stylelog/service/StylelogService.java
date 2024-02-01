@@ -51,10 +51,16 @@ public class StylelogService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 모든 옷의 존재 여부를 먼저 확인
+        // 모든 옷의 존재 여부를 먼저 확인하고, 해당 옷이 현재 사용자 소유인지 검증
         List<Clothes> clothesList = request.getClotheset().stream()
                 .map(StylelogCreateRequest.ClothesStylelogCreateRequest::getClothesId)
                 .map(clothesId -> clothesRepository.findById(clothesId)
+                        .map(clothes -> {
+                            if (!(clothes.getUser().getUserId()==(userId))) {
+                                throw new RuntimeException("No permission to access clothes with id: " + clothesId);
+                            }
+                            return clothes;
+                        })
                         .orElseThrow(() -> new RuntimeException("Clothes not found with id: " + clothesId)))
                 .collect(Collectors.toList());
 
@@ -120,6 +126,7 @@ public class StylelogService {
 
     @Transactional(readOnly = true)
     public List<StylelogDetailResponse> getStylelogsByYearAndMonth(int year, int month, Integer userId) {
+        //  YYYYMM로 날짜 변환
         LocalDate startOfMonth = LocalDate.of(year, month, 1);
         LocalDate endOfMonth = startOfMonth.plusMonths(1).minusDays(1);
 
@@ -162,17 +169,16 @@ public class StylelogService {
         return new StylelogDetailResponse(stylelog,customClothesResponses);
     }
 
-    // Constructor injection is recommended
-    public StylelogService(StylelogRepository stylelogRepository) {
-        this.stylelogRepository = stylelogRepository;
-    }
+
 
     @Transactional
-    public void deleteStylelog(int stylelogId) {
+    public void deleteStylelog(int stylelogId,int UserId) {
         if (!stylelogRepository.existsById(stylelogId)) {
             throw new EntityNotFoundException("스타일로그를 찾을 수 없습니다. ID: " + stylelogId);
         }
-
+        if (stylelogRepository.findByStylelogId(stylelogId).getUser().getUserId() != UserId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
         // 해당 스타일로그와 연관된 ClothesStylelog 정보 삭제
         clothesStylelogRepository.deleteByStylelog_StylelogId(stylelogId);
 
@@ -181,10 +187,12 @@ public class StylelogService {
     }
 
     @Transactional
-    public void updateStylelog(int stylelogId, StylelogUpdateRequest request) {
+    public void updateStylelog(int stylelogId, StylelogUpdateRequest request,int UserId) {
         Stylelog stylelog = stylelogRepository.findById(stylelogId)
                 .orElseThrow(() -> new RuntimeException("스타일로그를 찾을 수 없습니다."));
-
+        if (stylelogRepository.findByStylelogId(stylelogId).getUser().getUserId() != UserId) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
         stylelog.setLocation(request.getLocation());
         stylelog.setTemperature(request.getTemperature());
         stylelog.setWeather(request.getWeather());
@@ -193,29 +201,57 @@ public class StylelogService {
         // 기존 ClothesStylelog 엔트리들 조회
         List<ClothesStylelog> existingEntries = clothesStylelogRepository.findByStylelog_StylelogId(stylelogId);
 
-        // 요청된 ClothesStylelog 데이터를 Map으로 변환 (key: clothesId, value: ClothesStylelogData)
-        Map<Integer, StylelogUpdateRequest.ClothesStylelogData> requestMap = request.getClotheset().stream()
+        // 신규 데이터 처리를 위한 준비
+        Map<Integer, StylelogUpdateRequest.ClothesStylelogData> newDataMap = request.getClotheset().stream()
                 .collect(Collectors.toMap(StylelogUpdateRequest.ClothesStylelogData::getClothesId, Function.identity()));
 
-        // 기존 데이터 처리
-        Set<Integer> toRemove = existingEntries.stream()
-                .filter(e -> !requestMap.containsKey(e.getClothes().getClothesId()))
-                .peek(e -> clothesStylelogRepository.delete(e))
-                .map(e -> e.getClothes().getClothesId())
-                .collect(Collectors.toSet());
+        // 권한 검증 로직 추가
+        for (Integer clothesId : newDataMap.keySet()) {
+            Clothes clothes = clothesRepository.findById(clothesId)
+                    .orElseThrow(() -> new RuntimeException("옷을 찾을 수 없습니다. Clothes ID: " + clothesId));
+            if (clothes.getUser().getUserId() != UserId) {
+                throw new RuntimeException("옷에 대한 권한이 없습니다. Clothes ID: " + clothesId);
+            }
+        }
+        // 기존 데이터 중 삭제해야 할 데이터 식별 및 업데이트 로직
+        existingEntries.forEach(existingEntry -> {
+            StylelogUpdateRequest.ClothesStylelogData newData = newDataMap.get(existingEntry.getClothes().getClothesId());
+            // 신규 데이터에 존재하지 않는 경우 삭제
+            if (newData == null) {
+                clothesStylelogRepository.delete(existingEntry);
+            } else {
+                // 신규 데이터에도 존재하지만, 위치나 크기 등이 다른 경우 업데이트
+                boolean isUpdated = false;
+                if (!existingEntry.getX().equals(newData.getX())) {
+                    existingEntry.setX(newData.getX());
+                    isUpdated = true;
+                }
+                if (!existingEntry.getY().equals(newData.getY())) {
+                    existingEntry.setY(newData.getY());
+                    isUpdated = true;
+                }
+                if (!existingEntry.getRotate().equals(newData.getRotate())) {
+                    existingEntry.setRotate(newData.getRotate());
+                    isUpdated = true;
+                }
+                if (!existingEntry.getSize().equals(newData.getSize())) {
+                    existingEntry.setSize(newData.getSize());
+                    isUpdated = true;
+                }
+                if (isUpdated) {
+                    clothesStylelogRepository.save(existingEntry);
+                }
+            }
+        });
 
-        // 새로운 데이터 추가
-        request.getClotheset().stream()
-                .filter(e -> !toRemove.contains(e.getClothesId()))
-                .forEach(data -> {
-                    Clothes clothes = clothesRepository.findById(data.getClothesId())
+        // 새로운 데이터 추가 로직
+        newDataMap.entrySet().stream()
+                .filter(entry -> existingEntries.stream().noneMatch(existingEntry -> existingEntry.getClothes().getClothesId()==entry.getKey()))
+                .forEach(entry -> {
+                    Clothes clothes = clothesRepository.findById(entry.getKey())
                             .orElseThrow(() -> new RuntimeException("옷을 찾을 수 없습니다."));
-
-                    if (!existingEntries.stream().anyMatch(e -> e.getClothes().getClothesId() == data.getClothesId())) {
-                        ClothesStylelog newEntry = new ClothesStylelog(clothes, stylelog, data.getX(), data.getY(), data.getRotate(), data.getSize());
-                        clothesStylelogRepository.save(newEntry);
-                    }
+                    ClothesStylelog newClothesStylelog = new ClothesStylelog(clothes, stylelog, entry.getValue().getX(), entry.getValue().getY(), entry.getValue().getRotate(), entry.getValue().getSize());
+                    clothesStylelogRepository.save(newClothesStylelog);
                 });
     }
-
 }

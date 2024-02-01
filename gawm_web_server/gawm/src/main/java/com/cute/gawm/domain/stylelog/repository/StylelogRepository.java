@@ -9,5 +9,6 @@ import java.util.List;
 public interface StylelogRepository extends JpaRepository<Stylelog, Integer> {
 
     List<Stylelog> findAllByUserUserIdAndDateBetween(Integer userId, Timestamp startDate, Timestamp endDate);
+    Stylelog findByStylelogId(Integer StylelogId);
 
 }

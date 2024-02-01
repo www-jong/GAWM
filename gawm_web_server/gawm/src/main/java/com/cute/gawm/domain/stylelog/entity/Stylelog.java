@@ -32,4 +32,5 @@ public class Stylelog extends BaseEntity {
 
     @Column
     private Timestamp date;
+
 }

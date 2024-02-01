@@ -13,6 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "clothes_stylelog")
 public class ClothesStylelog  extends BaseEntity {
 

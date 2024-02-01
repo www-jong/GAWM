@@ -56,7 +56,6 @@ public class StylelogController {
             @RequestParam(value = "year" ,defaultValue = "#{T(java.time.LocalDate).now().getYear()}") int year,
             @LoginUser SessionUser sessionUser) {
         try {
-
             Map<String, List<StylelogDetailResponse>> stylelogsGroupedByMonth =
                     stylelogService.getStylelogsByYearGroupedByMonth(year, sessionUser.getId());
 
@@ -83,19 +82,23 @@ public class StylelogController {
 
     // id로 스타일로그 삭제
     @DeleteMapping("/{stylelogId}")
-    public ResponseEntity<?> deleteStylelog(@PathVariable int stylelogId) {
+    public ResponseEntity<?> deleteStylelog(@PathVariable int stylelogId,
+                                            @LoginUser SessionUser sessionUser) {
         try {
-            stylelogService.deleteStylelog(stylelogId);
+            stylelogService.deleteStylelog(stylelogId,sessionUser.getId());
             return ResponseUtil.buildBasicResponse(HttpStatus.OK, "스타일로그 삭제 완료.");
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "DataProcessingException", "데이터 처리 실패: " + e.getMessage());
         }
     }
 
+    // id로 스타일로그 수정
     @PatchMapping("/{stylelog-id}")
-    public ResponseEntity<?> updateStylelog(@PathVariable("stylelog-id") int stylelogId, @RequestBody StylelogUpdateRequest request) {
+    public ResponseEntity<?> updateStylelog(@PathVariable("stylelog-id") int stylelogId,
+                                            @RequestBody StylelogUpdateRequest request,
+                                            @LoginUser SessionUser sessionUser) {
         try {
-            stylelogService.updateStylelog(stylelogId, request);
+            stylelogService.updateStylelog(stylelogId, request,sessionUser.getId());
             return ResponseUtil.buildBasicResponse(HttpStatus.OK, "스타일로그가 성공적으로 업데이트되었습니다.");
         } catch (RuntimeException e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"DataProcessingException",e.getMessage());
