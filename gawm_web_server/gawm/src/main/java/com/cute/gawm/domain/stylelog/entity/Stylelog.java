@@ -25,6 +25,10 @@ public class Stylelog extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String location;
+    private int temperature;
+    private String weather;
+
 
     @Column
     private Timestamp date;
