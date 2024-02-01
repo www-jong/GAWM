@@ -6,7 +6,7 @@ import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.clothes.dto.request.ClothesCreateRequest;
 import com.cute.gawm.domain.clothes.dto.response.ClothesInfoResponse;
-import com.cute.gawm.domain.clothes.dto.request.ClothesUpdateResponse;
+import com.cute.gawm.domain.clothes.dto.request.ClothesUpdateRequest;
 import com.cute.gawm.domain.clothes.service.ClothesService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,11 +92,11 @@ public class ClothesController {
     public ResponseEntity<?> updateClothes(
             @PathVariable("clothesId") int clothesId,
             @RequestPart("image") MultipartFile image,
-            @RequestPart("data") ClothesUpdateResponse clothesUpdateResponse,
+            @RequestPart("data") ClothesUpdateRequest clothesUpdateRequest,
             @LoginUser SessionUser sessionUser) {
         try {
             int userId = sessionUser.getId();
-            clothesService.updateClothes(clothesId, image, clothesUpdateResponse, userId);
+            clothesService.updateClothes(clothesId, image, clothesUpdateRequest, userId);
             return ResponseUtil.buildBasicResponse(HttpStatus.OK, "옷 정보가 업데이트되었습니다.");
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "UpdateFailureException", "업데이트 처리 실패: " + e.getMessage());

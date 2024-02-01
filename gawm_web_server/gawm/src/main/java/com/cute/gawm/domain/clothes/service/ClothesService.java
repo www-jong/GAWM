@@ -4,7 +4,7 @@ import com.cute.gawm.common.util.s3.S3Uploader;
 
 import com.cute.gawm.domain.clothes.dto.request.ClothesCreateRequest;
 import com.cute.gawm.domain.clothes.dto.response.ClothesInfoResponse;
-import com.cute.gawm.domain.clothes.dto.request.ClothesUpdateResponse;
+import com.cute.gawm.domain.clothes.dto.request.ClothesUpdateRequest;
 import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.clothes.entity.ClothesDetail;
 import com.cute.gawm.domain.clothes.repository.ClothesDetailRepository;
@@ -69,16 +69,16 @@ public class ClothesService {
                 .user(user)
                 .clothesImg(imageName)
                 .orderNum(lastOrder + 1)
+                .mCategory(clothesCreateRequest.getMCategory())
+                .name(clothesCreateRequest.getName())
                 .build();
         clothesRepository.save(clothes);
 
         ClothesDetail clothesDetail = ClothesDetail.builder()
                 .clothesId(clothes.getClothesId())
-                .mCategory(clothesCreateRequest.getMCategory())
-                .sCategory(clothesCreateRequest.getSCategory())
                 .brand(clothesCreateRequest.getBrand())
-                .name(clothesCreateRequest.getName())
                 .colors(clothesCreateRequest.getColors())
+                .sCategory(clothesCreateRequest.getSCategory())
                 .materials(clothesCreateRequest.getMaterials())
                 .patterns(clothesCreateRequest.getPatterns())
                 .build();
@@ -98,7 +98,7 @@ public class ClothesService {
 
     // 옷 수정
     @Transactional
-    public void updateClothes(int clothesId, MultipartFile image, ClothesUpdateResponse clothesUpdateResponse, int userId) throws IOException {
+    public void updateClothes(int clothesId, MultipartFile image, ClothesUpdateRequest clothesUpdateRequest, int userId) throws IOException {
         Clothes clothes = clothesRepository.findById(clothesId)
                 .orElseThrow(() -> new RuntimeException("옷을 찾을수 없습니다."));
         ClothesDetail clothesDetail = clothesDetailRepository.findByClothesId(clothesId);
@@ -116,7 +116,16 @@ public class ClothesService {
             }
         }
         // clothes.setClothesId(clothesId); // 더티체킹용(updated_at갱신) -> 안됨. 실제로 변화가 없다.
-        clothesDetail.updateDetails(clothesUpdateResponse);
+        System.out.println(clothes.getMCategory());
+        System.out.println(clothesUpdateRequest.getMCategory());
+
+        if(!clothes.getMCategory().equals(clothesUpdateRequest.getMCategory())){
+            clothes.setMCategory(clothesUpdateRequest.getMCategory());
+        }
+        if(!clothes.getName().equals(clothesUpdateRequest.getName())){
+            clothes.setName(clothesUpdateRequest.getName());
+        }
+        clothesDetail.updateDetails(clothesUpdateRequest);
         clothesDetailRepository.save(clothesDetail);
     }
 

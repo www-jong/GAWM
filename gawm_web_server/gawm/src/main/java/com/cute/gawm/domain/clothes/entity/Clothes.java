@@ -3,6 +3,7 @@ package com.cute.gawm.domain.clothes.entity;
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.persistence.*;
 
@@ -22,6 +23,10 @@ public class Clothes extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    private String name;
+
+    @Column(name = "m_category")
+    private String mCategory;
 
     @Column(name = "order_num")
     private int orderNum;  // 정렬 순서를 위한 필드

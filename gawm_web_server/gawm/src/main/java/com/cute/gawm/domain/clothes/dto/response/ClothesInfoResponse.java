@@ -27,10 +27,10 @@ public class ClothesInfoResponse {
         this.userId = clothes.getUser().getUserId();
         this.orderNum = clothes.getOrderNum();
         this.clothesImg = clothes.getClothesImg();
-        this.mCategory = clothesDetail.getMCategory();
+        this.mCategory = clothes.getMCategory();
         this.sCategory = clothesDetail.getSCategory();
         this.brand = clothesDetail.getBrand();
-        this.name = clothesDetail.getName();
+        this.name = clothes.getName();
         this.colors = clothesDetail.getColors();
         this.materials = clothesDetail.getMaterials();
         this.patterns = clothesDetail.getPatterns();
