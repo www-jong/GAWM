@@ -5,11 +5,13 @@ import LiveImg from './LiveImg.png';
 
 const TodayLookComponent = ({ lookImage, userId, profileImage }) => {
     return (
-        <div className="flex flex-col items-center bg-white p-4 rounded-lg shadow-md">
-            <img className="w-full h-60 object-cover rounded-lg" src={lookImage} alt="Lookbook" />
-            <div className="flex items-center mt-2">
-                <img className="w-10 h-10 object-cover rounded-full border-2 border-gray-300" src={profileImage} alt={userId} />
-                <span className="ml-2 text-sm font-semibold">{userId}</span>
+        <div className="relative rounded-lg shadow-md w-full overflow-hidden mt-1">
+            <img className="w-full h-60 object-cover" src={lookImage} alt="Lookbook" />
+            <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-end">
+                <div className="flex items-center">
+                    <img className="w-10 h-10 object-cover rounded-full border-2 border-white" src={profileImage} alt={userId} />
+                    <span className="ml-2 text-sm font-semibold text-white">{userId}</span>
+                </div>
             </div>
         </div>
     );
@@ -45,8 +47,8 @@ export default function Browse() {
         return (
             <div className="today-look-section mt-4">
                 <h2 className="h2-nps">{title}</h2>
-                <div className="grid grid-cols-2 gap-4">
-                    {todayLooks.map((look) => (
+                <div className="grid grid-cols-2 gap-4 px-4">
+                    {todayLooks.slice(0, 2).map((look) => (
                         <TodayLookComponent
                             key={look.lookbook_id}
                             lookImage={look.lookbook_img}
@@ -62,16 +64,16 @@ export default function Browse() {
 
     const LiveSection = ({ title }) => {
         return (
-            <div className="live-section">
+            <div className="live-section mt-4">
                 <h2 className="h2-nps">{title}</h2>
 
-                <div className="grid grid-cols-3 gap-8 justify-center">
+                <div className="flex gap-2 mt-1 justify-center">
                     <LiveComponent />
                     <LiveComponent />
                     <LiveComponent />
                 </div>
 
-                <div className="grid grid-cols-3 gap-8 justify-center">
+                <div className="flex gap-2 mt-2 justify-center">
                     <LiveComponent />
                     <LiveComponent />
                     <LiveComponent />
@@ -107,17 +109,18 @@ export default function Browse() {
 
     const LiveComponent = ({ image, title, createdDate, points }) => {
         return (
-            <div className="size-28 rounded-lg relative">
-            <img className="size-28 object-cover rounded-lg" src={image} />
-            <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
-                <span className="inline-block text-sm text-white">{title}</span>
-                <span className="inline-block text-[0.6rem] text-tertiary">
-                    {getRelativeTime(createdDate)} · {points} 감 포인트
-                </span>
+            <div className="w-26 h-26 rounded-lg relative">
+                <img className="w-full h-full object-cover rounded-lg" src={image} />
+                <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
+                    <span className="inline-block text-sm text-white">{title}</span>
+                    <span className="inline-block text-[0.6rem] text-tertiary">
+                        {getRelativeTime(createdDate)} · {points} 감 포인트
+                    </span>
+                </div>
             </div>
-        </div>
-        );
-    };
+            );
+        };
+    
 
     return (
         <div className="min-h-screen flex flex-col">
