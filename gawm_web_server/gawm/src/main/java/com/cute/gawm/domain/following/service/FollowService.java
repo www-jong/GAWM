@@ -52,6 +52,8 @@ public class FollowService {
         return followFollower != null ? followFollower : new Follower(followId, new ArrayList<>());
     }
 
+
+
     private void follow(Integer userId, int followId, List<Integer> followingList, Following userFollowing,
                         List<Integer> followerList, Follower followFollower) {
         if(followerList.contains(userId)){
@@ -98,6 +100,14 @@ public class FollowService {
     private void saveFollowingAndFollower(Following userFollowing, Follower followFollower) {
         saveFollowing(userFollowing);
         saveFollower(followFollower);
+    }
+
+    public int getFollowingCount(int userId){
+        return followingRepository.findByUserId(userId).getFollowingList().size();
+    }
+
+    public int getFollowerCount(int userId){
+        return followerRepository.findByUserId(userId).getFollowerList().size();
     }
 
     public void saveFollowing(Following userFollowing) {

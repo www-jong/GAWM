@@ -2,18 +2,26 @@ package com.cute.gawm.domain.user.service;
 
 
 import com.cute.gawm.common.auth.OAuthAttributes;
+import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.domain.following.entity.Follower;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowerRepository;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
 import com.cute.gawm.domain.following.service.FollowService;
+import com.cute.gawm.domain.lookbook.repository.LookbookRepository;
 import com.cute.gawm.domain.user.dto.UserEditForm;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import com.cute.gawm.domain.user.dto.UserInfoDto;
+import com.cute.gawm.domain.user.dto.UserSummaryInfoDto;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -29,8 +37,10 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +51,7 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
     private final FollowingRepository followingRepository;
     private final FollowerRepository followerRepository;
     private final FollowService followService;
+    private final LookbookRepository lookbookRepository;
 
     private final HttpSession httpSession;
 
@@ -69,6 +80,41 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         User user = userRepository.findById(userId).get();
         user.update(form);
 
+    }
+
+    public PagingResponse search(int sessionUserId, String keyword, int page, int size, Sort sort) {
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<User> userPage = userRepository.findByNicknameContainingAndUserIdNot(keyword, sessionUserId, pageable);
+        List<UserSummaryInfoDto> userSummaryInfos = userPage.getContent().stream()
+                .map(user -> {
+                    int followerCount = followService.getFollowerCount(user.getUserId());
+                    int followingCount = followService.getFollowingCount(user.getUserId());
+                    boolean isFollowing = followService.isFollowing(sessionUserId, user.getUserId());
+                    int lookbook_num = lookbookRepository.countByUserUserId(user.getUserId());
+                    return new UserSummaryInfoDto(user, lookbook_num, followerCount, followingCount, isFollowing);
+                })
+                .collect(Collectors.toList());
+
+        boolean isSorted = userPage.getSort().isSorted();
+        boolean isAscending = false;
+
+        for (Sort.Order order : userPage.getSort()) {
+            isAscending = order.isAscending();
+            break;  // Break after checking the first order
+        }
+        return new PagingResponse(
+                HttpStatus.OK.value(),
+                userSummaryInfos,
+                userPage.isFirst(),
+                userPage.isLast(),
+                userPage.getNumber(),
+                userPage.getTotalPages(),
+                userPage.getSize(),
+                isSorted,
+                isAscending,
+                false
+        );
     }
 
     private static boolean validateNickname(String nickname) {
