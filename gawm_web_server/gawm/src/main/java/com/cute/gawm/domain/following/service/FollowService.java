@@ -13,6 +13,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,8 @@ public class FollowService {
 
     private final FollowingRepository followingRepository;
     private final FollowerRepository followerRepository;
+
+    private final Map<Integer, List<Integer>> followingCache = new ConcurrentHashMap<>();
 
     public void saveFollow(Integer userId, int followId) {
         if(userId==followId){
@@ -75,6 +79,20 @@ public class FollowService {
 
         followFollower.update(followerList);
         saveFollower(followFollower);
+    }
+
+    public boolean isFollowing(int followerId, int targetUserId) {
+        // 캐시에서 팔로잉 목록을 조회
+        List<Integer> followingList = followingCache.get(followerId);
+
+        // 캐시에 없으면 데이터베이스에서 조회하고 캐시에 저장
+        if (followingList == null) {
+            followingList = followingRepository.findByUserId(followerId).getFollowingList();
+            followingCache.put(followerId, followingList);
+        }
+
+        // 팔로잉 목록에 포함되어 있는지 확인
+        return followingList.contains(targetUserId);
     }
 
     private void saveFollowingAndFollower(Following userFollowing, Follower followFollower) {
