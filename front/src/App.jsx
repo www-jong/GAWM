@@ -6,6 +6,7 @@ import Live from "./pages/Live";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";
+// import Look from './pages/Look';
 
 function App() {
 	return (
@@ -17,6 +18,7 @@ function App() {
 					<Route path="browse" element={<Browse />} />
 					<Route path="closet" element={<Closet />} />
 					<Route path="mypage" element={<MyPage />} />
+					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
 			</Routes>
 		</BrowserRouter>
