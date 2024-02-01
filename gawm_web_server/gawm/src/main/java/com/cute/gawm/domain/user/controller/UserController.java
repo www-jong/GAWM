@@ -47,11 +47,11 @@ public class UserController {
                                     @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
                                     String sortBy,
-                                    @RequestParam(defaultValue = "asc")String sortDirection) {
+                                    @RequestParam(defaultValue = "asc") String sortDirection) {
         try {
             log.info("keyword={}", keyword);
-            log.info("sortBy={}",sortBy);
-            log.info("sortDirection={}",sortDirection);
+            log.info("sortBy={}", sortBy);
+            log.info("sortDirection={}", sortDirection);
 
 
             Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
@@ -59,11 +59,27 @@ public class UserController {
 
             Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
 
-            log.info("direction={}",direction);
-            log.info("sortBy={}",sortBy);
-            log.info("sort={}",sort);
+            log.info("direction={}", direction);
+            log.info("sortBy={}", sortBy);
+            log.info("sort={}", sort);
 
             PagingResponse pagingResponse = userService.search(sessionUser.getId(), keyword, page, size, sort);
+            return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/following")
+    public ResponseEntity<?> getfollowing(@LoginUser SessionUser sessionUser, String keyword,
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size,
+                                          @RequestParam(defaultValue = "create_at") String sortBy,
+                                          @RequestParam(defaultValue = "asc") String sortDirection) {
+        try {
+
+
+            PagingResponse pagingResponse = userService.getFollowings(sessionUser.getId(), page, size, sortBy, sortDirection);
             return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());

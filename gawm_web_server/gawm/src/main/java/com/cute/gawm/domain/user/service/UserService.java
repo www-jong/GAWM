@@ -17,10 +17,7 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -116,6 +113,63 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
                 false
         );
     }
+
+    public PagingResponse getFollowings(int sessionUserId, int page, int size, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        List<Integer> followingList = followService.getOrCreateFollowing(sessionUserId).getFollowingList();
+        List<UserSummaryInfoDto> userSummaryInfos = followingList.stream()
+                .map(userId -> {
+                    User user = userRepository.findById(userId).get();
+                    int followerCount = followService.getFollowerCount(user.getUserId());
+                    int followingCount = followService.getFollowingCount(user.getUserId());
+                    boolean isFollowing = followService.isFollowing(sessionUserId, user.getUserId());
+                    int lookbook_num = lookbookRepository.countByUserUserId(user.getUserId());
+                    return new UserSummaryInfoDto(user, lookbook_num, followerCount, followingCount, isFollowing);
+                })
+                .collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), followingList.size());
+        int totalPage = (followingList.size() + size - 1) / size;
+        boolean sorted = true; //등록 순서대로
+        boolean asc = true; //등록 오름차순
+        boolean filtered = false;
+        boolean first = (start == 0) ? true : false;
+        boolean last = (page == totalPage - 1) ? true : false;
+        if(direction==Sort.Direction.DESC){
+            Collections.reverse(userSummaryInfos);
+            asc=false;
+        }
+        userSummaryInfos = userSummaryInfos.subList(start, end);
+
+        return new PagingResponse(
+                HttpStatus.OK.value(),
+                userSummaryInfos,
+                first,
+                last,
+                page,
+                totalPage,
+                size,
+                sorted,
+                asc,
+                false
+        );
+    }
+
+    private <T> Page<T> paginateList(List<T> list, Pageable pageable) {
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+
+        List<T> sublist = list.subList(start, end);
+
+        return new PageImpl<>(sublist, pageable, list.size());
+    }
+
 
     private static boolean validateNickname(String nickname) {
         String regex = "^[a-z|A-Z|가-힣| |_]*$";

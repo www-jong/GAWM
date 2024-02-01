@@ -42,17 +42,15 @@ public class FollowService {
         }
     }
 
-    private Following getOrCreateFollowing(Integer userId) {
+    public Following getOrCreateFollowing(Integer userId) {
         Following userFollowing = followingRepository.findByUserId(userId);
         return userFollowing != null ? userFollowing : new Following(userId, new ArrayList<>());
     }
 
-    private Follower getOrCreateFollower(int followId) {
+    public Follower getOrCreateFollower(int followId) {
         Follower followFollower = followerRepository.findByUserId(followId);
         return followFollower != null ? followFollower : new Follower(followId, new ArrayList<>());
     }
-
-
 
     private void follow(Integer userId, int followId, List<Integer> followingList, Following userFollowing,
                         List<Integer> followerList, Follower followFollower) {
@@ -61,6 +59,7 @@ public class FollowService {
         }
         followingList.add(followId);
         userFollowing.update(followingList);
+        followingCache.put(userId, followingList);
 
         followerList.add(userId);
         followFollower.update(followerList);
@@ -78,6 +77,7 @@ public class FollowService {
 
         userFollowing.update(followingList);
         saveFollowing(userFollowing);
+        followingCache.put(userId, followingList);
 
         followFollower.update(followerList);
         saveFollower(followFollower);
