@@ -8,6 +8,7 @@ import LiveComponent from './LiveComponent.jsx';
 
 export default function Browse() {
     const [todayLooks, setTodayLooks] = useState([]);
+    const [liveRooms, setLiveRooms] = useState([]);
 
     useEffect(() => {
         const fetchTodayLooks = async () => {
@@ -21,6 +22,19 @@ export default function Browse() {
 
         fetchTodayLooks();
     }, []);
+
+    useEffect(() => {
+        const fetchLiveRooms = async () => {
+            try {
+                const response = await axios.get('https://ssafyfood-www-jong.koyeb.app/webapp/live-room/follow/');
+                setLiveRooms(response.data.content);
+            } catch (error) {
+                console.error('Live Rooms 데이터를 불러오는데 실패했습니다.', error);
+            }
+        };
+        fetchLiveRooms();
+    }, []);
+
 
 
     const Header = () => {
@@ -53,21 +67,21 @@ export default function Browse() {
     const LiveSection = ({ title }) => {
         return (
             <div className="live-section mt-4">
-                <div className="flex">
-                <h2 className="h2-nps inline-block">{title}</h2>
-                <img src={LiveImg} alt="Live" className="w-8 h-5 inline-block" />
+                <div className="flex items-center">
+                    <h2 className="h2-nps">{title}</h2>
+                    <img src={LiveImg} alt="Live" className="ml-2 w-10 h-6" />
                 </div>
 
                 <div className="flex gap-2 mt-1 justify-center">
-                    <LiveComponent />
-                    <LiveComponent />
-                    <LiveComponent />
-                </div>
-
-                <div className="flex gap-2 mt-2 justify-center">
-                    <LiveComponent />
-                    <LiveComponent />
-                    <LiveComponent />
+                    {liveRooms.map(room => (
+                        <LiveComponent
+                            key={room.user_id}
+                            image={room.profile_img}
+                            title={room.name}
+                            createdDate={new Date(room['시작시간'])}
+                            points={room.point}
+                        />
+                    ))}
                 </div>
             </div>
         );
