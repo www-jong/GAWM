@@ -1,4 +1,5 @@
 import TopBar from "../../components/TopBar";
+import WeeklyWeather from "./WeeklyWeather";
 
 export default function Closet() {
 	return (
@@ -8,6 +9,7 @@ export default function Closet() {
 			</div>
 
 			<div className="flex flex-col gap-4 mt-12 px-2.5">
+				<WeeklyWeather />
 				<div className="flex flex-row gap-2">
 					<button className="basis-24 p-2 bg-[#d9d9d9] rounded-lg">옷 추가</button>
 					<button className="basis-24 p-2 bg-[#d9d9d9] rounded-lg">감각 추가</button>
