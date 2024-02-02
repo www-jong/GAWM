@@ -1,12 +1,16 @@
 package com.cute.gawm.domain.following.service;
 
 import com.cute.gawm.common.exception.DataMismatchException;
+import com.cute.gawm.common.exception.DataNotFoundException;
 import com.cute.gawm.common.response.ErrorResponse;
 import com.cute.gawm.domain.following.entity.Follower;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowerRepository;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
+import com.cute.gawm.domain.user.entity.User;
+import com.cute.gawm.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;

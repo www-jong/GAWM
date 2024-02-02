@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -29,17 +30,15 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/userInfo")
-    public BasicResponse userInfo(@LoginUser SessionUser sessionUser) {
+    public ResponseEntity<?> userInfo(@LoginUser SessionUser sessionUser) {
         UserInfoDto userInfo = userService.getUserInfo(sessionUser.getId());
-        log.info("sessionUser.getId()={}", sessionUser.getId());
-        log.info("userInfo={}", userInfo);
-        return new BasicResponse(HttpStatus.OK.value(), userInfo);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, userInfo);
     }
 
     @PatchMapping("/userInfo")
-    public BasicResponse edit(UserEditForm form, @LoginUser SessionUser sessionUser) throws IOException {
+    public ResponseEntity<?> edit(UserEditForm form, @LoginUser SessionUser sessionUser) throws IOException {
         userService.updateMember(sessionUser.getId(), form);
-        return new BasicResponse(HttpStatus.OK.value(), null);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, null);
     }
 
     @GetMapping
@@ -53,7 +52,7 @@ public class UserController {
             Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
 
             PagingResponse pagingResponse = userService.search(sessionUser.getId(), keyword, page, size, sort);
-            return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
+            return ResponseUtil.buildBasicResponse(HttpStatus.OK, pagingResponse);
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
         }
@@ -67,7 +66,7 @@ public class UserController {
                                           @RequestParam(defaultValue = "asc") String sortDirection) {
         try {
             PagingResponse pagingResponse = userService.getFollowings(sessionUser.getId(), page, size, sortBy, sortDirection);
-            return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
+            return ResponseUtil.buildPagingResponse(HttpStatus.OK,pagingResponse);
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
         }
@@ -81,9 +80,20 @@ public class UserController {
                                           @RequestParam(defaultValue = "asc") String sortDirection) {
         try {
             PagingResponse pagingResponse = userService.getFollowers(sessionUser.getId(), page, size, sortBy, sortDirection);
-            return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
+            return ResponseUtil.buildPagingResponse(HttpStatus.OK,pagingResponse);
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/profile_img")
+    public ResponseEntity<?> updateProfileImge(@LoginUser SessionUser sessionUser, MultipartFile multipartFile){
+        try{
+            log.info("multipartFile={}",multipartFile);
+            String profileImg=userService.updateProfileImg(sessionUser.getId(),multipartFile);
+            return ResponseUtil.buildBasicResponse(HttpStatus.OK, profileImg);
+        } catch (IOException e) {
+            throw new RuntimeException("프로필 사진 업데이트 실패");
         }
     }
 }
