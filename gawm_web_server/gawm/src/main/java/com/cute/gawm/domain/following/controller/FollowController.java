@@ -26,17 +26,10 @@ import org.springframework.web.server.ResponseStatusException;
 public class FollowController {
 
     private final FollowService followService;
-
     @PostMapping("/follow")
     public ResponseEntity<?> follow(@LoginUser SessionUser sessionUser, int followId) {
-        try {
-            log.info("followId={}", followId);
-            followService.saveFollow(sessionUser.getId(), followId);
-            return ResponseUtil.buildBasicResponse(HttpStatus.OK, null);
-        } catch (ResponseStatusException e) {
-            return ResponseUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, "ResponseStatusException", "자신을 팔로우할 수 없습니다.");
-        } catch (DataMismatchException e) {
-            return ResponseUtil.buildErrorResponse(HttpStatus.FORBIDDEN, "DataMismatchException", e.getMessage());
-        }
+        followService.saveFollow(sessionUser.getId(), followId);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, null);
+
     }
 }

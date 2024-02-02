@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @RestControllerAdvice
@@ -45,5 +46,12 @@ public class ApiExceptionController {
     public ErrorResponse datamismatchExHandle(RuntimeException e) {
         log.error("[exceptionHandle] ex={}", e.getMessage());
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "RuntimeException",e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST) //500
+    @ExceptionHandler(ResponseStatusException.class)
+    public ErrorResponse responseStatusException(ResponseStatusException e) {
+        log.error("[exceptionHandle] ex={}", e.getMessage());
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "ResponseStatusException",e.getMessage());
     }
 }

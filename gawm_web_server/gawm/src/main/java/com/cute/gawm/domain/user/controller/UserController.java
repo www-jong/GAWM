@@ -47,15 +47,12 @@ public class UserController {
                                     @RequestParam(defaultValue = "10") int size,
                                     String sortBy,
                                     @RequestParam(defaultValue = "asc") String sortDirection) {
-        try {
-            Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-            Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
 
-            PagingResponse pagingResponse = userService.search(sessionUser.getId(), keyword, page, size, sort);
-            return ResponseUtil.buildBasicResponse(HttpStatus.OK, pagingResponse);
-        } catch (Exception e) {
-            return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
-        }
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
+
+        PagingResponse pagingResponse = userService.search(sessionUser.getId(), keyword, page, size, sort);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, pagingResponse);
     }
 
     @GetMapping("/following")
@@ -66,7 +63,7 @@ public class UserController {
                                           @RequestParam(defaultValue = "asc") String sortDirection) {
         try {
             PagingResponse pagingResponse = userService.getFollowings(sessionUser.getId(), page, size, sortBy, sortDirection);
-            return ResponseUtil.buildPagingResponse(HttpStatus.OK,pagingResponse);
+            return ResponseUtil.buildPagingResponse(HttpStatus.OK, pagingResponse);
         } catch (Exception e) {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
         }
@@ -74,26 +71,18 @@ public class UserController {
 
     @GetMapping("/follower")
     public ResponseEntity<?> getfollower(@LoginUser SessionUser sessionUser, String keyword,
-                                          @RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size,
-                                          @RequestParam(defaultValue = "create_at") String sortBy,
-                                          @RequestParam(defaultValue = "asc") String sortDirection) {
-        try {
-            PagingResponse pagingResponse = userService.getFollowers(sessionUser.getId(), page, size, sortBy, sortDirection);
-            return ResponseUtil.buildPagingResponse(HttpStatus.OK,pagingResponse);
-        } catch (Exception e) {
-            return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
-        }
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size,
+                                         @RequestParam(defaultValue = "create_at") String sortBy,
+                                         @RequestParam(defaultValue = "asc") String sortDirection) {
+        PagingResponse pagingResponse = userService.getFollowers(sessionUser.getId(), page, size, sortBy, sortDirection);
+        return ResponseUtil.buildPagingResponse(HttpStatus.OK, pagingResponse);
     }
 
     @PatchMapping("/profile_img")
-    public ResponseEntity<?> updateProfileImge(@LoginUser SessionUser sessionUser, MultipartFile multipartFile){
-        try{
-            log.info("multipartFile={}",multipartFile);
-            String profileImg=userService.updateProfileImg(sessionUser.getId(),multipartFile);
+    public ResponseEntity<?> updateProfileImge(@LoginUser SessionUser sessionUser, MultipartFile multipartFile) throws IOException {
+            log.info("multipartFile={}", multipartFile);
+            String profileImg = userService.updateProfileImg(sessionUser.getId(), multipartFile);
             return ResponseUtil.buildBasicResponse(HttpStatus.OK, profileImg);
-        } catch (IOException e) {
-            throw new RuntimeException("프로필 사진 업데이트 실패");
-        }
     }
 }
