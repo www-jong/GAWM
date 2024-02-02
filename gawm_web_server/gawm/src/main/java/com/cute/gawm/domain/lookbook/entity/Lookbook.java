@@ -1,11 +1,11 @@
 package com.cute.gawm.domain.lookbook.entity;
 
 import com.cute.gawm.common.BaseEntity;
-import com.cute.gawm.domain.clothes_lookbook.entity.ClothesLookbook;
+import com.cute.gawm.domain.clothes_stylelog.entity.ClothesLookbook;
 import com.cute.gawm.domain.lookbook_image.entity.LookbookImage;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
