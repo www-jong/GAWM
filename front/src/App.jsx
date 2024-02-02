@@ -6,6 +6,7 @@ import Live from "./pages/Live";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";
+import Landing from "./pages/Landing";
 // import Look from './pages/Look';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
 					<Route path="mypage" element={<MyPage />} />
 					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
+				<Route path="landing" element={<Landing />} />
 			</Routes>
 		</BrowserRouter>
 	)
