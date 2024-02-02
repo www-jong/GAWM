@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -116,9 +117,7 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
 
     public PagingResponse getFollowings(int sessionUserId, int page, int size, String sortBy, String sortDirection) {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-
         Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
-
         Pageable pageable = PageRequest.of(page, size, sort);
 
         List<Integer> followingList = followService.getOrCreateFollowing(sessionUserId).getFollowingList();
@@ -131,19 +130,24 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
                     int lookbook_num = lookbookRepository.countByUserUserId(user.getUserId());
                     return new UserSummaryInfoDto(user, lookbook_num, followerCount, followingCount, isFollowing);
                 })
+                .sorted(Comparator.comparing(userSummaryInfoDto -> userSummaryInfoDto.getNickname()))
                 .collect(Collectors.toList());
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), followingList.size());
         int totalPage = (followingList.size() + size - 1) / size;
-        boolean sorted = true; //등록 순서대로
-        boolean asc = true; //등록 오름차순
-        boolean filtered = false;
+        boolean sorted = true;
+        boolean asc = true;
         boolean first = (start == 0) ? true : false;
         boolean last = (page == totalPage - 1) ? true : false;
-        if(direction==Sort.Direction.DESC){
+        if (sortBy.equals("nickname")) {
+            userSummaryInfos = userSummaryInfos.stream()
+                    .sorted(Comparator.comparing(UserSummaryInfoDto::getNickname, String.CASE_INSENSITIVE_ORDER))
+                    .collect(Collectors.toList());
+        }
+        if (direction == Sort.Direction.DESC) {
             Collections.reverse(userSummaryInfos);
-            asc=false;
+            asc = false;
         }
         userSummaryInfos = userSummaryInfos.subList(start, end);
 
@@ -166,10 +170,8 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         int end = Math.min((start + pageable.getPageSize()), list.size());
 
         List<T> sublist = list.subList(start, end);
-
         return new PageImpl<>(sublist, pageable, list.size());
     }
-
 
     private static boolean validateNickname(String nickname) {
         String regex = "^[a-z|A-Z|가-힣| |_]*$";

@@ -49,19 +49,8 @@ public class UserController {
                                     String sortBy,
                                     @RequestParam(defaultValue = "asc") String sortDirection) {
         try {
-            log.info("keyword={}", keyword);
-            log.info("sortBy={}", sortBy);
-            log.info("sortDirection={}", sortDirection);
-
-
             Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-
-
             Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
-
-            log.info("direction={}", direction);
-            log.info("sortBy={}", sortBy);
-            log.info("sort={}", sort);
 
             PagingResponse pagingResponse = userService.search(sessionUser.getId(), keyword, page, size, sort);
             return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
@@ -77,8 +66,6 @@ public class UserController {
                                           @RequestParam(defaultValue = "create_at") String sortBy,
                                           @RequestParam(defaultValue = "asc") String sortDirection) {
         try {
-
-
             PagingResponse pagingResponse = userService.getFollowings(sessionUser.getId(), page, size, sortBy, sortDirection);
             return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
         } catch (Exception e) {
