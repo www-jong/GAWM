@@ -257,9 +257,15 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         );
     }
 
-    private static boolean validateNickname(String nickname) {
+    private boolean validateNickname(String nickname) {
         String regex = "^[a-z|A-Z|가-힣| |_]*$";
-        return Pattern.matches(regex, nickname) && !nickname.contains("  ") && !nickname.endsWith(" ") && !nickname.startsWith(" ");
+        byte[] bytes = nickname.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        return userRepository.findByNickname(nickname).isEmpty()
+                && bytes.length <= maxByteLength
+                && Pattern.matches(regex, nickname)
+                && !nickname.contains("  ")
+                && !nickname.endsWith(" ")
+                && !nickname.startsWith(" ");
     }
 
     @Override
