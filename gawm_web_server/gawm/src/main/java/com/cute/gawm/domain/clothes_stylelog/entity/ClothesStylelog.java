@@ -30,12 +30,12 @@ public class ClothesStylelog  extends BaseEntity {
     @JoinColumn(name = "stylelog_id")
     private Stylelog stylelog;
 
-    private Double x;
-    private Double y;
-    private Double rotate = 0.0;
-    private Double size = 1.0;
+    private double x;
+    private double y;
+    private double rotate = 0.0;
+    private double size = 1.0;
 
-    public ClothesStylelog(Clothes clothes, Stylelog stylelog, Double x, Double y, Double rotate, Double size) {
+    public ClothesStylelog(Clothes clothes, Stylelog stylelog, double x, double y, double rotate, double size) {
         this.clothes = clothes;
         this.stylelog = stylelog;
         this.x = x;

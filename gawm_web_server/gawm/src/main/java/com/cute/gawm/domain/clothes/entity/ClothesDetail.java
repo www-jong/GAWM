@@ -26,7 +26,6 @@ public class ClothesDetail {
     @Field(value = "clothes_id")
     private int clothesId;
 
-    private String brand;
 
     private List<String> colors;
 
@@ -37,7 +36,6 @@ public class ClothesDetail {
     private List<String> patterns;
 
     public void updateDetails(ClothesUpdateRequest clothesUpdateRequest) {
-        this.brand = clothesUpdateRequest.getBrand();
         this.colors = clothesUpdateRequest.getColors();
         this.materials = clothesUpdateRequest.getMaterials();
         this.patterns = clothesUpdateRequest.getPatterns();

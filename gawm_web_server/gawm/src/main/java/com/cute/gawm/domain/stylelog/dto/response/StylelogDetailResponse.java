@@ -28,6 +28,7 @@ public class StylelogDetailResponse {
         this.date = date;
         this.clothesDetails = clothesDetails;
     }
+
     public StylelogDetailResponse(Stylelog stylelog, List<CustomClothesResponse> clothesDetails) {
         this.stylelogId = stylelog.getStylelogId();
         this.location = stylelog.getLocation();
@@ -36,7 +37,7 @@ public class StylelogDetailResponse {
         this.date = stylelog.getDate();
         this.clothesDetails = clothesDetails;
     }
-    // CustomClothesResponse 내부 클래스
+
     @Getter
     @Setter
     public static class CustomClothesResponse {
@@ -53,9 +54,5 @@ public class StylelogDetailResponse {
             this.rotate = rotate;
             this.size = size;
         }
-
     }
-
-    // Getters and Setters for StylelogDetailResponse
-    // ...
 }

@@ -29,7 +29,7 @@ public class ClothesInfoResponse {
         this.clothesImg = clothes.getClothesImg();
         this.mCategory = clothes.getMCategory();
         this.sCategory = clothesDetail.getSCategory();
-        this.brand = clothesDetail.getBrand();
+        this.brand = clothes.getBrand();
         this.name = clothes.getName();
         this.colors = clothesDetail.getColors();
         this.materials = clothesDetail.getMaterials();
