@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+// image : 유저 프로필사진, post : 가는 주소, user : 컴포넌트, badge : 
 function LookThumbnail({ image, post, user, badge, action }) {
 	return (
 		<div className="flex flex-col w-40 shadow-md rounded-lg">

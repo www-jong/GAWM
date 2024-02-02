@@ -6,6 +6,9 @@ export default {
 	],
 	theme: {
 		extend: {
+			spacing: {
+				'26': '6.7rem', // Add custom spacing for width and height
+			},
 			colors: {
 				'primary': '#f26444',
 				'secondary': '#56423d',
