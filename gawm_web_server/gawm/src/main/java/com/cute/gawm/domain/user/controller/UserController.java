@@ -79,7 +79,7 @@ public class UserController {
         return ResponseUtil.buildPagingResponse(HttpStatus.OK, pagingResponse);
     }
 
-    @PatchMapping("/profile_img")
+    @PatchMapping("/profile-img")
     public ResponseEntity<?> updateProfileImge(@LoginUser SessionUser sessionUser, MultipartFile multipartFile) throws IOException {
             log.info("multipartFile={}", multipartFile);
             String profileImg = userService.updateProfileImg(sessionUser.getId(), multipartFile);

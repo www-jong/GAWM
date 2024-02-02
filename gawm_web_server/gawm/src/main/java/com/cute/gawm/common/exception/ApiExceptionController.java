@@ -132,12 +132,6 @@ public class ApiExceptionController {
         return logAndResponse(e,HttpStatus.INTERNAL_SERVER_ERROR, "DataMismatchException");
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
-    @ExceptionHandler(RuntimeException.class)
-    public ErrorResponse datamismatchExHandle(RuntimeException e) {
-        return logAndResponse(e,HttpStatus.INTERNAL_SERVER_ERROR, "RuntimeException");
-    }
-
     private ErrorResponse logAndResponse(Exception e, HttpStatus status, String errorType) {
         log.error("[exceptionHandle] ex={}", e.getMessage(), e);
         return new ErrorResponse(status.value(), errorType, e.getMessage());
