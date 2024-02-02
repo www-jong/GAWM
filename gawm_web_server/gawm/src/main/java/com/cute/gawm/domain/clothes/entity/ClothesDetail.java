@@ -1,6 +1,6 @@
 package com.cute.gawm.domain.clothes.entity;
 
-import com.cute.gawm.domain.clothes.dto.request.ClothesUpdateResponse;
+import com.cute.gawm.domain.clothes.dto.request.ClothesUpdateRequest;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
+import javax.persistence.Column;
 import java.util.List;
 @Getter
 @Setter
@@ -25,31 +26,18 @@ public class ClothesDetail {
     @Field(value = "clothes_id")
     private int clothesId;
 
-    //private String userId;
-
-    @Field(value = "m_category")
-    private String mCategory;
-
-    @Field(value = "s_category")
-    private String sCategory;
-
-    private String brand;
-
-    private String name;
 
     private List<String> colors;
 
+    @Field(value = "s_category")
+    private String sCategory;
     private List<String> materials;
 
     private List<String> patterns;
 
-    public void updateDetails(ClothesUpdateResponse clothesUpdateResponse) {
-        this.mCategory = clothesUpdateResponse.getMCategory();
-        this.sCategory = clothesUpdateResponse.getSCategory();
-        this.brand = clothesUpdateResponse.getBrand();
-        this.name = clothesUpdateResponse.getName();
-        this.colors = clothesUpdateResponse.getColors();
-        this.materials = clothesUpdateResponse.getMaterials();
-        this.patterns = clothesUpdateResponse.getPatterns();
+    public void updateDetails(ClothesUpdateRequest clothesUpdateRequest) {
+        this.colors = clothesUpdateRequest.getColors();
+        this.materials = clothesUpdateRequest.getMaterials();
+        this.patterns = clothesUpdateRequest.getPatterns();
     }
 }
