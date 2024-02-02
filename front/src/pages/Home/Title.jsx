@@ -3,7 +3,7 @@ import HomeLogo from "../../assets/images/HomeLogo.svg";
 
 function Title() {
 	return (
-		<Link to="/gawm-front/">
+		<Link to="/">
 			<img src={HomeLogo} />
 		</Link>
 	);

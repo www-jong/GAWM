@@ -10,9 +10,9 @@ import MyPage from "./pages/MyPage";
 
 function App() {
 	return (
-		<BrowserRouter>
+		<BrowserRouter basename="/gawm-front">
 			<Routes>
-				<Route path="/gawm-front/" element={<Layout />}>
+				<Route path="/" element={<Layout />}>
 					<Route index element={<Home />} />
 					<Route path="live" element={<Live />} />
 					<Route path="browse" element={<Browse />} />
