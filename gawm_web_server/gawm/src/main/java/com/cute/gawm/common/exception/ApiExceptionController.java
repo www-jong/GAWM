@@ -30,7 +30,7 @@ public class ApiExceptionController {
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<?> dataNotFoundException(DataNotFoundException e) {
         log.error("[exceptionHandle] ex={}", e.getMessage());
-        return ResponseUtil.buildErrorResponse(HttpStatus.NOT_FOUND,"dataNotFoundException",e.getMessage());
+        return ResponseUtil.buildErrorResponse(HttpStatus.NOT_FOUND,"DataNotFoundException",e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500

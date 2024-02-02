@@ -8,6 +8,7 @@ import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowerRepository;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
 import com.cute.gawm.domain.user.entity.User;
+import com.cute.gawm.domain.user.repository.UserRepository;
 import com.cute.gawm.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class FollowService {
 
     private final FollowingRepository followingRepository;
     private final FollowerRepository followerRepository;
+    private final UserRepository userRepository;
 
     private final Map<Integer, List<Integer>> followingCache = new ConcurrentHashMap<>();
 
@@ -33,6 +35,10 @@ public class FollowService {
         if(userId==followId){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"자신을 팔로우할 수 없습니다.");
         }
+        if(!userRepository.existsById(followId)){
+            throw new DataNotFoundException("해당 유저가 존재하지 않습니다.");
+        }
+
         Following userFollowing = getOrCreateFollowing(userId);
         Follower followFollower = getOrCreateFollower(followId);
 
