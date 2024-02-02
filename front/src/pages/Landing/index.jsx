@@ -1,7 +1,15 @@
-function Landing() {
-    return (
-        <p>랜딩페이지</p>
-    )
-}
+import SocialKakao from './SocialKakao.jsx';
 
-export default Landing;
+
+export default function Landing() {
+    return (
+        <div className="h-screen">
+            <div style={{ height: '70vh' }} >
+
+            </div>
+            <div style={{ height: '30vh' }} >
+                <SocialKakao />
+            </div>
+        </div>
+    );
+}
