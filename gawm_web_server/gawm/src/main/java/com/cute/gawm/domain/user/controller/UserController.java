@@ -72,4 +72,18 @@ public class UserController {
             return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
         }
     }
+
+    @GetMapping("/follower")
+    public ResponseEntity<?> getfollower(@LoginUser SessionUser sessionUser, String keyword,
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size,
+                                          @RequestParam(defaultValue = "create_at") String sortBy,
+                                          @RequestParam(defaultValue = "asc") String sortDirection) {
+        try {
+            PagingResponse pagingResponse = userService.getFollowers(sessionUser.getId(), page, size, sortBy, sortDirection);
+            return new ResponseEntity<>(pagingResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "NotFoundException", "데이터 처리 실패: " + e.getMessage());
+        }
+    }
 }

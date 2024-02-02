@@ -138,8 +138,8 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
         int totalPage = (followingList.size() + size - 1) / size;
         boolean sorted = true;
         boolean asc = true;
-        boolean first = (start == 0) ? true : false;
-        boolean last = (page == totalPage - 1) ? true : false;
+        boolean first = start == 0;
+        boolean last = page == totalPage - 1;
         if (sortBy.equals("nickname")) {
             userSummaryInfos = userSummaryInfos.stream()
                     .sorted(Comparator.comparing(UserSummaryInfoDto::getNickname, String.CASE_INSENSITIVE_ORDER))
@@ -164,6 +164,58 @@ public class UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2U
                 false
         );
     }
+
+    public PagingResponse getFollowers(int sessionUserId, int page, int size, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = sortBy != null ? Sort.by(direction, sortBy) : Sort.unsorted();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        List<Integer> followerList = followService.getOrCreateFollower(sessionUserId).getFollowerList();
+        List<UserSummaryInfoDto> userSummaryInfos = followerList.stream()
+                .map(userId -> {
+                    User user = userRepository.findById(userId).get();
+                    int followerCount = followService.getFollowerCount(user.getUserId());
+                    int followingCount = followService.getFollowingCount(user.getUserId());
+                    boolean isFollowing = followService.isFollowing(sessionUserId, user.getUserId());
+                    int lookbook_num = lookbookRepository.countByUserUserId(user.getUserId());
+                    return new UserSummaryInfoDto(user, lookbook_num, followerCount, followingCount, isFollowing);
+                })
+                .sorted(Comparator.comparing(userSummaryInfoDto -> userSummaryInfoDto.getNickname()))
+                .collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), followerList.size());
+        int totalPage = (followerList.size() + size - 1) / size;
+        boolean sorted = true;
+        boolean asc = true;
+        boolean first = start == 0;
+        boolean last = page == totalPage - 1;
+        if (sortBy.equals("nickname")) {
+            userSummaryInfos = userSummaryInfos.stream()
+                    .sorted(Comparator.comparing(UserSummaryInfoDto::getNickname, String.CASE_INSENSITIVE_ORDER))
+                    .collect(Collectors.toList());
+        }
+        if (direction == Sort.Direction.DESC) {
+            Collections.reverse(userSummaryInfos);
+            asc = false;
+        }
+        userSummaryInfos = userSummaryInfos.subList(start, end);
+
+        return new PagingResponse(
+                HttpStatus.OK.value(),
+                userSummaryInfos,
+                first,
+                last,
+                page,
+                totalPage,
+                size,
+                sorted,
+                asc,
+                false
+        );
+    }
+
+
 
     private <T> Page<T> paginateList(List<T> list, Pageable pageable) {
         int start = (int) pageable.getOffset();
