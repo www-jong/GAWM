@@ -13,9 +13,10 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Entity
+@Getter
+@Entity
 @Table(name = "user")
-public class User extends BaseEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -49,10 +50,11 @@ public class User extends BaseEntity {
         this.email = email;
         return this;
     }
-    public void update(UserEditForm form){
-        this.nickname=form.getNickname();
-        this.gender=form.getGender();
-        this.age=form.getAge();
+
+    public void update(UserEditForm form) {
+        this.nickname = form.getNickname();
+        this.gender = form.getGender();
+        this.age = form.getAge();
     }
 
     public String getRoleKey() {
