@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
 
-    private final UserService userService;
+    private final OAuthService oAuthService;
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
@@ -30,7 +30,7 @@ public class SpringSecurityConfig {
                 .logout().logoutSuccessUrl("/").and()
                 .oauth2Login()
                 .userInfoEndpoint()
-                .userService(userService)
+                .userService(oAuthService)
                 .and()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);

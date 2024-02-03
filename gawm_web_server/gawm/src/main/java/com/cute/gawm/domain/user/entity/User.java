@@ -55,6 +55,10 @@ public class User extends BaseEntity {
         this.age=form.getAge();
     }
 
+    public void updateProfileImge(String profileImg){
+        this.profileImg=profileImg;
+    }
+
     public String getRoleKey() {
         return this.role.getKey();
     }
