@@ -34,6 +34,8 @@ lint-test-job:   # This job also runs in the test stage.
     - echo "Linting code... This will take about 10 seconds."
     - sleep 10
     - echo "No lint issues found."
+  tags:           # runner 등록 4번 과정의 tag와 맵핑된다
+    - master
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
@@ -41,3 +43,5 @@ deploy-job:      # This job runs in the deploy stage.
   script:
     - cd /scripts
     - ./deploy.sh
+  tags:           # runner 등록 4번 과정의 tag와 맵핑된다
+    - master
