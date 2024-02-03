@@ -6,18 +6,22 @@ import Live from "./pages/Live";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";
+import Landing from "./pages/Landing";
+// import Look from './pages/Look';
 
 function App() {
 	return (
-		<BrowserRouter>
+		<BrowserRouter basename="/gawm-front">
 			<Routes>
-				<Route path="/gawm-front/" element={<Layout />}>
+				<Route path="/" element={<Layout />}>
 					<Route index element={<Home />} />
 					<Route path="live" element={<Live />} />
 					<Route path="browse" element={<Browse />} />
 					<Route path="closet" element={<Closet />} />
 					<Route path="mypage" element={<MyPage />} />
+					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
+				<Route path="landing" element={<Landing />} />
 			</Routes>
 		</BrowserRouter>
 	)
