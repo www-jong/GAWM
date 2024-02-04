@@ -8,5 +8,9 @@ import java.util.List;
 
 @Repository
 public interface LookbookRepository extends JpaRepository<Lookbook,Integer> {
-    Integer countByUserUserId(int userId);
+    Integer countByUserUserId(Integer userId);
+
+    List<Lookbook> findByUserUserId(Integer userId);
+
+//    void deleteByUserId(Integer userId);
 }

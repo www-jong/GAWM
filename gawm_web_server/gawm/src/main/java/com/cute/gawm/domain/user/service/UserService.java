@@ -5,10 +5,20 @@ package com.cute.gawm.domain.user.service;
 import com.cute.gawm.common.exception.DataNotFoundException;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
+import com.cute.gawm.domain.bookmark.repository.BookmarkRepository;
+import com.cute.gawm.domain.clothes.entity.Clothes;
+import com.cute.gawm.domain.clothes.repository.ClothesDetailRepository;
+import com.cute.gawm.domain.clothes.repository.ClothesRepository;
+import com.cute.gawm.domain.clothes_stylelog.repository.ClothesStylelogRepository;
+import com.cute.gawm.domain.comment.repository.CommentRepository;
 import com.cute.gawm.domain.following.repository.FollowerRepository;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
 import com.cute.gawm.domain.following.service.FollowService;
+import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.lookbook.repository.LookbookRepository;
+import com.cute.gawm.domain.stylelog.entity.Stylelog;
+import com.cute.gawm.domain.stylelog.repository.StylelogRepository;
+import com.cute.gawm.domain.tag_lookbook.repository.TagLookbookRepository;
 import com.cute.gawm.domain.user.dto.UserEditForm;
 import com.cute.gawm.domain.user.dto.UserInfoDto;
 import com.cute.gawm.domain.user.dto.UserSummaryInfoDto;
@@ -18,9 +28,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -42,11 +53,19 @@ public class UserService {
     private final LookbookRepository lookbookRepository;
     private final S3Uploader s3Uploader;
     private final FollowService followService;
+    private final StylelogRepository stylelogRepository;
+    private final ClothesStylelogRepository clothesStylelogRepository;
+    private final ClothesRepository clothesRepository;
+    private final ClothesDetailRepository clothesDetailRepository;
+    private final TagLookbookRepository tagLookbookRepository;
+    private final CommentRepository commentRepository;
+    private final BookmarkRepository bookmarkRepository;
+
     private static final Integer maxByteLength = 24;
 
     public User findOne(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
+        if (user.isPresent()) {
             throw new DataNotFoundException("해당 유저가 존재하지 않습니다");
         }
         return user.get();
@@ -54,7 +73,7 @@ public class UserService {
 
     public boolean validateUserExistence(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
+        if (user.isPresent()) {
             log.error("[validateUserExistence] 존재하지 않은 유저가 있습니다.");
             return false;
         }
@@ -251,5 +270,41 @@ public class UserService {
                 && !nickname.endsWith(" ")
                 && !nickname.startsWith(" ");
     }
+
+    @Transactional
+    public void signout(Integer sessionUserId){
+        deleteSession();
+
+        deleteRelatedEntities(sessionUserId);
+    }
+
+    private void deleteRelatedEntities(Integer sessionUserId) {
+       /* //clothesStylelog 삭제
+        List<Stylelog> stylelogList = stylelogRepository.findByUserId(sessionUserId);
+        for (Stylelog stylelog : stylelogList) {
+            clothesStylelogRepository.deleteByStylelog_StylelogId(stylelog.getStylelogId());
+        }
+        stylelogRepository.deleteByUserId(sessionUserId); //stylelog삭제
+
+        //clothesDetail 삭제
+        List<Clothes> clothesList = clothesRepository.findByUserUserId(sessionUserId);
+        for (Clothes clothes : clothesList) {
+            clothesDetailRepository.deleteByClothesId(clothes.getClothesId());
+        }
+        clothesRepository.deleteByUserUserId(sessionUserId);//clothes 삭제
+
+        List<Lookbook> lookbookList = lookbookRepository.findByUserUserId(sessionUserId);
+        for (Lookbook lookbook : lookbookList) {
+            tagLookbookRepository.deleteByTagLookbookId(lookbook.getLookbookId()); //Tag-Lookbook 삭제
+            commentRepository.deleteByStylelogId(lookbook.getLookbookId()); //comment 삭제
+            bookmarkRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //bookmark 삭제
+        }
+        lookbookRepository.deleteByUserId(sessionUserId); //lookbook 삭제*/
+    }
+
+    private static void deleteSession() {
+        SecurityContextHolder.clearContext();
+    }
+
 
 }

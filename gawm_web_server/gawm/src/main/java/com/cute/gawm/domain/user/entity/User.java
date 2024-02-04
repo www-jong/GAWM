@@ -4,7 +4,6 @@ package com.cute.gawm.domain.user.entity;
 import com.cute.gawm.domain.user.dto.UserEditForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import com.cute.gawm.common.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
