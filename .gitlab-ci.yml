@@ -27,9 +27,6 @@ npm:
   tags:
     - master
   stage: libs
-  cache:
-    paths:
-      - node_modules
   script:
     - npm install
 
@@ -37,9 +34,6 @@ build:
   tags:
     - master
   stage: front-build
-  cache:
-    paths:
-      - front/dist
   script:
     - npm run dev
 
