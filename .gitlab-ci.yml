@@ -29,7 +29,7 @@ npm:
   stage: libs
   cache:
     paths:
-      - front/node_modules
+      - node_modules
   script:
     - npm install
 
