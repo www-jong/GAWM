@@ -28,6 +28,7 @@ npm:
     - master
   stage: libs
   script:
+    - cd front
     - npm install
 
 build:
