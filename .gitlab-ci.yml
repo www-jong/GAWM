@@ -28,8 +28,12 @@ build-job:
   script:
     - cd gawm_web_server/gawm
     - chmod a+rx ./gradlew
-    - ./gradlew clean build -x test
+    - ./gradlew clean build -x test 
+    - cd ../../front 
+    - npm install
+    - npm run dev
 
+# 지금 린트체크 안함
 lint-test-job:   # This job also runs in the test stage.
   tags:           # runner 등록 4번 과정의 tag와 맵핑된다
     - master
@@ -47,5 +51,8 @@ deploy-job:      # This job runs in the deploy stage.
   script:
     - cd scripts
     - chmod a+rx ./run_api_server.sh
-    - ./run_api_server.sh
+    - ./run_api_server.sh 
+    - cd ../openvidu-library-react # 오픈비두 시작
+    - npm install
+    - npm start
 
