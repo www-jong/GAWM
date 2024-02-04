@@ -36,6 +36,7 @@ build:
     - master
   stage: front-build
   script:
+    - cd front
     - npm run dev
 
 build-job:   
