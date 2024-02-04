@@ -31,6 +31,9 @@ npm:
   tags:
     - master
   stage: libs
+  cache:
+    paths:
+      - node_modules/
   script:
     - cd front
     - npm install
@@ -39,6 +42,9 @@ build:
   tags:
     - master
   stage: front-build
+  cache:
+    paths:
+      - node_modules/
   script:
     - cd front
     - npm run dev
