@@ -23,17 +23,14 @@ stages:          # List of stages for jobs, and their order of execution
   - test
   - deploy
 
+image: node:latest
+cache:
+  paths:
+    - node_modules/
 npm:
   tags:
     - master
   stage: libs
-  cache:
-    key: build-cache
-    paths:
-      - node_modules/
-      - lib/
-      - .npmrc
-    policy: push
   script:
     - cd front
     - npm install
@@ -42,13 +39,6 @@ build:
   tags:
     - master
   stage: front-build
-  cache:
-    key: build-cache
-    paths:
-      - node_modules/
-      - lib/
-      - .npmrc
-    policy: pull
   script:
     - cd front
     - npm run dev
