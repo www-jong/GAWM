@@ -8,6 +8,7 @@ import com.cute.gawm.domain.clothes.repository.ClothesRepository;
 import com.cute.gawm.domain.clothes_stylelog.entity.ClothesStylelog;
 import com.cute.gawm.domain.clothes_stylelog.repository.ClothesStylelogRepository;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
+import com.cute.gawm.domain.like.repository.LikeRepository;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.lookbook.repository.LookbookRepository;
 import com.cute.gawm.domain.stylelog.entity.Stylelog;
@@ -39,6 +40,7 @@ public class RevokeService {
     private final CommentRepository commentRepository;
     private final BookmarkRepository bookmarkRepository;
     private final LookbookRepository lookbookRepository;
+    private final LikeRepository likeRepository;
 
     @Transactional
     public void deleteGoogleAccount(Integer sessionUserId, OAuth2AuthorizedClient oAuth2AuthorizedClient) {
@@ -134,6 +136,7 @@ public class RevokeService {
             tagLookbookRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //Tag-Lookbook 삭제
             commentRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //comment 삭제
             bookmarkRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //bookmark 삭제
+            likeRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //like 삭제
         }
         lookbookRepository.deleteByUser_UserId(sessionUserId); //lookbook 삭제
     }
