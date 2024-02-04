@@ -40,7 +40,7 @@ build:
   stage: front-build
   cache:
     paths:
-      - dist
+      - node_modules
   script:
     - cd front
     - npm run dev
