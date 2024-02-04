@@ -27,7 +27,7 @@ build-job:
   stage: build
   script:
     - cd gawm_web_server/gawm
-    - sudo chmod a+rx ./gradlew
+    - chmod a+rx ./gradlew
     - ./gradlew clean build -x test
 
 lint-test-job:   # This job also runs in the test stage.
