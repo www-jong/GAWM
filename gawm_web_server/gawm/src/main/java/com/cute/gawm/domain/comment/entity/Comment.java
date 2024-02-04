@@ -24,6 +24,6 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stylelog_id")
-    private Lookbook stylelog;
+    @JoinColumn(name = "lookbook_id")
+    private Lookbook lookbook;
 }

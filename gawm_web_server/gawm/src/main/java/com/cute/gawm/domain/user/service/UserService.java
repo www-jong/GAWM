@@ -53,19 +53,13 @@ public class UserService {
     private final LookbookRepository lookbookRepository;
     private final S3Uploader s3Uploader;
     private final FollowService followService;
-    private final StylelogRepository stylelogRepository;
-    private final ClothesStylelogRepository clothesStylelogRepository;
-    private final ClothesRepository clothesRepository;
-    private final ClothesDetailRepository clothesDetailRepository;
-    private final TagLookbookRepository tagLookbookRepository;
-    private final CommentRepository commentRepository;
-    private final BookmarkRepository bookmarkRepository;
+
 
     private static final Integer maxByteLength = 24;
 
     public User findOne(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
+        if (!user.isPresent()) {
             throw new DataNotFoundException("해당 유저가 존재하지 않습니다");
         }
         return user.get();
@@ -73,7 +67,7 @@ public class UserService {
 
     public boolean validateUserExistence(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
+        if (!user.isPresent()) {
             log.error("[validateUserExistence] 존재하지 않은 유저가 있습니다.");
             return false;
         }
@@ -271,40 +265,6 @@ public class UserService {
                 && !nickname.startsWith(" ");
     }
 
-    @Transactional
-    public void signout(Integer sessionUserId){
-        deleteSession();
-
-        deleteRelatedEntities(sessionUserId);
-    }
-
-    private void deleteRelatedEntities(Integer sessionUserId) {
-       /* //clothesStylelog 삭제
-        List<Stylelog> stylelogList = stylelogRepository.findByUserId(sessionUserId);
-        for (Stylelog stylelog : stylelogList) {
-            clothesStylelogRepository.deleteByStylelog_StylelogId(stylelog.getStylelogId());
-        }
-        stylelogRepository.deleteByUserId(sessionUserId); //stylelog삭제
-
-        //clothesDetail 삭제
-        List<Clothes> clothesList = clothesRepository.findByUserUserId(sessionUserId);
-        for (Clothes clothes : clothesList) {
-            clothesDetailRepository.deleteByClothesId(clothes.getClothesId());
-        }
-        clothesRepository.deleteByUserUserId(sessionUserId);//clothes 삭제
-
-        List<Lookbook> lookbookList = lookbookRepository.findByUserUserId(sessionUserId);
-        for (Lookbook lookbook : lookbookList) {
-            tagLookbookRepository.deleteByTagLookbookId(lookbook.getLookbookId()); //Tag-Lookbook 삭제
-            commentRepository.deleteByStylelogId(lookbook.getLookbookId()); //comment 삭제
-            bookmarkRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //bookmark 삭제
-        }
-        lookbookRepository.deleteByUserId(sessionUserId); //lookbook 삭제*/
-    }
-
-    private static void deleteSession() {
-        SecurityContextHolder.clearContext();
-    }
 
 
 }
