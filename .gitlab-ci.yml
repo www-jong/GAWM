@@ -22,13 +22,7 @@ stages:          # List of stages for jobs, and their order of execution
   - back-build
   - test
   - deploy
-
-
-cache:
-  paths:
-    - node_modules/
-    
-image: node:latest
+  
 
 npm:
   tags:
