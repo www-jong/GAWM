@@ -23,10 +23,13 @@ stages:          # List of stages for jobs, and their order of execution
   - test
   - deploy
 
-image: node:latest
+
 cache:
   paths:
     - node_modules/
+    
+image: node:latest
+
 npm:
   tags:
     - master
