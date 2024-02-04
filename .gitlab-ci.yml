@@ -18,6 +18,7 @@
 
 stages:          # List of stages for jobs, and their order of execution
   - libs
+  - front-build
   - back-build
   - test
   - deploy
@@ -26,9 +27,22 @@ npm:
   tags:
     - master
   stage: libs
+  cache:
+    paths:
+      - node_modules
   script:
     - cd front
     - npm install
+    
+build:
+  tags:
+    - master
+  stage: front-build
+  cache:
+    paths:
+      - dist
+  script:
+    - cd front
     - npm run dev
 
 build-job:   
