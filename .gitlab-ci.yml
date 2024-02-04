@@ -46,5 +46,6 @@ deploy-job:      # This job runs in the deploy stage.
   environment: production
   script:
     - cd scripts
+    - chmod a+rx ./run_api_server.sh
     - ./run_api_server.sh
 
