@@ -28,8 +28,12 @@ npm:
     - master
   stage: libs
   cache:
+    key: build-cache
     paths:
-      - node_modules
+      - node_modules/
+      - lib/
+      - .npmrc
+    policy: push
   script:
     - cd front
     - npm install
@@ -39,8 +43,12 @@ build:
     - master
   stage: front-build
   cache:
-    paths:
-      - node_modules
+      key: build-cache
+      paths:
+        - node_modules/
+        - lib/
+        - .npmrc
+      policy: poll
   script:
     - cd front
     - npm run dev
