@@ -43,12 +43,12 @@ build:
     - master
   stage: front-build
   cache:
-      key: build-cache
-      paths:
-        - node_modules/
-        - lib/
-        - .npmrc
-      policy: pull
+    key: build-cache
+    paths:
+      - node_modules/
+      - lib/
+      - .npmrc
+    policy: pull
   script:
     - cd front
     - npm run dev
