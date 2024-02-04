@@ -23,6 +23,9 @@ stages:          # List of stages for jobs, and their order of execution
   - test
   - deploy
   
+cache:
+  paths:
+    - node_modules/
 
 npm:
   tags:
