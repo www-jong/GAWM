@@ -48,7 +48,7 @@ build:
         - node_modules/
         - lib/
         - .npmrc
-      policy: poll
+      policy: pull
   script:
     - cd front
     - npm run dev
