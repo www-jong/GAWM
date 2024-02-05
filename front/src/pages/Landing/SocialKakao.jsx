@@ -2,10 +2,10 @@ import React from 'react';
 import kakao_login from '../../assets/images/kakao_login.svg';
 
 const SocialKakao = () => {
-    const KAKAO_CLIENT_ID = 'REST API KEY'; // REST API KEY = KAKAO_CLIENT_ID
-    const redirect_uri = 'http://localhost:4000/gawm-front/landing'; // Redirect URI
+    const KAKAO_CLIENT_ID = import.meta.env.VITE_REST_API_KEY; // REST API KEY = KAKAO_CLIENT_ID
+    const redirect_uri = 'http://localhost:4000/gawm-front/'; // Redirect URI
     // oauth 요청 URL
-    const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${redirect_uri}&response_type=code`;
+    const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri={}&response_type=code`;
 
     const handleLogin = () => {
         window.location.href = kakaoURL;
