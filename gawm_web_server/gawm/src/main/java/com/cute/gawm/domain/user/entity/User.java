@@ -4,7 +4,6 @@ package com.cute.gawm.domain.user.entity;
 import com.cute.gawm.domain.user.dto.UserEditForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import com.cute.gawm.common.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,8 +32,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column
     private Role role;
+    @Builder.Default
     @Column
     private int point = 0;
+    @Builder.Default
     @Column
     private int level = 1;
     @Column
@@ -64,6 +65,4 @@ public class User {
     public String getRoleKey() {
         return this.role.getKey();
     }
-
-
 }

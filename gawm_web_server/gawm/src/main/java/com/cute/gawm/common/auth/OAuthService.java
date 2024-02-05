@@ -1,4 +1,4 @@
-package com.cute.gawm.common.auth.filter;
+package com.cute.gawm.common.auth;
 
 import com.cute.gawm.common.auth.OAuthAttributes;
 import com.cute.gawm.domain.following.entity.Follower;

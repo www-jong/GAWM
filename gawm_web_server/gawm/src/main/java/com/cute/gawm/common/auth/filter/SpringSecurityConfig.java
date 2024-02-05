@@ -2,8 +2,8 @@
 package com.cute.gawm.common.auth.filter;
 
 
+import com.cute.gawm.common.auth.OAuthService;
 import com.cute.gawm.domain.user.entity.Role;
-import com.cute.gawm.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +37,4 @@ public class SpringSecurityConfig {
 
         return http.build();
     }
-
-
 }
