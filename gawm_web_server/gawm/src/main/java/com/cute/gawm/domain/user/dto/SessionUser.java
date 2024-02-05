@@ -9,8 +9,6 @@ public class SessionUser implements Serializable {
     private int id;
     private String nickname;
     private String email;
-    private String gender;
-    private int age;
 
     SessionUser(){};
 
