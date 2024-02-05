@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CategoryList from "./CategoryList";
 import ClothesList from "./ClothesList";
+import ClothesDetail from "./ClothesDetail";
 
 /**
  * 내 옷장 페이지 내 옷장 영역을 표시하는 요소를 반환합니다
@@ -9,9 +10,14 @@ import ClothesList from "./ClothesList";
  */
 export default function MyCloset() {
 	const [category, setCategory] = useState(undefined);
+	const [clothesId, setClothesId] = useState(3);
+
 	const categorySetter = (newCategory) => {
 		setCategory(newCategory);
 	};
+	const clothesIdSetter = (newClothesId) => {
+		setClothesId(newClothesId);
+	}
 
 	// 테스트 데이터
 	const response = {
@@ -114,16 +120,22 @@ export default function MyCloset() {
 	return (
 		<>
 			{
-				category ? (
-					<ClothesList
-						clothes={map.get(category)}
-						categorySetter={categorySetter}
+				clothesId ? (
+					<ClothesDetail
+						clothesId={clothesId}
 					/>
 				) : (
-					<CategoryList
-						categories={Array.from(map.keys())}
-						categorySetter={categorySetter}
-					/>
+					category ? (
+						<ClothesList
+							clothes={map.get(category)}
+							categorySetter={categorySetter}
+						/>
+					) : (
+						<CategoryList
+							categories={Array.from(map.keys())}
+							categorySetter={categorySetter}
+						/>
+					)
 				)
 			}
 		</>
