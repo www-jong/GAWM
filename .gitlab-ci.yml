@@ -57,6 +57,7 @@ build:
     policy: pull
   script:
     - cd front
+    - npm install
     - npm run dev
 
 build-job:   
