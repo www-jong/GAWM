@@ -5,6 +5,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.cute.gawm.common.exception.S3FileDeleteException;
+import com.cute.gawm.common.exception.S3FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,21 +31,34 @@ public class S3Uploader {
         this.amazonS3 = amazonS3;
     }
 
-    public String uploadFile(MultipartFile file) throws IOException {
-        String uuid = UUID.randomUUID().toString();
-        String fileName = uuid + "_" + file.getOriginalFilename();
+    public String uploadFile(MultipartFile file){
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = Optional.ofNullable(originalFilename)
+                    .filter(f -> f.contains("."))
+                    .map(f -> f.substring(originalFilename.lastIndexOf(".") + 1))
+                    .orElse("");
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
+            String uuid = UUID.randomUUID().toString();
+            String fileName = uuid + (fileExtension.isEmpty() ? "" : "." + fileExtension);
 
-        amazonS3.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
 
-        return uuid;
+            amazonS3.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            return fileName;
+        }catch(Exception e){
+            throw new S3FileUploadException("파일 업로드에 실패했습니다. :"+e.getMessage());
+        }
     }
 
-    public void deleteFile(String uuid) {
-        String fileName = uuid + "_*"; // 파일 이름 패턴을 사용하여 삭제
-        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+    public boolean deleteFile(String fileName) {
+        try {
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+            return true; // 삭제 성공
+        } catch (Exception e) {
+            throw new S3FileDeleteException("파일 삭제에 실패했습니다. 원인: " + e.getMessage());
+        }
     }
 }

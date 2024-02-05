@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RequestMapping("/look-book")
 public class LookbookController {
+
     private final LookbookService lookbookService;
 
 //    @GetMapping("/list")

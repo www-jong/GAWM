@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TagLookbookRepository extends JpaRepository<TagLookbook, Integer>, TagLookbookRepositoryCustom {
+    void deleteByTagLookbookId(Integer tagLookbookId);
 }

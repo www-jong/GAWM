@@ -6,8 +6,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import java.sql.Timestamp;
 @Getter
+@MappedSuperclass
 public abstract class BaseEntity {
     @Column
     @CreationTimestamp

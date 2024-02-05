@@ -1,8 +1,7 @@
 package com.cute.gawm.domain.lookbook.repository;
 
 import com.cute.gawm.common.QueryDslSupport;
-import com.cute.gawm.domain.clothe.entity.QClothe;
-import com.cute.gawm.domain.clothe_lookbook.entity.QClotheLookbook;
+
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.lookbook.entity.QLookbook;
 import com.cute.gawm.domain.tag.entity.QTag;
