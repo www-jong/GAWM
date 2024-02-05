@@ -24,17 +24,8 @@ public class Lookbook extends BaseEntity {
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "clothes_lookbook_id")
-    private ClothesLookbook clothesLookbook;
     @Column
     private Integer view = 0;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lookbook_image_id")
-    private LookbookImage lookbookImage;
-
     @Column(name = "is_public")
     private boolean isPublic = true;
 }
