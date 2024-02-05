@@ -2,7 +2,7 @@ import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
 import { ArrowUturnLeftIcon } from "@heroicons/react/16/solid";
 
-export default function ClothesList({ className, clothes, categorySetter }) {
+export default function ClothesList({ className, clothes, categorySetter, clothesIdSetter }) {
 	return (
 		<ListGroup className={className ? className : ""}>
 			{
@@ -20,6 +20,7 @@ export default function ClothesList({ className, clothes, categorySetter }) {
 								(clothing) => (
 									<ListItem
 										key={clothing.clothes_id}
+										onClick={() => clothesIdSetter(clothing.clothes_id)}
 									>
 										{clothing.name}
 									</ListItem>

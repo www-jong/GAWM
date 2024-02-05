@@ -1,6 +1,6 @@
 import { ArrowUturnLeftIcon } from "@heroicons/react/16/solid";
 
-export default function ClothesDetail({ clothesId }) {
+export default function ClothesDetail({ clothesId, clothesIdSetter }) {
 	const data = {
 		"status": 200,
 		"data": {
@@ -27,7 +27,7 @@ export default function ClothesDetail({ clothesId }) {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-row justify-between items-center">
-				<button className="size-5">
+				<button className="size-6 p-1 hover:bg-primary/20" onClick={() => clothesIdSetter(undefined)}>
 					<ArrowUturnLeftIcon className="size-full" />
 				</button>
 				<h2 className="text-lg font-bold">{data.data.name}</h2>

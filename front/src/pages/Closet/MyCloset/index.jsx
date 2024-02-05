@@ -10,7 +10,7 @@ import ClothesDetail from "./ClothesDetail";
  */
 export default function MyCloset() {
 	const [category, setCategory] = useState(undefined);
-	const [clothesId, setClothesId] = useState(3);
+	const [clothesId, setClothesId] = useState(undefined);
 
 	const categorySetter = (newCategory) => {
 		setCategory(newCategory);
@@ -123,12 +123,14 @@ export default function MyCloset() {
 				clothesId ? (
 					<ClothesDetail
 						clothesId={clothesId}
+						clothesIdSetter={clothesIdSetter}
 					/>
 				) : (
 					category ? (
 						<ClothesList
 							clothes={map.get(category)}
 							categorySetter={categorySetter}
+							clothesIdSetter={clothesIdSetter}
 						/>
 					) : (
 						<CategoryList
