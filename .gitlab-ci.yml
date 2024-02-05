@@ -43,7 +43,7 @@ npm:
   script:
     - cd front
     - npm install
-    - nohup npm run dev &
+    - npm run dev & npx wait-on http://localhost:3000
 
 build-job:   
   tags:           # runner 등록 4번 과정의 tag와 맵핑된다
