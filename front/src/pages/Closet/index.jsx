@@ -1,6 +1,7 @@
 import TopBar from "../../components/TopBar";
 import WeeklyWeather from "./WeeklyWeather";
 import History from "./History/index.jsx";
+import FloatingButton from "../../components/Button/FloatingButton.jsx";
 
 /**
  * 옷장 페이지의 component입니다
@@ -34,7 +35,7 @@ export default function Closet() {
 
 				{/* 뭐입었더라 페이지 테스트용 */}
 				<History />
-
+				<FloatingButton />
 			</div>
 		</>
 	);
