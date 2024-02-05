@@ -46,7 +46,7 @@ public class ClotheController {
     }
     */
     @PostMapping
-    public ResponseEntity<?> createClothe(
+    public ResponseEntity<?> createClothe (
             @RequestPart("image") MultipartFile image,
             @RequestPart("data") ClotheCreateDTO clotheCreateDTO,
             HttpServletRequest request

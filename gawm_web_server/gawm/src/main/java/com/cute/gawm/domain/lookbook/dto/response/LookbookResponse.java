@@ -10,15 +10,15 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Builder
 public class LookbookResponse {
-    private int lookbookId;
     private int userId;
     private Timestamp createdAt;
-    private ClotheMiniResponse clothe;
+    private List<ClotheMiniResponse> clothes;
     private int view;
-    private TagResponse tag;
-    private CommentResponse comment;
+    private List<Tag> tag;
+    private List<Comment> comment;
 }

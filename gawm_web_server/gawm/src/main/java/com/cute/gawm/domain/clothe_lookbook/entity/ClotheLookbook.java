@@ -20,7 +20,7 @@ public class ClotheLookbook extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clothe_id")
     private Clothe clothe;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lookbook_id")
     private Lookbook lookbook;
 }

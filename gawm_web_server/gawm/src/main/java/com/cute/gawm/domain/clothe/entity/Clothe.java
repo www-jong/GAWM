@@ -26,5 +26,4 @@ public class Clothe extends BaseEntity {
     @Column(name = "clothe_img")
     private String clotheImg;
 
-
 }

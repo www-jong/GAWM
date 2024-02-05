@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LookbookRepository extends JpaRepository<Lookbook, Integer>, LookbookRepositoryCustom {
-
+    Lookbook getByLookbookId(int lookbookId);
 }

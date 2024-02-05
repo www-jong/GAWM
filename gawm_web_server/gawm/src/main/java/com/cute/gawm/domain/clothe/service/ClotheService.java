@@ -49,6 +49,7 @@ public class ClotheService {
                 .materials(clotheCreateDTO.getMaterials())
                 .patterns(clotheCreateDTO.getPatterns())
                 .build();
+        System.out.println(clotheDetail);
         clotheDetailRepository.save(clotheDetail);
     }
 }
