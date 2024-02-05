@@ -22,6 +22,28 @@ export default {
 				'pretendard': [ 'Pretendard Variable', 'sans-serif' ],
 				'sans': [ 'Pretendard Variable', 'sans-serif' ],
 				'nps': [ '국민연금체', 'sans-serif' ]
+			},
+			translate: {
+				'100%': '100%',
+				'200%': '200%'
+			},
+			keyframes: {
+				'left-0-100': {
+					'0%': 'translate-x-0',
+					'100%': '-translate-x-100%'
+				},
+				'left-100-200': {
+					'0%': '-translate-x-100%',
+					'100%': '-translate-x-200%'
+				},
+				'right-200-100': {
+					'0%': '-translate-x-200%',
+					'100%': '-translate-x-100%'
+				},
+				'right-100-0': {
+					'0%': '-translate-x-100%',
+					'100%': 'translate-x-0'
+				}
 			}
 		}
 	},
