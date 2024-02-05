@@ -11,7 +11,7 @@ import Landing from "./pages/Landing";
 
 function App() {
 	return (
-		<BrowserRouter basename="/gawm-front">
+		<BrowserRouter basename="/gawm">
 			<Routes>
 				<Route path="/" element={<Layout />}>
 					<Route index element={<Home />} />
