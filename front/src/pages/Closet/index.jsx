@@ -1,5 +1,6 @@
 import TopBar from "../../components/TopBar";
 import WeeklyWeather from "./WeeklyWeather";
+import MyCloset from "./MyCloset";
 
 /**
  * 옷장 페이지의 component입니다
@@ -31,7 +32,7 @@ export default function Closet() {
 					</button>
 				</div>
 
-
+				<MyCloset />
 			</div>
 		</>
 	);
