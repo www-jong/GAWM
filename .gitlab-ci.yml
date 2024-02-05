@@ -28,23 +28,8 @@ cache:
     - .npm/
     - node_modules/
   policy: pull-push
-
-npm:
-  tags:
-    - develop
-  stage: libs
-  cache:
-    key: build-cache
-    paths:
-      - node_modules/
-      - .npmrc
-      - lib/
-    policy: push
-  script:
-    - cd front
-    - npm install
     
-build:
+npm:
   tags:
     - develop
   stage: front-build
