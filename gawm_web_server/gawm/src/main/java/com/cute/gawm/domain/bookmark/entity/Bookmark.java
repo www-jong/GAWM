@@ -25,11 +25,9 @@ public class Bookmark {
     private int bookmarkId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @NotNull
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lookbook_id")
-    @NotNull
     private Lookbook lookbook;
     @Column
     @CreationTimestamp

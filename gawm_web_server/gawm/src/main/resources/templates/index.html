@@ -9,10 +9,10 @@
 <body>
 <div sec:authorize="isAuthenticated()">
     Logged in as: <span id="user" th:text="${userName}">None</span>
-    <a href="/logout" class="btn btn-info active" role="button">Logout</a>
-    <a href="/signout/google" class="btn btn-info active" role="button">Google signout</a>
-    <a href="/signout/kakao" class="btn btn-info active" role="button">Kakao signout</a>
+    <a href="/gawm-back/logout" class="btn btn-info active" role="button">Logout</a><br>
+    <a href="/gawm-back/user/kakao" class="btn btn-info active" role="button">Kakao signout</a>
+    <a href="/gawm-back/user/google" class="btn btn-info active" role="button">Google signout</a>
 </div>
-<a sec:authorize="isAnonymous()" href="/oauth2/authorization/kakao" class="btn btn-secondary active" role="button">Kakao Login</a>
-<a sec:authorize="isAnonymous()" href="/oauth2/authorization/google" class="btn btn-secondary active" role="button">Google Login</a>
+<a sec:authorize="isAnonymous()" href="/gawm-back/oauth2/authorization/kakao" class="btn btn-secondary active" role="button">Kakao Login</a>
+<a sec:authorize="isAnonymous()" href="/gawm-back/oauth2/authorization/google" class="btn btn-secondary active" role="button">Google Login</a>
 </body>

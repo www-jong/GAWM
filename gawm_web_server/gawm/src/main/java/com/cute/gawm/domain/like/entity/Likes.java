@@ -15,18 +15,16 @@ import javax.validation.constraints.NotNull;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "like")
-public class Like {
+@Table(name = "likes")
+public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "like_id")
     private int likeId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @NotNull
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lookbook_id")
-    @NotNull
     private Lookbook lookbook;
 }
