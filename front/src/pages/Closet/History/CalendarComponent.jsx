@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import moment from 'moment';
+import './Calendar.css';
 
 function ReactCalendar() {
     const curDate = new Date();
@@ -41,8 +42,9 @@ function ReactCalendar() {
     return (
         <div>
             <Calendar
-                locale="en"
+                locale="ko" // 영어 en 한국 ko
                 onChange={onChange}
+                onClickDay={(value, event) => console.log(value)}
                 value={value}
                 next2Label={null}
                 prev2Label={null}

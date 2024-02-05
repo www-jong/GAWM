@@ -16,10 +16,10 @@ export default function Closet() {
 
 			<div className="flex flex-col gap-4 mt-12 px-2.5">
 				<WeeklyWeather />
-				<div className="flex flex-row gap-2">
+				{/* <div className="flex flex-row gap-2">
 					<button className="basis-24 p-2 bg-[#d9d9d9] rounded-lg">옷 추가</button>
 					<button className="basis-24 p-2 bg-[#d9d9d9] rounded-lg">감각 추가</button>
-				</div>
+				</div> */}
 
 				<div className="grid grid-cols-2">
 					<button className={`flex flex-col group`}>
