@@ -1,5 +1,6 @@
 import TopBar from "../../components/TopBar";
 import WeeklyWeather from "./WeeklyWeather";
+import History from "./History/index.jsx";
 
 /**
  * 옷장 페이지의 component입니다
@@ -22,15 +23,17 @@ export default function Closet() {
 
 				<div className="grid grid-cols-2">
 					<button className={`flex flex-col group`}>
-						<div className="text-center py-1 text-tertiary group-[.active]:text-primary font-bold text-lg">옷장</div>
-						<div className="h-1 bg-tertiary group-[.active]:bg-primary"></div>
+						<div className="text-center w-full py-1 text-tertiary group-[.active]:text-primary font-bold text-lg">옷장</div>
+						<div className="h-1 w-full bg-tertiary group-[.active]:bg-primary"></div>
 					</button>
 					<button className={`flex flex-col group`}>
-						<div className="text-center py-1 text-tertiary group-[.active]:text-primary font-bold text-lg">뭐입었더라?</div>
-						<div className="h-1 bg-tertiary group-[.active]:bg-primary"></div>
+						<div className="text-center w-full py-1 text-tertiary group-[.active]:text-primary font-bold text-lg">뭐입었더라?</div>
+						<div className="h-1 w-full  bg-tertiary group-[.active]:bg-primary"></div>
 					</button>
 				</div>
 
+				{/* 뭐입었더라 페이지 테스트용 */}
+				<History />
 
 			</div>
 		</>
