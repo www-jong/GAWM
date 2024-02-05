@@ -33,6 +33,13 @@ npm:
   tags:
     - develop
   stage: libs
+  cache:
+    key: build-cache
+    paths:
+      - node_modules/
+      - .npmrc
+      - lib/
+    policy: push
   script:
     - cd front
     - npm install
@@ -41,8 +48,13 @@ build:
   tags:
     - develop
   stage: front-build
-  before_script:
-    - npm ci --cache .npm --prefer-offline
+  cache:
+    key: build-cache
+    paths:
+      - node_modules/
+      - lib/
+      - .npmrc/
+    policy: pull
   script:
     - cd front
     - npm run dev
