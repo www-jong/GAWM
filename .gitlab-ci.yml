@@ -25,11 +25,12 @@ stages:          # List of stages for jobs, and their order of execution
   
 cache:
   paths:
+    - .npm/
     - node_modules/
 
 npm:
   tags:
-    - master
+    - develop
   stage: libs
   script:
     - cd front
@@ -37,15 +38,17 @@ npm:
     
 build:
   tags:
-    - master
+    - develop
   stage: front-build
+  before_script:
+    - npm ci --cache .npm --prefer-offline
   script:
     - cd front
     - npm run dev
 
 build-job:   
   tags:           # runner 등록 4번 과정의 tag와 맵핑된다
-    - master    # This job runs in the build stage, which runs first.
+    - develop    # This job runs in the build stage, which runs first.
   stage: back-build
   script:
     - cd gawm_web_server/gawm
@@ -55,7 +58,7 @@ build-job:
 # 지금 린트체크 안함
 lint-test-job:   # This job also runs in the test stage.
   tags:           # runner 등록 4번 과정의 tag와 맵핑된다
-    - master
+    - develop
   stage: test    # It can run at the same time as unit-test-job (in parallel).
   script:
     - echo "Linting code... This will take about 10 seconds."
@@ -64,7 +67,7 @@ lint-test-job:   # This job also runs in the test stage.
 
 deploy-job:      # This job runs in the deploy stage.
   tags:           # runner 등록 4번 과정의 tag와 맵핑된다
-    - master
+    - develop
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   environment: production
   script:
