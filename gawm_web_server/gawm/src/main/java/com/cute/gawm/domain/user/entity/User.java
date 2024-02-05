@@ -32,8 +32,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column
     private Role role;
+    @Builder.Default
     @Column
     private int point = 0;
+    @Builder.Default
     @Column
     private int level = 1;
     @Column
@@ -63,6 +65,4 @@ public class User {
     public String getRoleKey() {
         return this.role.getKey();
     }
-
-
 }

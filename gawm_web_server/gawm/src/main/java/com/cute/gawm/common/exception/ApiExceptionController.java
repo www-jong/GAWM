@@ -24,16 +24,16 @@ public class ApiExceptionController {
 
     // 잘못된 인수값 전달
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalExHandle(IllegalArgumentException e) {
-        return constructErrorResponse(e,HttpStatus.UNAUTHORIZED,"IllegalArgumentException");
+        return constructErrorResponse(e,HttpStatus.BAD_REQUEST,"IllegalArgumentException");
     }
 
     // 부적절한 객체상태오류
     @ExceptionHandler(IllegalStateException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalExHandle(IllegalStateException e) {
-        return constructErrorResponse(e,HttpStatus.UNAUTHORIZED, "IllegalStateException");
+        return constructErrorResponse(e,HttpStatus.BAD_REQUEST, "IllegalStateException");
     }
 
     // 잘못된 요청 데이터
@@ -119,7 +119,7 @@ public class ApiExceptionController {
         return constructErrorResponse(e,HttpStatus.INTERNAL_SERVER_ERROR, "handleAllUncaughtException");
     }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) //404
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<?> dataNotFoundException(DataNotFoundException e) {
         log.error("[exceptionHandle] ex={}", e.getMessage());
