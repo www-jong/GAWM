@@ -22,4 +22,6 @@ public interface ClothesRepository extends JpaRepository<Clothes,Integer> {
                                  @Param("userId") Integer userId,
                                  @Param("brand") String brand);
     List<Clothes> findByUserUserId(int userId);
+
+    void deleteByUserUserId(Integer userId);
 }
