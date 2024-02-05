@@ -1,25 +1,26 @@
-package com.cute.gawm.domain.comment.entity;
+package com.cute.gawm.domain.like.entity;
 
-import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.user.entity.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
 @Entity
-@Table(name = "comment")
-@NoArgsConstructor
 @AllArgsConstructor
-public class Comment extends BaseEntity {
+@NoArgsConstructor
+@Table(name = "likes")
+public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
-    private int commentId;
-    @Column
-    private String content;
+    @Column(name = "like_id")
+    private int likeId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
