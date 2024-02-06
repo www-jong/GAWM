@@ -1,7 +1,7 @@
 package com.cute.gawm.domain.lookbook.entity;
 
 import com.cute.gawm.common.BaseEntity;
-import com.cute.gawm.domain.clothes_stylelog.entity.ClothesLookbook;
+import com.cute.gawm.domain.clothes_lookbook.entity.ClothesLookbook;
 import com.cute.gawm.domain.lookbook_image.entity.LookbookImage;
 import com.cute.gawm.domain.user.entity.User;
 import lombok.*;
@@ -24,14 +24,10 @@ public class Lookbook extends BaseEntity {
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "clothes_lookbook_id")
-    private ClothesLookbook clothesLookbook;
     @Column
+    @Builder.Default
     private Integer view = 0;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lookbook_image_id")
-    private LookbookImage lookbookImage;
     @Column(name = "is_public")
+    @Builder.Default
     private boolean isPublic = true;
 }
