@@ -2,12 +2,35 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+		<link rel="icon" type="ico" href="icons/favicon.ico" />
+		<link
+			rel="apple-touch-icon"
+			href="icons/apple-touch-icon.png"
+			sizes="152x152"
+		/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Vite + React</title>
+		<meta name="theme-color" content="#485EEE">
+		<link rel="manifest" href="manifest.json" />
+		<title>당신의 패션온도, GAWM</title>
 	</head>
 	<body>
 		<div id="root"></div>
 		<script type="module" src="/src/main.jsx"></script>
-	</body>
-</html>
+		<script>
+		  if ("serviceWorker" in navigator) {
+			// Register a service worker hosted at the root of the
+			// site using the default scope.
+			navigator.serviceWorker
+			  .register("/sw.js")
+			  .then((registration) => {
+				console.log("Service worker registration succeeded:", registration);
+			  })
+			  .catch((err) => {
+				console.log("Service worker registration failed:", err);
+			  });
+		  } else {
+			console.log("Service workers are not supported.");
+		  }
+		</script>
+	  </body>
+	</html>
