@@ -4,10 +4,16 @@ import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface LookbookRepository extends JpaRepository<Lookbook, Integer>, LookbookRepositoryCustom {
-    Lookbook getByLookbookId(int lookbookId);
+import java.util.List;
 
-    Integer countByUserUserId(int userId);
+@Repository
+public interface LookbookRepository extends JpaRepository<Lookbook,Integer> {
+    Integer countByUserUserId(Integer userId);
+
+    List<Lookbook> findByUserUserId(Integer userId);
+
+    void deleteByUser_UserId(Integer userId);
+
+    Lookbook getByLookbookId(Integer lookbookId);
 }
 

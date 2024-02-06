@@ -62,8 +62,6 @@ public class FollowService {
         return followFollower != null ? followFollower : new Follower(followId, new ArrayList<>());
     }
 
-
-
     private void follow(Integer userId, int followId, List<Integer> followingList, Following userFollowing,
                         List<Integer> followerList, Follower followFollower) {
         if(followerList.contains(userId)){
