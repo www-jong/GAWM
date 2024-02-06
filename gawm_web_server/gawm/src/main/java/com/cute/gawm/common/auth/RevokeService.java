@@ -1,5 +1,6 @@
 package com.cute.gawm.common.auth;
 
+import com.cute.gawm.common.exception.DataMismatchException;
 import com.cute.gawm.common.exception.DataNotFoundException;
 import com.cute.gawm.domain.bookmark.repository.BookmarkRepository;
 import com.cute.gawm.domain.clothes.entity.Clothes;

@@ -26,6 +26,7 @@ public class OAuthAttributes {
     private final String nickname;
     private final Integer point;
     private final Integer level;
+    private final User.Provider provider;
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
 
@@ -44,6 +45,7 @@ public class OAuthAttributes {
                 .email((String) kakaoAccount.get("email"))
                 .gender(kakaoAccount.get("gender").equals("female")? User.Gender.FEMALE: User.Gender.MALE)
                 .age(LocalDate.now().getYear()-Integer.parseInt(kakaoAccount.get("birthyear").toString())+1)
+                .provider(User.Provider.KAKAO)
                 .nameAttributeKey(userNameAttributeName)
                 .attributes(attributes)
                 .build();
@@ -55,6 +57,7 @@ public class OAuthAttributes {
                 .email((String) attributes.get("email"))
                 .gender(User.Gender.NONE)
                 .age(0)
+                .provider(User.Provider.GOOGLE)
                 .nameAttributeKey(userNameAttributeName)
                 .attributes(attributes)
                 .build();
@@ -69,6 +72,7 @@ public class OAuthAttributes {
                 .point(0)
                 .level(1)
                 .role(Role.GUEST)
+                .provider(provider)
                 .build();
     }
 }

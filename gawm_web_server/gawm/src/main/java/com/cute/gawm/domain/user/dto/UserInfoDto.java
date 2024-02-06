@@ -13,6 +13,7 @@ public class UserInfoDto {
     private Integer level;
     private Integer following_num;
     private Integer follower_num;
+    private User.Provider provider;
 
     public UserInfoDto(User user) {
         this.nickname = user.getNickname();
@@ -22,5 +23,6 @@ public class UserInfoDto {
         this.level = user.getLevel();
         this.following_num = 0;
         this.follower_num = 0;
+        this.provider=user.getProvider();
     }
 }

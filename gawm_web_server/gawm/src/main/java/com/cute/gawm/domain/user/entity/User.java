@@ -42,9 +42,15 @@ public class User {
     private String session;
     @Column(name = "profile_img")
     private String profileImg;
+    @Column(name = "provider")
+    private Provider provider;
 
     public enum Gender {
         MALE, FEMALE, NONE
+    }
+
+    public enum Provider {
+        GOOGLE, KAKAO
     }
 
     public User update(String email) {
@@ -58,8 +64,8 @@ public class User {
         this.age = form.getAge();
     }
 
-    public void updateProfileImge(String profileImg){
-        this.profileImg=profileImg;
+    public void updateProfileImge(String profileImg) {
+        this.profileImg = profileImg;
     }
 
     public String getRoleKey() {
