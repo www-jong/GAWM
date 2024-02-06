@@ -52,9 +52,29 @@ public class LookbookController {
             @PathVariable Integer lookbookId,
             @RequestPart("image") List<MultipartFile> images,
             @RequestPart("data") LookbookUpdateRequest lookbookUpdateRequest
-    ){
+    ) {
         final int userId = sessionUser.getId();
-        lookbookService.updateLookbook(lookbookId, images, lookbookUpdateRequest);
+        lookbookService.updateLookbook(userId ,lookbookId, images, lookbookUpdateRequest);
         return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 생성 완료"));
+    }
+
+    @DeleteMapping("/{lookbookId}")
+    public ResponseEntity<?> deleteLookbook(
+            @LoginUser SessionUser sessionUser,
+            @PathVariable Integer lookbookId
+    ){
+         final int userId = sessionUser.getId();
+         lookbookService.deleteLookbook(userId, lookbookId);
+         return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 삭제 완료"));
+    }
+
+    @GetMapping("/following/list")
+    public ResponseEntity<?> getFollowingLookbooks(
+            @LoginUser SessionUser sessionUser,
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt") final Pageable pageable
+    ){
+        return ResponseEntity.ok(
+                lookbookService.getFollowingLookbooks(sessionUser.getId(), pageable)
+        );
     }
 }

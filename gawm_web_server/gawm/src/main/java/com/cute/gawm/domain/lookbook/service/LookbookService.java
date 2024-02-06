@@ -3,6 +3,7 @@ package com.cute.gawm.domain.lookbook.service;
 import com.cute.gawm.common.exception.ClothesNotFoundException;
 import com.cute.gawm.common.exception.TagNotFoundException;
 import com.cute.gawm.common.exception.UserNotFoundException;
+import com.cute.gawm.common.exception.UserNotMatchException;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.clothes.dto.response.ClothesMiniResponse;
@@ -12,6 +13,8 @@ import com.cute.gawm.domain.clothes_lookbook.entity.ClothesLookbook;
 import com.cute.gawm.domain.clothes_lookbook.repository.ClothesLookbookRepository;
 import com.cute.gawm.domain.comment.entity.Comment;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
+import com.cute.gawm.domain.following.entity.Following;
+import com.cute.gawm.domain.following.repository.FollowingRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
@@ -28,6 +31,7 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,6 +54,8 @@ public class LookbookService {
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
     private final TagRepository tagRepository;
+
+    private final FollowingRepository followingRepository;
 
     public LookbookResponse getLookbook(final int lookbookId){
         final Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
@@ -136,13 +142,11 @@ public class LookbookService {
         lookbooks.forEach(lookbook -> {
             List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
             List<String> images = new ArrayList<>();
-            lookbookImages.forEach(image -> {
-                images.add(image.getImage());
-            });
+
 
             LookbookMiniResponse response = LookbookMiniResponse.builder()
                     .userId(lookbook.getUser().getUserId())
-                    .images(images)
+                    .images(lookbookImages)
                     .view(lookbook.getView())
                     .createdAt(lookbook.getCreatedAt())
                     .build();
@@ -163,10 +167,11 @@ public class LookbookService {
                 false
                 );
     }
-
+//TODO : 수정 테스트
     @Transactional
-    public void updateLookbook(Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest){
+    public void updateLookbook(Integer userId, Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest) throws UserNotMatchException {
         Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 수정 권한이 존재하지 않습니다.");
 
         if(!images.isEmpty()) {
             List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbookId);
@@ -212,6 +217,47 @@ public class LookbookService {
                 tagLookbookRepository.save(tagLookbook);
             });
         }
-
     }
+
+    @Transactional
+    public void deleteLookbook(Integer userId, Integer lookbookId){
+        Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 삭제 권한이 존재하지 않습니다.");
+        lookbookRepository.deleteByLookbook(lookbookId);
+    }
+
+    public PageImpl<LookbookMiniResponse> getFollowingLookbooks(Integer userId, Pageable pageable){
+        Following followingList = followingRepository.findByUserId(userId);
+        List<LookbookMiniResponse> responseList = new ArrayList<>();
+
+        followingList.getFollowingList().forEach(followingId -> {
+            PageImpl<Lookbook> lookbooks = lookbookRepository.findPageByUserId(followingId, pageable);
+
+            lookbooks.forEach(lookbook -> {
+                List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+                LookbookMiniResponse lookbookMiniResponse = LookbookMiniResponse.builder()
+                        .images(lookbookImages)
+                        .createdAt(lookbook.getCreatedAt())
+                        .view(lookbook.getView())
+                        .userId(lookbook.getUser().getUserId())
+                        .build();
+                responseList.add(lookbookMiniResponse);
+            });
+
+        });
+
+        return new PagingResponse(
+                HttpStatus.OK.value(),
+                responseList,
+                lookbooks.isFirst(),
+                lookbooks.isLast(),
+                lookbooks.getPageable().getPageNumber(),
+                lookbooks.getTotalPages(),
+                lookbooks.getSize(),
+                false,
+                false,
+                false
+        );
+    }
+
 }
