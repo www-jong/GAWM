@@ -262,7 +262,6 @@ public class UserService {
                 && !nickname.endsWith(" ")
                 && !nickname.startsWith(" ");
     }
-
-
-
 }
+
+

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TagLookbookRepository extends JpaRepository<TagLookbook, Integer>, TagLookbookRepositoryCustom {
     void deleteByTagLookbookId(Integer tagLookbookId);
+    void deleteByLookbookLookbookId(Integer lookbookId);
 }

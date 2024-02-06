@@ -25,7 +25,9 @@ public class Lookbook extends BaseEntity {
     @NotNull
     private User user;
     @Column
+    @Builder.Default
     private Integer view = 0;
     @Column(name = "is_public")
+    @Builder.Default
     private boolean isPublic = true;
 }

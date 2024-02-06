@@ -120,4 +120,5 @@ public class LookbookService {
             tagLookbookRepository.save(tagLookbook);
         });
     }
+
 }
