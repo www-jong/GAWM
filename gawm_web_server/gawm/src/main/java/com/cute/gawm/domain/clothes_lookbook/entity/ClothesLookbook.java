@@ -1,15 +1,16 @@
-package com.cute.gawm.domain.clothes_stylelog.entity;
+package com.cute.gawm.domain.clothes_lookbook.entity;
 
 import com.cute.gawm.common.BaseEntity;
 import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Table(name = "clothes_lookbook")
 public class ClothesLookbook extends BaseEntity {

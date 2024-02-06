@@ -56,7 +56,7 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
         followService.saveFollowing(getOrCreateFollowing(user.getUserId()));
         followService.saveFollower(getOrCreateFollower(user.getUserId()));
         httpSession.setAttribute("user", new SessionUser(user));
-        httpSession.setMaxInactiveInterval(14400);
+        httpSession.setMaxInactiveInterval(1440000000);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),

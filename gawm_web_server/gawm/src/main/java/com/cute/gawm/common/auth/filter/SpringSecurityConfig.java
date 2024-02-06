@@ -1,3 +1,4 @@
+
 package com.cute.gawm.common.auth.filter;
 
 import com.cute.gawm.common.auth.OAuthService;
@@ -19,7 +20,6 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
-
     private final OAuthService oAuthService;
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
