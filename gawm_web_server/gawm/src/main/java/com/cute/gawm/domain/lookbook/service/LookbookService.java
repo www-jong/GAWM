@@ -12,6 +12,7 @@ import com.cute.gawm.domain.clothes_lookbook.repository.ClothesLookbookRepositor
 import com.cute.gawm.domain.comment.entity.Comment;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
+import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookResponse;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
@@ -31,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +51,7 @@ public class LookbookService {
     private final TagRepository tagRepository;
 
     public LookbookResponse getLookbook(final int lookbookId){
-        final Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        final Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
         final List<ClothesLookbook> clotheLookbooks = clothesLookbookRepository.getAllByLookbookId(lookbookId);
         final List<TagLookbook> tagLookbooks = tagLookbookRepository.getAllByLookbookId(lookbookId);
         final List<Comment> comments = commentRepository.getAllByLookbookId(lookbookId);
@@ -83,7 +85,7 @@ public class LookbookService {
                 .comment(comments)
                 .build();
     }
-
+    @Transactional
     public void createLookbook(Integer userId, List<MultipartFile> images, LookbookCreateRequest lookbookRequest){
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
 
@@ -127,11 +129,11 @@ public class LookbookService {
     }
 
     public PagingResponse<List<LookbookMiniResponse>> getLookbooks(Pageable pageable){
-        Page<Lookbook> lookbooks = lookbookRepository.findByIsDeleted(false, pageable);
+        Page<Lookbook> lookbooks = lookbookRepository.findAllLookbook(pageable);
         List<LookbookMiniResponse> lookbookResponse = new ArrayList<>();
 
         lookbooks.forEach(lookbook -> {
-            List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook(lookbook.getLookbookId());
+            List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
             List<String> images = new ArrayList<>();
             lookbookImages.forEach(image -> {
                 images.add(image.getImage());
@@ -159,6 +161,11 @@ public class LookbookService {
                 false,
                 false
                 );
+    }
+    @Transactional
+    public Lookbook updateLookbook(Integer userId, Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest){
+        Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+
     }
 
 }
