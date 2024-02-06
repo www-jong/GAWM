@@ -13,4 +13,7 @@ public interface LookbookRepository extends JpaRepository<Lookbook,Integer> {
     List<Lookbook> findByUserUserId(Integer userId);
 
     void deleteByUser_UserId(Integer userId);
+
+    Lookbook getByLookbookId(Integer lookbookId);
 }
+

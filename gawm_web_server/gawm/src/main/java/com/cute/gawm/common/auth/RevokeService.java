@@ -48,9 +48,6 @@ public class RevokeService {
         if (!user.isPresent()) {
             throw new DataNotFoundException("해당 유저가 존재하지 않습니다");
         }
-        if(!(user.get().getProvider() !=User.Provider.GOOGLE)){
-            throw new DataMismatchException("해당 유저는 구글 소셜 회원이 아닙니다.");
-        }
         // 1. 세션 삭제
         deleteSession();
         // 2. 토큰 만료
@@ -67,9 +64,6 @@ public class RevokeService {
         Optional<User> user = userRepository.findById(sessionUserId);
         if (!user.isPresent()) {
             throw new DataNotFoundException("해당 유저가 존재하지 않습니다");
-        }
-        if(!(user.get().getProvider() !=User.Provider.KAKAO)){
-            throw new DataMismatchException("해당 유저는 구글 소셜 회원이 아닙니다.");
         }
         // 1. 세션 삭제
         deleteSession();

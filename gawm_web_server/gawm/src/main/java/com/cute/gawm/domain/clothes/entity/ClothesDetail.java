@@ -26,7 +26,6 @@ public class ClothesDetail {
     @Field(value = "clothes_id")
     private int clothesId;
 
-
     private List<String> colors;
 
     @Field(value = "s_category")

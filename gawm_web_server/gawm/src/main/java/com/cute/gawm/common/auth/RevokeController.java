@@ -17,14 +17,14 @@ public class RevokeController {
 
     private final RevokeService revokeService;
 
-    @DeleteMapping("/user/google")
+    @GetMapping("/user/google")
     public ResponseEntity<?> revokeGoogleAccount(@LoginUser SessionUser sessionUser, @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient oAuth2AuthorizedClient) {
         log.info("revokeGoogleAccount들어옴");
         revokeService.deleteGoogleAccount(sessionUser.getId(),oAuth2AuthorizedClient);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, null);
     }
 
-    @DeleteMapping("/user/kakao")
+    @GetMapping("/user/kakao")
     public ResponseEntity<?> revokeKakaoAccount(@LoginUser SessionUser sessionUser, @RegisteredOAuth2AuthorizedClient("kakao") OAuth2AuthorizedClient oAuth2AuthorizedClient) {
         revokeService.deleteKakaoAccount(sessionUser.getId(),oAuth2AuthorizedClient);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, null);

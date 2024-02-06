@@ -45,8 +45,6 @@ import java.util.Comparator;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
-
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
     private final FollowerRepository followerRepository;
@@ -264,7 +262,6 @@ public class UserService {
                 && !nickname.endsWith(" ")
                 && !nickname.startsWith(" ");
     }
-
-
-
 }
+
+
