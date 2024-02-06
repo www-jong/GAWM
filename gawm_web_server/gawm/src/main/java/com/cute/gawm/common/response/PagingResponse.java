@@ -6,9 +6,9 @@ import lombok.Data;
 import java.util.List;
 @Data
 @AllArgsConstructor
-public class PagingResponse {
+public class PagingResponse<T> {
     private int status;
-    private List<?> content;
+    private T content;
     private boolean isFirst;
     private boolean isLast;
     private int page;
