@@ -8,7 +8,6 @@ import java.util.List;
 @Builder
 public class LookbookUpdateRequest {
     private List<String> lookbooksImg;
-    private boolean isPublic;
     private List<Integer> clothes;
-    private List<String> tags;
+    private List<Integer> tags;
 }

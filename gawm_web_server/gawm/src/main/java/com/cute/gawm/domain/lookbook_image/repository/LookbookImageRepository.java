@@ -9,6 +9,6 @@ public interface LookbookImageRepository extends JpaRepository<LookbookImage, In
 //    List<LookbookImage> findByLookbook(Integer lookbookId);
 //    List<LookbookImage> findLookbookImageByLookbook(Integer lookbookId);
     List<LookbookImage> findAllByLookbook_LookbookId(Integer lookbookId);
-
+    void deleteAllByLookbook(Integer lookbookId);
 
 }

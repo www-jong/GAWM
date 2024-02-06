@@ -1,9 +1,6 @@
 package com.cute.gawm.domain.lookbook.repository;
 
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +16,6 @@ public interface LookbookRepository extends JpaRepository<Lookbook, Integer>, Lo
 
     Lookbook findLookbookByLookbookId(Integer lookbookId);
 
-//    PageImpl<Lookbook> findAllBy(Pageable pageable);
-
+    void deleteAllByLookbook(Integer lookbookId);
 }
 

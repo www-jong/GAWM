@@ -1,6 +1,7 @@
 package com.cute.gawm.domain.lookbook.service;
 
 import com.cute.gawm.common.exception.ClothesNotFoundException;
+import com.cute.gawm.common.exception.TagNotFoundException;
 import com.cute.gawm.common.exception.UserNotFoundException;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
@@ -162,10 +163,55 @@ public class LookbookService {
                 false
                 );
     }
+
     @Transactional
-    public Lookbook updateLookbook(Integer userId, Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest){
+    public void updateLookbook(Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest){
         Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
 
-    }
+        if(!images.isEmpty()) {
+            List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbookId);
+            lookbookImages.forEach( (lookbookImage) -> {
+                s3Uploader.deleteFile(lookbookImage.getImage());
+            });
+            lookbookImageRepository.deleteAllByLookbook(lookbookId);
 
+            images.forEach((image) -> {
+                String name = s3Uploader.uploadFile(image);
+                LookbookImage lookbookImage = LookbookImage.builder()
+                        .image(name)
+                        .lookbook(lookbook)
+                        .build();
+                lookbookImageRepository.save(lookbookImage);
+            });
+        }
+
+        if(!lookbookUpdateRequest.getClothes().isEmpty()) {
+            clothesLookbookRepository.deleteAllByLookbook(lookbookId);
+
+            lookbookUpdateRequest.getClothes().forEach((clotheId)->{
+                Clothes clothe = clothesRepository.findByClothesId(clotheId);
+                ClothesLookbook clothesLookbook = ClothesLookbook.builder()
+                        .lookbook(lookbook)
+                        .clothes(clothe)
+                        .build();
+                clothesLookbookRepository.save(clothesLookbook);
+            });
+        }
+
+        if(!lookbookUpdateRequest.getTags().isEmpty()){
+            tagLookbookRepository.deleteByLookbookLookbookId(lookbookId);
+
+            lookbookUpdateRequest.getTags().forEach(tagId ->{
+                Tag tag = tagRepository.findById(tagId).orElseThrow(()-> new TagNotFoundException("해당 태그가 존재하지 않습니다."));
+
+                TagLookbook tagLookbook = TagLookbook.builder()
+                        .tag(tag)
+                        .lookbook(lookbook)
+                        .build();
+
+                tagLookbookRepository.save(tagLookbook);
+            });
+        }
+
+    }
 }

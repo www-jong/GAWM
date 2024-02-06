@@ -2,11 +2,8 @@ package com.cute.gawm.domain.lookbook.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.response.BasicResponse;
-import com.cute.gawm.common.response.PagingResponse;
-import com.cute.gawm.domain.clothes.dto.request.ClothesCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
-import com.cute.gawm.domain.lookbook.dto.response.LookbookResponse;
 import com.cute.gawm.domain.lookbook.service.LookbookService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import lombok.AllArgsConstructor;
@@ -29,7 +26,7 @@ public class LookbookController {
     @GetMapping("/list")
     public ResponseEntity<?> getLookbooks(
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt") final Pageable pageable
-            ){
+    ){
         return ResponseEntity.ok(
                     lookbookService.getLookbooks(pageable)
             );
@@ -50,12 +47,14 @@ public class LookbookController {
     }
 
     @PutMapping("/{lookbookId}")
-    public ResponseEntity<?> updateLookbook(@LoginUser SessionUser sessionUser,
-                                            @PathVariable Integer lookbookId,
-                                            @RequestPart("image") List<MultipartFile> images,
-                                            @RequestPart("data") LookbookUpdateRequest lookbookUpdateRequest){
+    public ResponseEntity<?> updateLookbook(
+            @LoginUser SessionUser sessionUser,
+            @PathVariable Integer lookbookId,
+            @RequestPart("image") List<MultipartFile> images,
+            @RequestPart("data") LookbookUpdateRequest lookbookUpdateRequest
+    ){
         final int userId = sessionUser.getId();
-        lookbookService.updateLookbook(userId, lookbookId, images, lookbookUpdateRequest);
+        lookbookService.updateLookbook(lookbookId, images, lookbookUpdateRequest);
         return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 생성 완료"));
     }
 }
