@@ -1,44 +1,74 @@
 package com.cute.gawm.domain.user.entity;
 
-import com.cute.gawm.common.BaseEntity;
+
+import com.cute.gawm.domain.user.dto.UserEditForm;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
-@Setter
 @Entity
 @Table(name = "user")
-public class User extends BaseEntity {
+public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private int userId;
     @Column
-    private long id;
+    private String email;
     @Column
-    private String session;
-    @Column
-    private String name;
-    @Column
-    private Integer age;
+    private int age;
     @Enumerated(EnumType.STRING)
     @Column
-    private GENDER gender;
+    private Gender gender;
     @Column
     private String nickname;
-    @Column(name = "following_num")
-    private Integer followingNum;
-    @Column(name = "follower_num")
-    private Integer followerNum;
-    @Column
-    private String password;
     @Enumerated(EnumType.STRING)
     @Column
-    private ROLE role;
-    public enum GENDER{
-        MALE, FEMALE
+    private Role role;
+    @Builder.Default
+    @Column
+    private int point = 0;
+    @Builder.Default
+    @Column
+    private int level = 1;
+    @Column
+    private String session;
+    @Column(name = "profile_img")
+    private String profileImg;
+    @Column(name = "provider")
+    private Provider provider;
+
+    public enum Gender {
+        MALE, FEMALE, NONE
     }
-    public enum ROLE{
-        ROLE_ADMIN, ROLE_USER
+
+    public enum Provider {
+        GOOGLE, KAKAO
+    }
+
+    public User update(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public void update(UserEditForm form) {
+        this.nickname = form.getNickname();
+        this.gender = form.getGender();
+        this.age = form.getAge();
+    }
+
+    public void updateProfileImge(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
+    public String getRoleKey() {
+        return this.role.getKey();
     }
 }
