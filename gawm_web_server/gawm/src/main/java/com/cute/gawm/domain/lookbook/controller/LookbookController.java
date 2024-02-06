@@ -2,12 +2,15 @@ package com.cute.gawm.domain.lookbook.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.response.BasicResponse;
+import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.domain.clothes.dto.request.ClothesCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookResponse;
 import com.cute.gawm.domain.lookbook.service.LookbookService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +22,17 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/look-book")
 public class LookbookController {
-
+    private final int DEFAULT_SIZE = 10;
     private final LookbookService lookbookService;
 
-//    @GetMapping("/list")
-//    public ResponseEntity<?> getLookbooks(){
-//        return lookbookService.getLookbooks();
-//    }
+    @GetMapping("/list")
+    public ResponseEntity<?> getLookbooks(
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "id") final Pageable pageable
+            ){
+        return ResponseEntity.ok(
+                    lookbookService.getLookbooks(pageable)
+            );
+    }
 
     @GetMapping("/{lookbookId}")
     public ResponseEntity<?> getLookbook(@PathVariable final int lookbookId){

@@ -2,6 +2,7 @@ package com.cute.gawm.domain.lookbook.service;
 
 import com.cute.gawm.common.exception.ClothesNotFoundException;
 import com.cute.gawm.common.exception.UserNotFoundException;
+import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.clothes.dto.response.ClothesMiniResponse;
 import com.cute.gawm.domain.clothes.entity.Clothes;
@@ -11,6 +12,7 @@ import com.cute.gawm.domain.clothes_lookbook.repository.ClothesLookbookRepositor
 import com.cute.gawm.domain.comment.entity.Comment;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
+import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookResponse;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.lookbook.repository.LookbookRepository;
@@ -23,6 +25,9 @@ import com.cute.gawm.domain.tag_lookbook.repository.TagLookbookRepository;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,7 +49,7 @@ public class LookbookService {
     private final TagRepository tagRepository;
 
     public LookbookResponse getLookbook(final int lookbookId){
-        final Lookbook lookbook = lookbookRepository.getByLookbookId(lookbookId);
+        final Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         final List<ClothesLookbook> clotheLookbooks = clothesLookbookRepository.getAllByLookbookId(lookbookId);
         final List<TagLookbook> tagLookbooks = tagLookbookRepository.getAllByLookbookId(lookbookId);
         final List<Comment> comments = commentRepository.getAllByLookbookId(lookbookId);
@@ -119,6 +124,41 @@ public class LookbookService {
                     .build();
             tagLookbookRepository.save(tagLookbook);
         });
+    }
+
+    public PagingResponse<List<LookbookMiniResponse>> getLookbooks(Pageable pageable){
+        Page<Lookbook> lookbooks = lookbookRepository.findByIsDeleted(false, pageable);
+        List<LookbookMiniResponse> lookbookResponse = new ArrayList<>();
+
+        lookbooks.forEach(lookbook -> {
+            List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook(lookbook.getLookbookId());
+            List<String> images = new ArrayList<>();
+            lookbookImages.forEach(image -> {
+                images.add(image.getImage());
+            });
+
+            LookbookMiniResponse response = LookbookMiniResponse.builder()
+                    .userId(lookbook.getUser().getUserId())
+                    .images(images)
+                    .view(lookbook.getView())
+                    .createdAt(lookbook.getCreatedAt())
+                    .build();
+
+            lookbookResponse.add(response);
+        });
+
+        return new PagingResponse(
+                HttpStatus.OK.value(),
+                lookbookResponse,
+                lookbooks.isFirst(),
+                lookbooks.isLast(),
+                lookbooks.getPageable().getPageNumber(),
+                lookbooks.getTotalPages(),
+                lookbooks.getSize(),
+                false,
+                false,
+                false
+                );
     }
 
 }
