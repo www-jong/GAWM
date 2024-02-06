@@ -19,7 +19,7 @@ export default function ClothesList({ className, clothes, categorySetter, clothe
 				clothes ? (
 					<>
 						<ListItem
-							className="flex flex-row gap-2 items-center py-4"
+							className="flex flex-row gap-2 items-center"
 							onClick={() => { categorySetter(undefined) }}
 						>
 							<ArrowUturnLeftIcon className="size-4" />
@@ -29,7 +29,6 @@ export default function ClothesList({ className, clothes, categorySetter, clothe
 							clothes.map(
 								(clothing) => (
 									<ListItem
-										className="py-4"
 										key={clothing.clothe_id}
 										onClick={() => clothesIdSetter(clothing.clothe_id)}
 									>

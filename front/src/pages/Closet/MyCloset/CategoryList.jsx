@@ -17,7 +17,6 @@ export default function CategoryList({ className, categories, categorySetter }) 
 				categories.map(
 					(category) => (
 						<ListItem
-							className="py-4"
 							key={category}
 							onClick={() => {categorySetter(category)}}
 						>

@@ -23,7 +23,7 @@ export default function ListItem({ className, onClick, children, href }) {
 	else if("link" in arguments[0])
 		element = <a href={href}>{children}</a>
 	
-	const appliedClassName = `px-4 py-2 ${"noHover" in arguments[0] ? "" : "hover:bg-primary/20 "}${className ? className : ""}`;
+	const appliedClassName = `p-4 ${"noHover" in arguments[0] ? "" : "hover:bg-primary/20 "}${className ? className : ""}`;
 
 	if("div" in arguments[0])
 		return <div className={appliedClassName} onClick={onClick}>{element}</div>;
