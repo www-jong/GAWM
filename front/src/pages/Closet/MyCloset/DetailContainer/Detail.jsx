@@ -10,7 +10,7 @@ import ListItem from "../../../../components/ListGroup/ListItem";
  */
 export default function Detail({ label, value }) {
 	return (
-		<ListItem>
+		<ListItem noHover>
 			<strong className="flex-none">{label}</strong>
 			<div className="grow self-stretch flex flex-row-reverse flex-wrap items-center gap-1">
 				{

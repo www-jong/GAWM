@@ -73,6 +73,7 @@ export default function ClothesDetail({ clothesId, clothesIdSetter }) {
 				<ListItem
 					className="flex flex-row gap-2 items-center"
 					onClick={() => { clothesIdSetter(undefined) }}
+					noHover
 				>
 					<ArrowUturnLeftIcon className="size-4" />
 					뒤로가기
