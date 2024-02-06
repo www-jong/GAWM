@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vitejs.dev/config/
 export default defineConfig({
 	base: '/gawm/',
 	plugins: [
@@ -12,10 +11,18 @@ export default defineConfig({
 			devOptions: {
 				enabled: true,
 				type: 'module',
-			  },
+			},
 		})
 	],
 	server: {
-		port: 3000
-	}
+		port: 4000
+	},
+	build: {
+		rollupOptions: {
+			input: {
+				main: "./index.html",
+				sw: "./sw.js",
+			},
+		},
+	},
 })
