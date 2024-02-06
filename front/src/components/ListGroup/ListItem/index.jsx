@@ -7,6 +7,8 @@
  * - href: 링크화 시 가리킬 주소
  * - button: 속성 존재 시 컴포넌트 버튼화
  * - link: 속성 존재 시 컴포넌트 링크화
+ * - div: 속성 존재 시 <div> 생성
+ * - noHover: hover 시 배경색 변경 비활성화
  * 
  * @returns 생성된 JSX component
  */
@@ -21,12 +23,10 @@ export default function ListItem({ className, onClick, children, href }) {
 	else if("link" in arguments[0])
 		element = <a href={href}>{children}</a>
 	
-	return (
-		<li
-			className={`px-4 py-2 hover:bg-primary/20 ${className ? className : ""}`}
-			onClick={onClick}
-		>
-			{element}
-		</li>
-	);
+	const appliedClassName = `px-4 py-2 ${"noHover" in arguments[0] ? "" : "hover:bg-primary/20 "}${className ? className : ""}`;
+
+	if("div" in arguments[0])
+		return <div className={appliedClassName} onClick={onClick}>{element}</div>;
+	else
+		return <li className={appliedClassName} onClick={onClick}>{element}</li>;
 }
