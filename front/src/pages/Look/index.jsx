@@ -29,3 +29,9 @@
 //   };
   
 //   export default Look;
+
+export default function Look() {
+    return (
+        <p>룩</p>
+    );
+}
