@@ -7,7 +7,6 @@ import java.util.List;
 @Getter
 @Builder
 public class LookbookUpdateRequest {
-//    private List<String> lookbooksImg;
     private List<Integer> clothes;
     private List<String> tags;
 }
