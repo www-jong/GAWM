@@ -69,8 +69,8 @@ export default function PropertySetter() {
 				{
 					property.options.map(
 						(option) => (
-							<ListItem div noHover className="p-0">
-								<label className="flex flex-row gap-2 py-4">
+							<ListItem key={option.name} div noHover className="p-0">
+								<label className="flex flex-row gap-2 py-1">
 									<input
 										type={property.type}
 										name={property.name}
