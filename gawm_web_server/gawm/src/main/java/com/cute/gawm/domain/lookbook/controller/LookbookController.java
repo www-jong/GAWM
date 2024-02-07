@@ -3,6 +3,7 @@ package com.cute.gawm.domain.lookbook.controller;
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.response.BasicResponse;
 import com.cute.gawm.common.response.PagingResponse;
+import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
@@ -39,7 +40,7 @@ public class LookbookController {
 
     @GetMapping("/{lookbookId}")
     public ResponseEntity<?> getLookbook(@PathVariable final int lookbookId){
-        return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), lookbookService.getLookbook(lookbookId)));
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(lookbookId));
     }
 
     @PostMapping()
@@ -48,7 +49,7 @@ public class LookbookController {
                                             @RequestPart("data") LookbookCreateRequest lookbookCreateRequest){
         final int userId = sessionUser.getId();
         lookbookService.createLookbook(userId, images, lookbookCreateRequest);
-        return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 생성 완료"));
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 생성 완료");
     }
 
     @PutMapping("/{lookbookId}")
@@ -60,7 +61,7 @@ public class LookbookController {
     ) {
         final int userId = sessionUser.getId();
         lookbookService.updateLookbook(userId ,lookbookId, images, lookbookUpdateRequest);
-        return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 수정 완료"));
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 수정 완료");
     }
 
     @DeleteMapping("/{lookbookId}")
@@ -70,51 +71,49 @@ public class LookbookController {
     ){
          final int userId = sessionUser.getId();
          lookbookService.deleteLookbook(userId, lookbookId);
-         return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 삭제 완료"));
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 삭제 완료");
     }
 
     @GetMapping("/following/list")
-    public ResponseEntity<PagingResponse<?>> getFollowingLookbooks(
+    public ResponseEntity<PagingResponse> getFollowingLookbooks(
             @LoginUser SessionUser sessionUser,
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ){
         PageImpl<LookbookMiniResponse> followingLookbooks = lookbookService.getFollowingLookbooks(sessionUser.getId(), pageable);
-        return ResponseEntity.ok(
-                new PagingResponse<>(
-                        HttpStatus.OK.value(),
-                        followingLookbooks.getContent(),
-                        followingLookbooks.isFirst(),
-                        followingLookbooks.isLast(),
-                        pageable.getPageNumber(),
-                        followingLookbooks.getTotalPages(),
-                        followingLookbooks.getSize(),
-                        true,
-                        false,
-                        false
-                )
+        return ResponseUtil.buildPagingResponse(
+                HttpStatus.OK,
+                followingLookbooks.getContent(),
+                followingLookbooks.isFirst(),
+                followingLookbooks.isLast(),
+                pageable.getPageNumber(),
+                followingLookbooks.getTotalPages(),
+                followingLookbooks.getSize(),
+                true,
+                false,
+                false
         );
     }
 
     @GetMapping()
-    public ResponseEntity<PagingResponse<?>> getSearchLookbook(
+    public ResponseEntity<PagingResponse> getSearchLookbook(
 
             @RequestParam("search") String keyword,
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ){
-        PageImpl<LookbookMiniResponse> followingLookbooks = lookbookService.getSearchLookbook(keyword, pageable);
-        return ResponseEntity.ok(
-                new PagingResponse<>(
-                        HttpStatus.OK.value(),
-                        followingLookbooks.getContent(),
-                        followingLookbooks.isFirst(),
-                        followingLookbooks.isLast(),
-                        pageable.getPageNumber(),
-                        followingLookbooks.getTotalPages(),
-                        followingLookbooks.getSize(),
-                        true,
-                        false,
-                        false
-                )
+        PageImpl<LookbookMiniResponse> lookbooks = lookbookService.getSearchLookbook(keyword, pageable);
+
+        return ResponseUtil.buildPagingResponse(
+                HttpStatus.OK,
+                lookbooks.getContent(),
+                lookbooks.isFirst(),
+                lookbooks.isLast(),
+                pageable.getPageNumber(),
+                lookbooks.getTotalPages(),
+                lookbooks.getSize(),
+                true,
+                false,
+                false
+
         );
     }
 
@@ -125,11 +124,10 @@ public class LookbookController {
     ){
         final int userId = seesionUser.getId();
         lookbookService.bookmark(userId, lookbookId);
-        return ResponseEntity.ok(
-                new BasicResponse(
-                        HttpStatus.OK.value(),
-                        "북마크 완료"
-                )
+
+        return ResponseUtil.buildBasicResponse(
+                HttpStatus.OK,
+                "북마크 완료"
         );
     }
 
@@ -140,11 +138,9 @@ public class LookbookController {
     ){
         final int userId = seesionUser.getId();
         lookbookService.unbookmark(userId, lookbookId);
-        return ResponseEntity.ok(
-                new BasicResponse(
-                        HttpStatus.OK.value(),
-                        "북마크 해제 완료"
-                )
+        return ResponseUtil.buildBasicResponse(
+                HttpStatus.OK,
+                "북마크 완료"
         );
     }
 }
