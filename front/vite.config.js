@@ -9,12 +9,13 @@ export default defineConfig({
 		react(),
 		VitePWA({
 			registerType: 'autoUpdate',
-			devOptions: { enabled: true,
-				type:'module'
-			}
+			devOptions: {
+				enabled: true,
+				type: 'module',
+			  },
 		})
 	],
 	server: {
-		port: 4000
+		port: 3000
 	}
 })

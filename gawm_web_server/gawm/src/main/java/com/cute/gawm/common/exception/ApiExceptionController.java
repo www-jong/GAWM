@@ -88,7 +88,9 @@ public class ApiExceptionController {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
     public ErrorResponse handleRuntimeException(RuntimeException e) {
-        return constructErrorResponse(e,HttpStatus.INTERNAL_SERVER_ERROR, "RuntimeException");
+        log.error("[RuntimeException]={}",e.getMessage());
+        String errorDetail = "실행 중 예외가 발생했습니다.";
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "RuntimeException", errorDetail);
     }
 
     // 유저를 찾을 수 없음.
@@ -116,7 +118,9 @@ public class ApiExceptionController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAllUncaughtException(Exception e) {
-        return constructErrorResponse(e,HttpStatus.INTERNAL_SERVER_ERROR, "handleAllUncaughtException");
+        log.error("[Exception]={}",e.getMessage());
+        String errorDetail = "예외가 발생했습니다.";
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "handleAllUncaughtException", errorDetail);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED) //404

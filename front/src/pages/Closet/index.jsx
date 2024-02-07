@@ -1,6 +1,9 @@
+import React, { useState } from 'react';
 import TopBar from "../../components/TopBar";
 import WeeklyWeather from "./WeeklyWeather";
 import History from "./History/index.jsx";
+import FloatingButton from "../../components/Button/FloatingButton.jsx";
+import AddInClosetModal from "../../components/Modal/AddInClosetModal.jsx";
 
 /**
  * 옷장 페이지의 component입니다
@@ -8,6 +11,8 @@ import History from "./History/index.jsx";
  * @returns 옷장 페이지 JSX element
  */
 export default function Closet() {
+	const [showModal, setShowModal] = useState(false);
+
 	return (
 		<>
 			<div className="fixed top-0 left-0 right-0 mx-2.5 my-1.5">
@@ -34,8 +39,9 @@ export default function Closet() {
 
 				{/* 뭐입었더라 페이지 테스트용 */}
 				<History />
-
+				<FloatingButton onAddClick={() => setShowModal(true)} />
 			</div>
+			{showModal && <AddInClosetModal onClose={() => setShowModal(false)} />}
 		</>
 	);
 }
