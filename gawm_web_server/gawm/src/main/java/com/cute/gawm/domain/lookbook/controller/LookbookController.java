@@ -143,4 +143,30 @@ public class LookbookController {
                 "북마크 완료"
         );
     }
+
+    @PostMapping("/{lookbookId}/likes")
+    public ResponseEntity<?> likes(
+            @LoginUser SessionUser seesionUser,
+            @PathVariable("lookbookId") Integer lookbookId
+    ){
+        final int userId = seesionUser.getId();
+        lookbookService.likes(userId, lookbookId);
+        return ResponseUtil.buildBasicResponse(
+                HttpStatus.OK,
+                "감있어요 완료"
+        );
+    }
+
+    @PostMapping("/{lookbookId}/unlikes")
+    public ResponseEntity<?> unlikes(
+            @LoginUser SessionUser seesionUser,
+            @PathVariable("lookbookId") Integer lookbookId
+    ){
+        final int userId = seesionUser.getId();
+        lookbookService.unlikes(userId, lookbookId);
+        return ResponseUtil.buildBasicResponse(
+                HttpStatus.OK,
+                "감있어요 취소 완료"
+        );
+    }
 }
