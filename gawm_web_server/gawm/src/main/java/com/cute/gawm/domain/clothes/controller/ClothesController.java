@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/clothes")
+@RequestMapping("/back/clothes")
 public class ClothesController {
 
     @Autowired

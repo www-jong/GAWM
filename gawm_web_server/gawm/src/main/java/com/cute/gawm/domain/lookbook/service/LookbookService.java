@@ -6,6 +6,8 @@ import com.cute.gawm.common.exception.UserNotFoundException;
 import com.cute.gawm.common.exception.UserNotMatchException;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
+import com.cute.gawm.domain.bookmark.entity.Bookmark;
+import com.cute.gawm.domain.bookmark.repository.BookmarkRepository;
 import com.cute.gawm.domain.clothes.dto.response.ClothesMiniResponse;
 import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
@@ -15,6 +17,8 @@ import com.cute.gawm.domain.comment.entity.Comment;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
+import com.cute.gawm.domain.like.entity.Likes;
+import com.cute.gawm.domain.like.repository.LikesRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
@@ -54,11 +58,12 @@ public class LookbookService {
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
     private final TagRepository tagRepository;
-
+    private final BookmarkRepository bookmarkRepository;
     private final FollowingRepository followingRepository;
+    private final LikesRepository likesRepository;
 
     public LookbookResponse getLookbook(final int lookbookId){
-        final Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        final Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         final List<ClothesLookbook> clotheLookbooks = clothesLookbookRepository.getAllByLookbookId(lookbookId);
         final List<TagLookbook> tagLookbooks = tagLookbookRepository.getAllByLookbookId(lookbookId);
         final List<Comment> comments = commentRepository.getAllByLookbookId(lookbookId);
@@ -167,10 +172,10 @@ public class LookbookService {
                 false
                 );
     }
-//TODO : 수정 테스트
+
     @Transactional
     public void updateLookbook(Integer userId, Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest) throws UserNotMatchException {
-        Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 수정 권한이 존재하지 않습니다.");
 
         if(!images.isEmpty()) {
@@ -178,7 +183,7 @@ public class LookbookService {
             lookbookImages.forEach( (lookbookImage) -> {
                 s3Uploader.deleteFile(lookbookImage.getImage());
             });
-            lookbookImageRepository.deleteAllByLookbook(lookbookId);
+            lookbookImageRepository.deleteByLookbook(lookbook);
 
             images.forEach((image) -> {
                 String name = s3Uploader.uploadFile(image);
@@ -191,7 +196,7 @@ public class LookbookService {
         }
 
         if(!lookbookUpdateRequest.getClothes().isEmpty()) {
-            clothesLookbookRepository.deleteAllByLookbook(lookbookId);
+            clothesLookbookRepository.deleteAllByLookbook(lookbook);
 
             lookbookUpdateRequest.getClothes().forEach((clotheId)->{
                 Clothes clothe = clothesRepository.findByClothesId(clotheId);
@@ -206,8 +211,11 @@ public class LookbookService {
         if(!lookbookUpdateRequest.getTags().isEmpty()){
             tagLookbookRepository.deleteByLookbookLookbookId(lookbookId);
 
-            lookbookUpdateRequest.getTags().forEach(tagId ->{
-                Tag tag = tagRepository.findById(tagId).orElseThrow(()-> new TagNotFoundException("해당 태그가 존재하지 않습니다."));
+            lookbookUpdateRequest.getTags().forEach(tagName ->{
+                Tag tag = Tag.builder()
+                        .name(tagName)
+                        .build();
+                tagRepository.save(tag);
 
                 TagLookbook tagLookbook = TagLookbook.builder()
                         .tag(tag)
@@ -221,9 +229,9 @@ public class LookbookService {
 
     @Transactional
     public void deleteLookbook(Integer userId, Integer lookbookId){
-        Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 삭제 권한이 존재하지 않습니다.");
-        lookbookRepository.deleteByLookbook(lookbookId);
+        lookbookRepository.deleteByLookbookId(lookbookId);
     }
 
     public PageImpl<LookbookMiniResponse> getFollowingLookbooks(Integer userId, Pageable pageable){
@@ -231,8 +239,7 @@ public class LookbookService {
         List<LookbookMiniResponse> responseList = new ArrayList<>();
 
         followingList.getFollowingList().forEach(followingId -> {
-            PageImpl<Lookbook> lookbooks = lookbookRepository.findPageByUserId(followingId, pageable);
-
+            List<Lookbook> lookbooks = lookbookRepository.findByUserUserId(followingId);
             lookbooks.forEach(lookbook -> {
                 List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
                 LookbookMiniResponse lookbookMiniResponse = LookbookMiniResponse.builder()
@@ -243,21 +250,65 @@ public class LookbookService {
                         .build();
                 responseList.add(lookbookMiniResponse);
             });
-
         });
-
-        return new PagingResponse(
-                HttpStatus.OK.value(),
-                responseList,
-                lookbooks.isFirst(),
-                lookbooks.isLast(),
-                lookbooks.getPageable().getPageNumber(),
-                lookbooks.getTotalPages(),
-                lookbooks.getSize(),
-                false,
-                false,
-                false
-        );
+        System.out.println(responseList);
+        return new PageImpl<>(responseList, pageable, responseList.size());
     }
 
+
+
+    public PageImpl<LookbookMiniResponse> getSearchLookbook(String keyword, Pageable pageable){
+        PageImpl<Lookbook> lookbooks = lookbookRepository.searchLookbook(keyword, pageable);
+        List<LookbookMiniResponse> responseList = new ArrayList<>();
+        lookbooks.forEach(lookbook -> {
+            List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+            LookbookMiniResponse build = LookbookMiniResponse.builder()
+                    .createdAt(lookbook.getCreatedAt())
+                    .view(lookbook.getView())
+                    .userId(lookbook.getUser().getUserId())
+                    .images(lookbookImage)
+                    .build();
+            responseList.add(build);
+        });
+
+        return new PageImpl<>(responseList, pageable, responseList.size());
+    }
+
+    @Transactional
+    public void bookmark(Integer userId, Integer lookbookId){
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 북마크 추가 권한이 존재하지 않습니다.");
+
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
+        Bookmark bookmark = Bookmark.builder()
+                .lookbook(lookbook)
+                .user(user)
+                .build();
+
+        bookmarkRepository.save(bookmark);
+    }
+
+    @Transactional
+    public void unbookmark(Integer userId, Integer lookbookId){
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 북마크 해제 권한이 존재하지 않습니다.");
+
+        bookmarkRepository.deleteByLookbookLookbookId(lookbookId);
+    }
+
+    @Transactional
+    public void likes(Integer userId, Integer lookbookId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        Likes likes = Likes.builder().lookbook(lookbook).user(user).build();
+        likesRepository.save(likes);
+    }
+
+    @Transactional
+    public void unlikes(Integer userId, Integer lookbookId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+
+        likesRepository.deleteByLookbookAndUser(lookbook, user);
+    }
 }

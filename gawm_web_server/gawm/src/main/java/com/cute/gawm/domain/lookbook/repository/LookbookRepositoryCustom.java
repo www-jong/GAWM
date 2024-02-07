@@ -6,6 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface LookbookRepositoryCustom {
        PageImpl<Lookbook> findAllLookbook(Pageable pageable);
-       PageImpl<Lookbook> findPageByUserId(Integer userId, Pageable pageable)
-
+       PageImpl<Lookbook> searchLookbook(String keyword, Pageable pageable);
 }
