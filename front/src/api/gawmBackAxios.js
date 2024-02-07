@@ -1,7 +1,7 @@
 import axios from 'axios';
 import cookies from 'js-cookie';
 const backURL = process.env.NODE_ENV === 'development'
-  ? 'http://localhost:8080/gawm'
+  ? 'http://localhost:8080/gawm/back'
   : import.meta.env.VITE_BACK_PROD_URL;
 
 const instance = axios.create({
