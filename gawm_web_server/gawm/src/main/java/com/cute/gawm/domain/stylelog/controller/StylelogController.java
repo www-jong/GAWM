@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/stylelog")
+@RequestMapping("/back/stylelog")
 public class StylelogController {
 
     @Autowired

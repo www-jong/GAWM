@@ -28,11 +28,14 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile").permitAll()
+                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile","/back/oauth2/authorization/**").permitAll()
                 .antMatchers("/api/**").hasRole(Role.USER.name())
                 .anyRequest().authenticated().and()
                 .logout().logoutSuccessUrl("/").and()
                 .oauth2Login()
+                .authorizationEndpoint()
+                .baseUri("/back/oauth2/authorization")
+                .and()
                 .userInfoEndpoint()
                 .userService(oAuthService)
                 .and()
@@ -45,7 +48,7 @@ public class SpringSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4000/gawm")); // 프론트엔드 도메인 허용
+        configuration.setAllowedOrigins(Arrays.asList("https://i10e203.p.ssafy.io/gawm")); // 프론트엔드 도메인 허용
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true); // 중요: 쿠키를 포함시키기 위해 true로 설정
