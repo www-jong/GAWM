@@ -1,4 +1,4 @@
-import { Outlet, useMatch } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import ProfileBadge from "./ProfileBadge";
 import AdaptiveContainer from "../../components/AdaptiveContainer";
@@ -9,31 +9,24 @@ import AdaptiveContainer from "../../components/AdaptiveContainer";
  * @returns 생성된 JSX component
  */
 export default function MyPage() {
-	const match = useMatch("/mypage/:page");
-	const page = match?.props.page;
+	// 마이페이지 메인 또는 북마크 페이지인지 확인
+	const pathname = useLocation().pathname;
 	const overlayPage = (
-		typeof page === "undefined" ||
-		page !== "bookmark"
+		!pathname.endsWith("/mypage") &&
+		!pathname.startsWith("/mypage/bookmark")
 	);
 
-	console.log(page);
-
-	return (
+	return overlayPage ? (
+		<Outlet />
+	) : (
 		<>
 			<div className="fixed top-0 left-0 right-0 px-2.5 py-1.5 bg-white">
 				<TopBar title={<h1 className="font-bold text-2xl">마이페이지</h1>} />
 			</div>
-
-			{
-				!overlayPage ? (
-					<Outlet />
-				) : (
-					<AdaptiveContainer className="flex flex-col gap-4 mt-12 mb-24">
-						<ProfileBadge />
-						<Outlet />
-					</AdaptiveContainer>
-				)
-			}
+			<AdaptiveContainer className="flex flex-col gap-4 mt-12 mb-24">
+				<ProfileBadge />
+				<Outlet />
+			</AdaptiveContainer>
 		</>
 	);
 }
