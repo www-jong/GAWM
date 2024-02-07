@@ -87,16 +87,15 @@ function TodaysLook() {
 				}
 			/>
 
-			<div className="flex flex-row justify-around">
+			<div className="flex flex-row justify-around items-center h-64">
 				{
 					looks.content.map(
 						(look, index) => (
 							index < 2 ? (
 								<LookThumbnail
 									key={look.lookbook_id}
+									className="w-40 h-64"
 									lookInfo={look}
-									width={40}
-									height={64}
 									action
 								/>
 							) : ""

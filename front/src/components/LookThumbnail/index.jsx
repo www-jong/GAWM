@@ -7,6 +7,7 @@ import { useState } from "react";
 /**
  * 하나의 오늘의 감각을 표시하는 component를 생성합니다
  * 
+ * - className: 내부 component에 적용할 className
  * - lookInfo: 오늘의 감각 정보
  * - width: LookThumbnail의 너비
  * - height: action 버튼을 포함한 LookThumbnail의 높이
@@ -14,14 +15,15 @@ import { useState } from "react";
  * - action: 속성 존재 시 하단 버튼 생성
  * - isLiked: 해당 감각이 좋아요 처리되었는지 확인
  * - setIsLiked: isLiked를 수정할 시 호출할 함수
+ * - href: <Link>의 to 속성
  * 
  * @returns 생성된 JSX component
  */
-function LookThumbnail({ lookInfo, width, height, isLiked, setIsLiked }) {
+function LookThumbnail({ className, lookInfo, width, height, isLiked, setIsLiked, href }) {
 	const actionPresent = "action" in arguments[0];
 
     const appliedStyle = {"--image-url": `url(${lookInfo.lookbook_img})`};
-	const appliedClassName=`flex flex-col justify-between rounded-lg ${width ? `w-${width} ` : ""}${height ? `h-${height} ` : ""}`;
+	const appliedClassName=`flex flex-col justify-between ${width ? `w-${width} ` : ""}${height ? `h-${height} ` : ""} ${className ? className : ""}`;
 
 	const countFormatter = new Intl.NumberFormat(
 		"ko-KR",
@@ -54,7 +56,7 @@ function LookThumbnail({ lookInfo, width, height, isLiked, setIsLiked }) {
 			{
 				actionPresent ? (
 					<button
-						className={`group self-stretch p-2 px-auto flex justify-center items-center gap-1 ${isLiked ? "active bg-[#fbc6ba]" : "bg-[#f0eeee]"} rounded-b-lg`}
+						className={`group p-2 flex flex-row justify-center items-center gap-1 ${isLiked ? "active bg-[#fbc6ba]" : "bg-[#f0eeee]"} rounded-b-lg`}
 						onClick={() => setIsLiked(!isLiked)}
 					>
 						{
@@ -78,18 +80,14 @@ function LookThumbnail({ lookInfo, width, height, isLiked, setIsLiked }) {
 
 	if("div" in arguments[0]) {
 		return (
-			<div
-				className={appliedClassName}
-			>
+			<div className={appliedClassName}>
 				{element}
 			</div>
 		);
 	}
 	else {
 		return (
-			<Link
-				className={appliedClassName}
-			>
+			<Link className={appliedClassName} to={href}>
 				{element}
 			</Link>
 		);

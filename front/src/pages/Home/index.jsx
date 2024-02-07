@@ -51,11 +51,11 @@ function Home() {
 								(item) => (
 									<LiveThumbnail
 										key={item.user_id}
+										className="size-32"
 										image={item.profile_img}
 										title={item.name}
 										createdDate={new Date(item["시작시간"])}
 										points={item.point}
-										size={32}
 										div
 									/>
 								)
