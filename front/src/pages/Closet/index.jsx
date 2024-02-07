@@ -22,13 +22,13 @@ export default function Closet() {
                 <div className="flex border-b">
                     <button 
                         onClick={() => setActiveTab('closet')}
-                        className={`flex-1 text-center py-2 font-bold ${activeTab === 'closet' ? 'border-b-2 border-primary text-primary' : 'text-gray-500'}`}
+                        className={`flex-1 text-center py-2 text-lg font-bold ${activeTab === 'closet' ? 'border-b-4 border-tertiary text-tertiary' : 'text-tertiary'}`}
                     >
                         옷장
                     </button>
                     <button 
                         onClick={() => setActiveTab('history')}
-                        className={`flex-1 text-center py-2 font-bold ${activeTab === 'history' ? 'border-b-2 border-primary text-primary' : 'text-gray-500'}`}
+                        className={`flex-1 text-center py-2 text-lg font-bold ${activeTab === 'history' ? 'border-b-4 border-tertiary text-tertiary' : 'text-tertiary'}`}
                     >
                         뭐입었더라?
                     </button>
