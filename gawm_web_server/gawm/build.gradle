@@ -54,6 +54,8 @@ dependencies {
     //QueryDSL 추가
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+	//OpenVidu
+	implementation 'io.openvidu:openvidu-java-client:2.29.0'
 }
 
 tasks.named('test') {
