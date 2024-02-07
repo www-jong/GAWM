@@ -1,7 +1,10 @@
 package com.cute.gawm.domain.lookbook.repository;
 
 import com.cute.gawm.common.QueryDslSupport;
+import com.cute.gawm.domain.clothes.entity.QClothes;
+import com.cute.gawm.domain.clothes_lookbook.entity.QClothesLookbook;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
+import com.cute.gawm.domain.lookbook.entity.QLookbook;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -22,7 +25,6 @@ public class LookbookRepositoryCustomImpl extends QueryDslSupport implements Loo
         super(Lookbook.class, entityManager);
     }
 
-
     @Override
     public PageImpl<Lookbook> findAllLookbook(Pageable pageable){
         JPAQuery<?> query = queryFactory.from(lookbook);
@@ -39,4 +41,30 @@ public class LookbookRepositoryCustomImpl extends QueryDslSupport implements Loo
 
         return new PageImpl<>(lookbookList, pageable, count);
     }
+
+    @Override
+    public PageImpl<Lookbook> searchLookbook(String keyword, Pageable pageable) {
+        JPAQuery<?> where = queryFactory.from(QClothesLookbook.clothesLookbook)
+                .leftJoin(QClothesLookbook.clothesLookbook.lookbook, lookbook)
+                .leftJoin(QClothesLookbook.clothesLookbook.clothes, QClothes.clothes)
+                .where(
+                        QClothes.clothes.name.contains(keyword)
+                                .or(QClothes.clothes.brand.contains(keyword))
+                                );
+
+
+        List<Lookbook> lookbookList = Objects.requireNonNull(getQuerydsl())
+                .applyPagination(pageable, where)
+                .select(lookbook)
+                .fetch();
+
+        long count = Objects.requireNonNull(getQuerydsl())
+                .applyPagination(pageable, where)
+                .select(lookbook)
+                .fetchCount();
+
+        return new PageImpl<>(lookbookList, pageable, count);
+    }
+
+
 }

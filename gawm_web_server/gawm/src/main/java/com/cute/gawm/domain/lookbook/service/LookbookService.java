@@ -178,7 +178,7 @@ public class LookbookService {
             lookbookImages.forEach( (lookbookImage) -> {
                 s3Uploader.deleteFile(lookbookImage.getImage());
             });
-            lookbookImageRepository.deleteAllByLookbook(lookbookId);
+            lookbookImageRepository.deleteByLookbook(lookbook);
 
             images.forEach((image) -> {
                 String name = s3Uploader.uploadFile(image);
@@ -191,7 +191,7 @@ public class LookbookService {
         }
 
         if(!lookbookUpdateRequest.getClothes().isEmpty()) {
-            clothesLookbookRepository.deleteAllByLookbook(lookbookId);
+            clothesLookbookRepository.deleteAllByLookbook(lookbook);
 
             lookbookUpdateRequest.getClothes().forEach((clotheId)->{
                 Clothes clothe = clothesRepository.findByClothesId(clotheId);
@@ -206,8 +206,11 @@ public class LookbookService {
         if(!lookbookUpdateRequest.getTags().isEmpty()){
             tagLookbookRepository.deleteByLookbookLookbookId(lookbookId);
 
-            lookbookUpdateRequest.getTags().forEach(tagId ->{
-                Tag tag = tagRepository.findById(tagId).orElseThrow(()-> new TagNotFoundException("해당 태그가 존재하지 않습니다."));
+            lookbookUpdateRequest.getTags().forEach(tagName ->{
+                Tag tag = Tag.builder()
+                        .name(tagName)
+                        .build();
+                tagRepository.save(tag);
 
                 TagLookbook tagLookbook = TagLookbook.builder()
                         .tag(tag)
@@ -247,4 +250,22 @@ public class LookbookService {
         return new PageImpl<>(responseList, pageable, responseList.size());
     }
 
+
+
+    public PageImpl<LookbookMiniResponse> getSearchLookbook(String keyword, Pageable pageable){
+        PageImpl<Lookbook> lookbooks = lookbookRepository.searchLookbook(keyword, pageable);
+        List<LookbookMiniResponse> responseList = new ArrayList<>();
+        lookbooks.forEach(lookbook -> {
+            List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+            LookbookMiniResponse build = LookbookMiniResponse.builder()
+                    .createdAt(lookbook.getCreatedAt())
+                    .view(lookbook.getView())
+                    .userId(lookbook.getUser().getUserId())
+                    .images(lookbookImage)
+                    .build();
+            responseList.add(build);
+        });
+
+        return new PageImpl<>(responseList, pageable, responseList.size());
+    }
 }

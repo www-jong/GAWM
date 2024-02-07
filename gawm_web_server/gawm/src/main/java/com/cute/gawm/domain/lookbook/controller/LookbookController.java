@@ -59,7 +59,7 @@ public class LookbookController {
     ) {
         final int userId = sessionUser.getId();
         lookbookService.updateLookbook(userId ,lookbookId, images, lookbookUpdateRequest);
-        return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 생성 완료"));
+        return ResponseEntity.ok(new BasicResponse(HttpStatus.OK.value(), "룩북 수정 완료"));
     }
 
     @DeleteMapping("/{lookbookId}")
@@ -87,7 +87,30 @@ public class LookbookController {
                         pageable.getPageNumber(),
                         followingLookbooks.getTotalPages(),
                         followingLookbooks.getSize(),
+                        true,
                         false,
+                        false
+                )
+        );
+    }
+
+    @GetMapping()
+    public ResponseEntity<PagingResponse<?>> getSearchLookbook(
+
+            @RequestParam("search") String keyword,
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
+    ){
+        PageImpl<LookbookMiniResponse> followingLookbooks = lookbookService.getSearchLookbook(keyword, pageable);
+        return ResponseEntity.ok(
+                new PagingResponse<>(
+                        HttpStatus.OK.value(),
+                        followingLookbooks.getContent(),
+                        followingLookbooks.isFirst(),
+                        followingLookbooks.isLast(),
+                        pageable.getPageNumber(),
+                        followingLookbooks.getTotalPages(),
+                        followingLookbooks.getSize(),
+                        true,
                         false,
                         false
                 )
