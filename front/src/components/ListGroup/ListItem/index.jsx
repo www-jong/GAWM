@@ -15,16 +15,6 @@ import { Link } from "react-router-dom";
  * @returns 생성된 JSX component
  */
 export default function ListItem({ className, onClick, children, href }) {
-	let element = children;
-
-	// 컴포넌트 생성 시 특정 속성을 넘겼는지 확인 후 버튼 또는 링크화
-	// 1. <ListItem button>...</ListItem>
-	if("button" in arguments[0])
-		element = <button>{children}</button>;
-	// 2. <ListItem link href="...">...</ListItem>
-	else if("link" in arguments[0])
-		element = <Link to={href}>{children}</Link>
-	
 	const appliedClassName = `p-4 ${"noHover" in arguments[0] ? "" : "hover:bg-primary/20 "}${className ? className : ""}`;
 
 	// 컴포넌트 생성 시 특정 속성을 넘겼는지 확인 후 버튼 또는 링크화
