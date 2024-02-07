@@ -17,6 +17,8 @@ import com.cute.gawm.domain.comment.entity.Comment;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
+import com.cute.gawm.domain.like.entity.Likes;
+import com.cute.gawm.domain.like.repository.LikesRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
@@ -58,6 +60,7 @@ public class LookbookService {
     private final TagRepository tagRepository;
     private final BookmarkRepository bookmarkRepository;
     private final FollowingRepository followingRepository;
+    private final LikesRepository likesRepository;
 
     public LookbookResponse getLookbook(final int lookbookId){
         final Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
@@ -291,5 +294,21 @@ public class LookbookService {
         if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 북마크 해제 권한이 존재하지 않습니다.");
 
         bookmarkRepository.deleteByLookbookLookbookId(lookbookId);
+    }
+
+    @Transactional
+    public void likes(Integer userId, Integer lookbookId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        Likes likes = Likes.builder().lookbook(lookbook).user(user).build();
+        likesRepository.save(likes);
+    }
+
+    @Transactional
+    public void unlikes(Integer userId, Integer lookbookId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+
+        likesRepository.deleteByLookbookAndUser(lookbook, user);
     }
 }
