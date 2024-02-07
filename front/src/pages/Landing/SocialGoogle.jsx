@@ -4,7 +4,7 @@ import google_login from '../../assets/images/google_login.svg';
 const SocialGoogle = () => {
     const redirect_uri = 'https://i10e203.p.ssafy.io/gawm'; // Redirect URI
     // oauth 요청 URL
-    const googleURL = `https://i10e203.p.ssafy.io/gawm/oauth2/authorization/google?redirect_uri=${redirect_uri}`;
+    const googleURL = `http://localhost:8080/gawm/back/oauth2/authorization/google?redirect_uri=${redirect_uri}`;
 
     const handleLogin = () => {
         window.location.href = googleURL;

@@ -2,9 +2,10 @@ import React from 'react';
 import kakao_login from '../../assets/images/kakao_login.svg';
 
 const SocialKakao = () => {
-    const redirect_uri = 'https://i10e203.p.ssafy.io/gawm/'; // Redirect URI 
+
+    const redirect_uri = 'https://i10e203.p.ssafy.io/gawm'; // Redirect URI
     // oauth 요청 URL
-    const kakaoURL = `https://i10e203.p.ssafy.io/gawm/oauth2/authorization/kakao?redirect_uri=${redirect_uri}`;
+    const kakaoURL = `http://localhost:8080/gawm/back/oauth2/authorization/kakao?redirect_uri=${redirect_uri}`;
 
     const handleLogin = () => {
         window.location.href = kakaoURL;
