@@ -6,6 +6,8 @@ import com.cute.gawm.common.exception.UserNotFoundException;
 import com.cute.gawm.common.exception.UserNotMatchException;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
+import com.cute.gawm.domain.bookmark.entity.Bookmark;
+import com.cute.gawm.domain.bookmark.repository.BookmarkRepository;
 import com.cute.gawm.domain.clothes.dto.response.ClothesMiniResponse;
 import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
@@ -54,7 +56,7 @@ public class LookbookService {
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
     private final TagRepository tagRepository;
-
+    private final BookmarkRepository bookmarkRepository;
     private final FollowingRepository followingRepository;
 
     public LookbookResponse getLookbook(final int lookbookId){
@@ -167,7 +169,7 @@ public class LookbookService {
                 false
                 );
     }
-//TODO : 수정 테스트
+
     @Transactional
     public void updateLookbook(Integer userId, Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest) throws UserNotMatchException {
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
@@ -267,5 +269,27 @@ public class LookbookService {
         });
 
         return new PageImpl<>(responseList, pageable, responseList.size());
+    }
+
+    @Transactional
+    public void bookmark(Integer userId, Integer lookbookId){
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 북마크 추가 권한이 존재하지 않습니다.");
+
+        User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
+        Bookmark bookmark = Bookmark.builder()
+                .lookbook(lookbook)
+                .user(user)
+                .build();
+
+        bookmarkRepository.save(bookmark);
+    }
+
+    @Transactional
+    public void unbookmark(Integer userId, Integer lookbookId){
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 북마크 해제 권한이 존재하지 않습니다.");
+
+        bookmarkRepository.deleteByLookbookLookbookId(lookbookId);
     }
 }

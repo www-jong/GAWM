@@ -8,6 +8,7 @@ import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
 import com.cute.gawm.domain.lookbook.service.LookbookService;
 import com.cute.gawm.domain.user.dto.SessionUser;
+import com.nimbusds.oauth2.sdk.auth.SelfSignedTLSClientAuthentication;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -113,6 +114,36 @@ public class LookbookController {
                         true,
                         false,
                         false
+                )
+        );
+    }
+
+    @PostMapping("/{lookbookId}/bookmark")
+    public ResponseEntity<?> bookmark(
+            @LoginUser SessionUser seesionUser,
+            @PathVariable("lookbookId") Integer lookbookId
+    ){
+        final int userId = seesionUser.getId();
+        lookbookService.bookmark(userId, lookbookId);
+        return ResponseEntity.ok(
+                new BasicResponse(
+                        HttpStatus.OK.value(),
+                        "북마크 완료"
+                )
+        );
+    }
+
+    @PostMapping("/{lookbookId}/unbookmark")
+    public ResponseEntity<?> unbookmark(
+            @LoginUser SessionUser seesionUser,
+            @PathVariable("lookbookId") Integer lookbookId
+    ){
+        final int userId = seesionUser.getId();
+        lookbookService.unbookmark(userId, lookbookId);
+        return ResponseEntity.ok(
+                new BasicResponse(
+                        HttpStatus.OK.value(),
+                        "북마크 해제 완료"
                 )
         );
     }
