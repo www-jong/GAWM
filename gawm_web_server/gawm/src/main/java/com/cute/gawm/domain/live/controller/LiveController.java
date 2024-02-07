@@ -8,6 +8,8 @@ import com.cute.gawm.domain.live.dto.request.LiveCreateRequest;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageImpl;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -50,9 +53,10 @@ public class LiveController {
     @PostMapping
     public ResponseEntity<?> createLive(
             @LoginUser SessionUser sessionUser,
-            @RequestBody LiveCreateRequest liveCreateRequest
-    ){
-        liveService.createLive(sessionUser.getId(), liveCreateRequest);
+            @RequestBody LiveCreateRequest liveCreateRequest,
+            @RequestBody(required = false) Map<String, Object> params
+    )throws OpenViduJavaClientException, OpenViduHttpException {
+        liveService.createLive(sessionUser.getId(), liveCreateRequest,params);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 생성 완료");
     }
 
