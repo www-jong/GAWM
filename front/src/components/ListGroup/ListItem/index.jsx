@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 /**
  * 리스트 중 하나의 아이템을 표시하는 컨테이너를 반환합니다
  * 
@@ -21,7 +23,7 @@ export default function ListItem({ className, onClick, children, href }) {
 		element = <button>{children}</button>;
 	// 2. <ListItem link href="...">...</ListItem>
 	else if("link" in arguments[0])
-		element = <a href={href}>{children}</a>
+		element = <Link to={href}>{children}</Link>
 	
 	const appliedClassName = `p-4 ${"noHover" in arguments[0] ? "" : "hover:bg-primary/20 "}${className ? className : ""}`;
 
