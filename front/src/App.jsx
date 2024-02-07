@@ -10,6 +10,9 @@ import Landing from "./pages/Landing";
 import Look from './pages/Look';
 import AddClothes from "./pages/AddFashion/AddClothes";
 import AddLook from "./pages/AddFashion/AddLookBook";
+import Menu from "./pages/MyPage/Menu";
+import Settings from "./pages/MyPage/Settings";
+import Bookmark from "./pages/MyPage/Bookmark";
 
 
 function App() {
@@ -22,7 +25,11 @@ function App() {
 					<Route path="browse" element={<Browse />} />
 					<Route path="closet" element={<Closet />} />
 					<Route path="closet/add" element={<AddClothes />} />
-					<Route path="mypage" element={<MyPage />} />
+					<Route path="mypage" element={<MyPage />}>
+						<Route index element={<Menu />} />
+						<Route path="settings" element={<Settings />} />
+						<Route path="bookmark" element={<Bookmark />} />
+					</Route>
 					<Route path="look" element={<Look />} />
 					<Route path="look/add" element={<AddLook />} />
 					{/* <Route path="/look/:id" element={<Look />} /> */}

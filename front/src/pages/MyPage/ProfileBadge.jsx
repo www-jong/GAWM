@@ -16,14 +16,14 @@ export default function ProfileBadge() {
 				alt={`${""}의 프로필 사진`}
 			/>
 			{/* 프로필 정보 */}
-			<div className="grow flex flex-col gap-3">
+			<div className="grow flex flex-col gap-1">
 				{/* 이름 및 포인트 */}
 				<div className="flex flex-col gap-1 lg:gap-2">
 					{/* 사용자 이름 */}
-					<span className="font-bold text-lg md:text-3xl break-all">{"감없는 판다"}</span>
+					<span className="font-bold text-xl md:text-3xl break-all">{"감없는 판다"}</span>
 					{/* 감 포인트 */}
-					<span className="flex flex-row gap-2 items-center text-base">
-						<img className="w-6" src={Gawm} />
+					<span className="flex flex-row gap-1.5 items-center text-sm md:text-base">
+						<img className="w-5" src={Gawm} />
 						<span>{15} 감 포인트</span>
 					</span>
 				</div>
@@ -33,7 +33,7 @@ export default function ProfileBadge() {
 					<Link to="/mypage/followers">{2} 팔로워</Link>
 				</div>
 				{/* 레벨 정보 */}
-				<div className="flex flex-col gap-1 text-base">
+				<div className="flex flex-col gap-1 text-sm md:text-base">
 					<span>레벨 {1}</span>
 					<div className="self-stretch h-2 flex flex-row justify-start content-stretch rounded-full bg-white">
 						{/* TODO: Progress bar 문제 해결 */}
