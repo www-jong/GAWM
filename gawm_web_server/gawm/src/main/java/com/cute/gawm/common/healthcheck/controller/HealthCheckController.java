@@ -1,3 +1,4 @@
+
 package com.cute.gawm.common.healthcheck.controller;
 
 import org.springframework.stereotype.Controller;

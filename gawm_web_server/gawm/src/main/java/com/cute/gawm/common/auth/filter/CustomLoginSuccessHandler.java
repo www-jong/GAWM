@@ -11,7 +11,7 @@ import java.io.IOException;
 public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        String redirectUrl = "http://localhost:4000/gawm/";
+        String redirectUrl = "https://i10e203.p.ssafy.io/gawm/";
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }
