@@ -14,10 +14,9 @@ public interface LookbookRepository extends JpaRepository<Lookbook, Integer>, Lo
 
     void deleteByUser_UserId(Integer userId);
 
-    Lookbook findLookbookByLookbookId(Integer lookbookId);
+    Lookbook findByLookbookId(Integer lookbookId);
 
-    void deleteByLookbook(Integer lookbookId);
-
+    void deleteByLookbookId(Integer lookbookId);
 
 }
 

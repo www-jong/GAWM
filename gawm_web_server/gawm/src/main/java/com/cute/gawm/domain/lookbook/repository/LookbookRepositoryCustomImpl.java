@@ -39,22 +39,4 @@ public class LookbookRepositoryCustomImpl extends QueryDslSupport implements Loo
 
         return new PageImpl<>(lookbookList, pageable, count);
     }
-
-    @Override
-    public PageImpl<Lookbook> findPageByUserId(Integer userId, Pageable pageable){
-        JPAQuery<?> query = queryFactory.from(lookbook);
-
-        final Long count = queryFactory.select(lookbook.count())
-                .from(lookbook)
-                .where(lookbook.user.userId.eq(userId))
-                .fetchOne();
-
-        List<Lookbook> lookbookList = Objects.requireNonNull(getQuerydsl())
-                .applyPagination(pageable, query)
-                .select(lookbook)
-                .fetch();
-
-
-        return new PageImpl<>(lookbookList, pageable, count);
-    }
 }

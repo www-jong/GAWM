@@ -2,12 +2,16 @@ package com.cute.gawm.domain.lookbook.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.response.BasicResponse;
+import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
+import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
 import com.cute.gawm.domain.lookbook.service.LookbookService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,12 +73,24 @@ public class LookbookController {
     }
 
     @GetMapping("/following/list")
-    public ResponseEntity<?> getFollowingLookbooks(
+    public ResponseEntity<PagingResponse<?>> getFollowingLookbooks(
             @LoginUser SessionUser sessionUser,
-            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt") final Pageable pageable
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ){
+        PageImpl<LookbookMiniResponse> followingLookbooks = lookbookService.getFollowingLookbooks(sessionUser.getId(), pageable);
         return ResponseEntity.ok(
-                lookbookService.getFollowingLookbooks(sessionUser.getId(), pageable)
+                new PagingResponse<>(
+                        HttpStatus.OK.value(),
+                        followingLookbooks.getContent(),
+                        followingLookbooks.isFirst(),
+                        followingLookbooks.isLast(),
+                        pageable.getPageNumber(),
+                        followingLookbooks.getTotalPages(),
+                        followingLookbooks.getSize(),
+                        false,
+                        false,
+                        false
+                )
         );
     }
 }

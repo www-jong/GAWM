@@ -58,7 +58,7 @@ public class LookbookService {
     private final FollowingRepository followingRepository;
 
     public LookbookResponse getLookbook(final int lookbookId){
-        final Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        final Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         final List<ClothesLookbook> clotheLookbooks = clothesLookbookRepository.getAllByLookbookId(lookbookId);
         final List<TagLookbook> tagLookbooks = tagLookbookRepository.getAllByLookbookId(lookbookId);
         final List<Comment> comments = commentRepository.getAllByLookbookId(lookbookId);
@@ -170,7 +170,7 @@ public class LookbookService {
 //TODO : 수정 테스트
     @Transactional
     public void updateLookbook(Integer userId, Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest) throws UserNotMatchException {
-        Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 수정 권한이 존재하지 않습니다.");
 
         if(!images.isEmpty()) {
@@ -221,9 +221,9 @@ public class LookbookService {
 
     @Transactional
     public void deleteLookbook(Integer userId, Integer lookbookId){
-        Lookbook lookbook = lookbookRepository.findLookbookByLookbookId(lookbookId);
+        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         if(lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 삭제 권한이 존재하지 않습니다.");
-        lookbookRepository.deleteByLookbook(lookbookId);
+        lookbookRepository.deleteByLookbookId(lookbookId);
     }
 
     public PageImpl<LookbookMiniResponse> getFollowingLookbooks(Integer userId, Pageable pageable){
@@ -231,8 +231,7 @@ public class LookbookService {
         List<LookbookMiniResponse> responseList = new ArrayList<>();
 
         followingList.getFollowingList().forEach(followingId -> {
-            PageImpl<Lookbook> lookbooks = lookbookRepository.findPageByUserId(followingId, pageable);
-
+            List<Lookbook> lookbooks = lookbookRepository.findByUserUserId(followingId);
             lookbooks.forEach(lookbook -> {
                 List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
                 LookbookMiniResponse lookbookMiniResponse = LookbookMiniResponse.builder()
@@ -243,21 +242,9 @@ public class LookbookService {
                         .build();
                 responseList.add(lookbookMiniResponse);
             });
-
         });
-
-        return new PagingResponse(
-                HttpStatus.OK.value(),
-                responseList,
-                lookbooks.isFirst(),
-                lookbooks.isLast(),
-                lookbooks.getPageable().getPageNumber(),
-                lookbooks.getTotalPages(),
-                lookbooks.getSize(),
-                false,
-                false,
-                false
-        );
+        System.out.println(responseList);
+        return new PageImpl<>(responseList, pageable, responseList.size());
     }
 
 }

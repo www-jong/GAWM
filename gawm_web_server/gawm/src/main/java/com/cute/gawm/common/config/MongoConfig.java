@@ -25,9 +25,9 @@ public class MongoConfig {
     }
 
     private void resetData() {
-        Set<String> collections = mongoTemplate.getCollectionNames();
-        for (String collection : collections) {
-            mongoTemplate.remove(new Query(), collection);
-        }
+//        Set<String> collections = mongoTemplate.getCollectionNames();
+//        for (String collection : collections) {
+//            mongoTemplate.remove(new Query(), collection);
+//        }
     }
 }
