@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/look-book")
+@RequestMapping("/back/look-book")
 public class LookbookController {
     private final int DEFAULT_SIZE = 10;
     private final LookbookService lookbookService;

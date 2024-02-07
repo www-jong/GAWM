@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/back")
 @Slf4j
 public class FollowController {
 
