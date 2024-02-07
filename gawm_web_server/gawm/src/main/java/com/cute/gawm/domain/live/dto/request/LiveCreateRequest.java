@@ -1,12 +1,12 @@
 package com.cute.gawm.domain.live.dto.request;
 
-import com.cute.gawm.domain.user.entity.User;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 @Getter
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class LiveCreateRequest {
     private String name;
 }

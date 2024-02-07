@@ -23,7 +23,7 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/back/user")
 @Slf4j
 public class UserController {
 

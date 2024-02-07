@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "clothes_stylelog")
-public class ClothesStylelog  extends BaseEntity {
+public class ClothesStylelog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,9 @@ public class ClothesStylelog  extends BaseEntity {
 
     private double x;
     private double y;
+    @Builder.Default
     private double rotate = 0.0;
+    @Builder.Default
     private double size = 1.0;
 
     public ClothesStylelog(Clothes clothes, Stylelog stylelog, double x, double y, double rotate, double size) {

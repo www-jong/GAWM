@@ -9,5 +9,12 @@ import java.util.List;
 
 @Repository
 public interface LiveRepository extends JpaRepository<Live, Integer> {
-    Live findByUser(User user);
+    List<Live> findByUser(User user);
+
+    Live findByUserAndIsDeletedFalse(User user);
+
+    Live findByLiveId(Integer liveId);
+
+    void deleteByLiveId(Integer liveId);
+
 }

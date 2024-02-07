@@ -2,6 +2,8 @@ package com.cute.gawm.domain.live.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.util.ResponseUtil;
+import com.cute.gawm.domain.clothes.dto.response.ClothesInfoResponse;
+import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.live.dto.request.LiveCreateRequest;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.service.LiveService;
@@ -17,8 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController("/live-room")
+@RestController
+@RequestMapping(("/back/live-room"))
 @AllArgsConstructor
 public class LiveController {
     private final LiveService liveService;
@@ -57,9 +61,15 @@ public class LiveController {
             @LoginUser SessionUser sessionUser,
             @PathVariable Integer liveId
     ){
-//        liveService.deleteLive(sessionUser.getId());
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 생성 완료");
+        liveService.deleteLive(sessionUser.getId(), liveId);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 삭제 완료");
     }
 
-
+    @GetMapping("/closet/{liveId}")
+    public ResponseEntity<?> getLiveCloset(
+            @PathVariable Integer liveId
+    ){
+        List<ClothesInfoResponse> closet = liveService.getLiveUserAllCloset(liveId);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, closet);
+    }
 }
