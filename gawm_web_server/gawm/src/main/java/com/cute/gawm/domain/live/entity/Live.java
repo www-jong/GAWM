@@ -26,7 +26,8 @@ public class Live extends BaseEntity {
     private String beforeImg;
     @Column(name = "after_img")
     private String afterImg;
-
+    @Column(name = "session")
+    private String session;
 //    public void endLive() {
 //        this.isDeleted=true;
 //    }

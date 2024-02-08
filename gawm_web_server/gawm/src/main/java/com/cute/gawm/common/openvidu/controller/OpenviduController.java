@@ -1,9 +1,16 @@
-//package com.cute.gawm.common.openvidu;
+//package com.cute.gawm.common.openvidu.controller;
 //
 //import java.util.Map;
 //
 //import javax.annotation.PostConstruct;
 //
+//import com.cute.gawm.common.auth.LoginUser;
+//import com.cute.gawm.common.openvidu.service.OpenviduService;
+//import com.cute.gawm.domain.live.dto.request.LiveCreateRequest;
+//import com.cute.gawm.domain.live.entity.Live;
+//import com.cute.gawm.domain.live.repository.LiveRepository;
+//import com.cute.gawm.domain.user.dto.SessionUser;
+//import lombok.RequiredArgsConstructor;
 //import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.http.HttpStatus;
 //import org.springframework.http.ResponseEntity;
@@ -24,7 +31,10 @@
 //
 //@CrossOrigin(origins = "*")
 //@RestController
+//@RequiredArgsConstructor
 //public class OpenviduController {
+//
+//    private final OpenviduService openviduService;
 //
 //    @Value("${OPENVIDU_URL}")
 //    private String OPENVIDU_URL;
@@ -44,10 +54,17 @@
 //     * @return The Session ID
 //     */
 //    @PostMapping("/api/sessions")
-//    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
+//    public ResponseEntity<String> initializeSession(
+//            @LoginUser SessionUser sessionUser,
+//            @RequestBody(required = false) Map<String, Object> params,
+//            @RequestBody LiveCreateRequest liveCreateRequest
+//    )
 //            throws OpenViduJavaClientException, OpenViduHttpException {
 //        SessionProperties properties = SessionProperties.fromJson(params).build();
 //        Session session = openvidu.createSession(properties);
+//
+//
+//        openviduService.saveLive(session.getSessionId(), sessionUser.getId(), liveCreateRequest.getName());
 //        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
 //    }
 //
