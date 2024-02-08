@@ -8,10 +8,13 @@ export default defineConfig({
 		react(),
 		VitePWA({
 			registerType: 'autoUpdate',
+<<<<<<< HEAD
 			devOptions: {
 				enabled: true,
 				type: 'module',
 			},
+=======
+>>>>>>> f666414edf321619a2e869a23d5b18e413b22148
 		})
 	],
 	server: {
