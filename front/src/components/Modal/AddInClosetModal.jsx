@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default function AddInCloset({ onClose }) {
   const navigate = useNavigate();
@@ -14,8 +14,11 @@ export default function AddInCloset({ onClose }) {
     const image = e.target.files[0];
     if(image){
       setSelectedImage(image);
+      navigate('/loading');
+
       const formData= new FormData();
       formData.append('image_file',image);
+
       try{
         const response = await fetch('http://localhost:8000/masking/',{
           method: 'POST',
@@ -25,7 +28,7 @@ export default function AddInCloset({ onClose }) {
         if(response.ok){
           const precessedImage = await response.blob();
           console.log(URL.createObjectURL(precessedImage))
-          navigate('/closet/add', { state: { processedImageURL: URL.createObjectURL(precessedImage) }});
+          navigate('/closet/add', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
           onClose();
         }else{
           console.error('Server error');

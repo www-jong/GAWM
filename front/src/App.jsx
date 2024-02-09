@@ -8,6 +8,7 @@ import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";
 import Landing from "./pages/Landing";
 import Look from './pages/Look';
+import Loading from './pages/Loading';
 import AddClothes from "./pages/AddFashion/AddClothes";
 import AddLook from "./pages/AddFashion/AddLookBook";
 import MyPageMenu from "./pages/MyPage/Menu";
@@ -44,6 +45,7 @@ function App() {
 				<Route path="closet/add" element={<AddClothes />} />
 				<Route path="look/add" element={<AddLook />} />
 				<Route path="landing" element={<Landing />} />
+				<Route path="loading" element={<Loading />} />
 			</Routes>
 		</BrowserRouter>
 	)
