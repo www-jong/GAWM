@@ -1,9 +1,6 @@
 package com.cute.gawm.domain.lookbook.service;
 
-import com.cute.gawm.common.exception.ClothesNotFoundException;
-import com.cute.gawm.common.exception.DataMismatchException;
-import com.cute.gawm.common.exception.UserNotFoundException;
-import com.cute.gawm.common.exception.UserNotMatchException;
+import com.cute.gawm.common.exception.*;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.bookmark.entity.Bookmark;
@@ -74,6 +71,7 @@ public class LookbookService {
         User sessionUser = userRepository.findById(sessionUserId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
 
         final Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
         final List<ClothesLookbook> clotheLookbooks = clothesLookbookRepository.getAllByLookbookId(lookbookId);
         final List<TagLookbook> tagLookbooks = tagLookbookRepository.getAllByLookbookId(lookbookId);
         final List<Comment> commentList = commentRepository.getAllByLookbookId(lookbookId);
@@ -117,6 +115,7 @@ public class LookbookService {
 
         return LookbookResponse.builder()
                 .lookbookId(lookbookId)
+                .userId(user.getUserId())
                 .userNickname(user.getNickname())
                 .userProfileImg(user.getProfileImg())
                 .createdAt(lookbook.getCreatedAt())
@@ -214,6 +213,7 @@ public class LookbookService {
     @Transactional
     public void updateLookbook(Integer userId, Integer lookbookId, List<MultipartFile> images, LookbookUpdateRequest lookbookUpdateRequest) throws UserNotMatchException {
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
         if (lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 수정 권한이 존재하지 않습니다.");
 
         if (!images.isEmpty()) {
@@ -269,7 +269,22 @@ public class LookbookService {
     @Transactional
     public void deleteLookbook(Integer userId, Integer lookbookId) {
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
         if (lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 룩북 삭제 권한이 존재하지 않습니다.");
+
+        tagLookbookRepository.deleteByLookbookLookbookId(lookbookId); //Tag-Lookbook 삭제
+        commentRepository.deleteByLookbookLookbookId(lookbookId); //comment 삭제
+        bookmarkRepository.deleteByLookbookLookbookId(lookbookId); //bookmark 삭제
+        likesRepository.deleteByLookbookLookbookId(lookbookId); //like 삭제
+        clothesLookbookRepository.deleteAllByLookbook(lookbook); //clothesLookbook삭제
+
+        //lookbookImage 삭제
+        List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbookId);
+        lookbookImages.forEach((lookbookImage) -> {
+            s3Uploader.deleteFile(lookbookImage.getImage());
+        });
+        lookbookImageRepository.deleteByLookbook(lookbook);
+
         lookbookRepository.deleteByLookbookId(lookbookId);
     }
 
@@ -315,7 +330,9 @@ public class LookbookService {
     @Transactional
     public void bookmark(Integer userId, Integer lookbookId) {
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
-        if (lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 북마크 추가 권한이 존재하지 않습니다.");
+        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
+        boolean isBookmarked = bookmarkRepository.existsByLookbookAndUserUserId(lookbook, userId);
+        if(isBookmarked) throw new DataMismatchException("해당 유저는 이미 북마크를 한 상태입니다.");
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
         Bookmark bookmark = Bookmark.builder()
@@ -329,7 +346,9 @@ public class LookbookService {
     @Transactional
     public void unbookmark(Integer userId, Integer lookbookId) {
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
-        if (lookbook.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 북마크 해제 권한이 존재하지 않습니다.");
+        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
+        boolean isBookmarked = bookmarkRepository.existsByLookbookAndUserUserId(lookbook, userId);
+        if(!isBookmarked) throw new DataMismatchException("해당 유저는 북마크를 하지 않은 상태입니다.");
 
         bookmarkRepository.deleteByLookbookLookbookId(lookbookId);
     }
@@ -338,6 +357,7 @@ public class LookbookService {
     public void likes(Integer userId, Integer lookbookId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
         boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
         if(isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 한 상태입니다.");
         Likes likes = Likes.builder().lookbook(lookbook).user(user).build();
@@ -348,8 +368,9 @@ public class LookbookService {
     public void unlikes(Integer userId, Integer lookbookId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
         boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
-        if(!isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요하지 않은 상태입니다.");
+        if(!isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 하지 않은 상태입니다.");
         likesRepository.deleteByLookbookAndUser(lookbook, user);
     }
 

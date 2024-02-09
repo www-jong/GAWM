@@ -8,4 +8,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark,Integer> {
     void deleteByLookbookLookbookId(Integer lookbookId);
 
     boolean existsByLookbookAndUserUserId(Lookbook lookbook,Integer userId);
+
+    void deleteByUserUserId(Integer userId);
 }

@@ -15,6 +15,7 @@ import java.util.List;
 @Builder
 public class LookbookResponse {
     private Integer lookbookId;
+    private Integer userId;
     private String userNickname;
     private String userProfileImg;
     private Timestamp createdAt;
