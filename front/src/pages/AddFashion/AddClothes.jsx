@@ -2,15 +2,16 @@ import React, { useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/Backbutton.jsx';
-import CoolMascot from '@/assets/images/CoolMascot.svg';  // 이미지 테스트용
+import downArrow from '@/assets/images/down-arrow.png';
 
 export default function AddClothes() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(
-    location.state?.processedImageURL || ''
-  );
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [dropdownOpenColor, setDropdownOpenColor] = useState(false);
+  const [dropdownOpenMaterial, setDropdownOpenMaterial] = useState(false);
+  const [dropdownOpenPattern, setDropdownOpenPattern] = useState(false);
 
   const fileInput = useRef(null);
   const nameInput = useRef(null);
@@ -20,6 +21,10 @@ export default function AddClothes() {
   const colorsInput = useRef(null);
   const materialsInput = useRef(null);
   const patternsInput = useRef(null);
+
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedMaterials, setSelectedMaterials] = useState([]);
+  const [selectedPatterns, setSelectedPatterns] = useState([]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -87,6 +92,8 @@ export default function AddClothes() {
     triggerFileSelectPopup();
   };
 
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+
   // 색상 선택 관련
 
   const colorsArray = [
@@ -95,10 +102,23 @@ export default function AddClothes() {
     { name: '베이지', colorCode: '#F5F5DC' },
     { name: '연회색', colorCode: '#D3D3D3' },
     { name: '검정색', colorCode: '#000000' },
+    { name: '노랑', colorCode: '#FFFF00' },
+    { name: '코랄', colorCode: '#FF7F50' },
+    { name: '연분홍', colorCode: '#FFB6C1' },
+    { name: '빨강', colorCode: '#FF0000' },
+    { name: '파랑', colorCode: '#0000FF' },
+    { name: '하늘색', colorCode: '#87CEEB' },
+    // 다채색은 나중에 이미지로?
   ];
-  const [selectedColors, setSelectedColors] = useState([]);
 
-  // 컬러 클릭시 선택되어있으면 빼고 안되어있으면 넣고
+  const patternsArray = ['무지', '체크', '스트라이프', '프린트', '도트', '애니멀', '플로럴', '트로피칼', '페이즐리', '아가일', '밀리터리', '기타'];
+  const materialsArray = [
+    '면', '린넨', '폴리에스테르', '니트', '울', '퍼', '트위드', '나일론', '데님', '가죽', '스웨이드', '벨벳', '쉬폰', '실크', '코듀로이', '레이스', '기타'
+  ];
+
+
+
+  // 컬러, 소재, 패턴 선택되어있으면 빼고 안되어있으면 넣고
   const handleColorSelect = (color) => {
     if (selectedColors.includes(color)) {
       setSelectedColors(selectedColors.filter((selectedColor) => selectedColor !== color));
@@ -107,12 +127,27 @@ export default function AddClothes() {
     }
   };
 
+  const handleMaterialSelect = (material) => {
+    if (selectedMaterials.includes(material)) {
+      setSelectedMaterials(selectedMaterials.filter((m) => m !== material));
+    } else {
+      setSelectedMaterials([...selectedMaterials, material]);
+    }
+  };
+
+  const handlePatternSelect = (pattern) => {
+    if (selectedPatterns.includes(pattern)) {
+      setSelectedPatterns(selectedPatterns.filter((p) => p !== pattern));
+    } else {
+      setSelectedPatterns([...selectedPatterns, pattern]);
+    }
+  };
 
 
   return (
     <>
       <Backbutton />
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 mb-16">
         {imagePreviewUrl ? (
           <div onClick={handleImageChange} style={{ cursor: 'pointer' }}>
             <img
@@ -131,31 +166,134 @@ export default function AddClothes() {
           </div>
         )}
         <input type="file" ref={fileInput} onChange={handleFileChange} style={{ visibility: 'hidden' }} />
-
-        <input type="text" ref={nameInput} placeholder="이름" required />
-        <input type="text" ref={brandInput} placeholder="브랜드" required />
+        
+        <div className="mx-3 text-lg font-semibold">이름</div>
+        <input className="w-80 mx-3 border-b-2 border-gray-100" type="text" ref={nameInput} placeholder="이름을 입력하세요" required />
+        
+        {/* <hr className="my-12 border-gray-200" /> */}
+        <div className="mx-3 text-lg font-semibold">브랜드</div>
+        <input className="w-80 mx-3 border-b-2 border-gray-100" type="text" ref={brandInput} placeholder="브랜드를 입력하세요" required />
+        
+        <div className="mx-3 text-lg font-semibold">주 카테고리</div>
         <input type="text" ref={mCategoryInput} placeholder="주 카테고리" required />
+
+        <div className="mx-3 text-lg font-semibold">부 카테고리</div>
         <input type="text" ref={sCategoryInput} placeholder="부 카테고리" required />
 
-        <div className="text-lg font-semibold">색상</div>
-        <div className="flex flex-wrap gap-2 items-center">
-          {colorsArray.map((colorItem) => (
-            <button
-              key={colorItem.name}
-              className={`flex items-center justify-center space-x-2 h-8 relative py-2 px-2 rounded-xl focus:outline-none ${selectedColors.includes(colorItem.name) ? 'ring-1 ring-main' : 'ring-1 ring-gray-200'}`}
-              onClick={(e) => {
-                e.preventDefault(); // 폼 제출 방지
-                handleColorSelect(colorItem.name);
-              }}
-            >
-              <div className={`h-6 w-6 rounded-full`} style={{ backgroundColor: colorItem.colorCode }}></div>
-              <span className={`text-sm font-medium ${selectedColors.includes(colorItem.name) ? 'text-main' : 'text-gray-400'}`}>{colorItem.name}</span>
-            </button>
-          ))}
-        </div>
 
-        <input type="text" ref={materialsInput} placeholder="소재(쉼표로 구분)" />
-        <input type="text" ref={patternsInput} placeholder="패턴(쉼표로 구분)" />
+        <div onClick={() => setDropdownOpenColor(!dropdownOpenColor)}>
+          <div className="mx-3 flex justify-between items-center">
+            <p className="text-lg font-semibold cursor-pointer" onClick={toggleDropdown}>
+              색상
+            </p>
+            <div className="flex-grow text-right">
+              {selectedColors.length > 0 ? (
+                <p className="mr-2 text-base font-medium text-quaternary">
+                  {selectedColors.join(', ')}
+                </p>
+              ) : (
+                <p className="text-base font-medium text-quaternary">선택된 색상 없음</p>
+              )}
+            </div>
+            <img className="ml-1 size-5" src={downArrow} alt="아래화살표" />
+          </div>
+        </div>
+        {dropdownOpenColor && (
+          <div className="flex flex-wrap mx-4 gap-2 items-center">
+            {colorsArray.map((colorItem) => (
+              <button
+                key={colorItem.name}
+                className={`flex items-center justify-center space-x-2 h-8 relative py-2 px-2 rounded-xl focus:outline-none ${selectedColors.includes(colorItem.name) ? 'ring-1 ring-main' : 'ring-1 ring-gray-200'}`}
+                onClick={(e) => {
+                  e.preventDefault(); // 폼 제출 방지
+                  handleColorSelect(colorItem.name);
+                }}
+              >
+                <div className={`h-5 w-5 rounded-full`} style={{ backgroundColor: colorItem.colorCode }}></div>
+                <span className={`text-sm font-medium ${selectedColors.includes(colorItem.name) ? 'text-main' : 'text-gray-400'}`}>{colorItem.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+
+        <hr className="my-12 border-gray-200" />
+        <div onClick={() => setDropdownOpenMaterial(!dropdownOpenMaterial)}>
+          <div className="mx-3 flex justify-between items-center">
+            <p className="text-lg font-semibold cursor-pointer">
+              소재
+            </p>
+            <div className="flex-grow text-right">
+              {selectedMaterials.length > 0 ? (
+                <p className="mr-2 text-base font-medium text-quaternary">
+                  {selectedMaterials.join(', ')}
+                </p>
+              ) : (
+                <p className="text-base font-medium text-quaternary">선택된 소재 없음</p>
+              )}
+            </div>
+            <img className="ml-1 size-5" src={downArrow} alt="아래화살표" />
+          </div>
+        </div>
+        {dropdownOpenMaterial && (
+
+          <div className="flex flex-wrap mx-4 gap-2 items-center">
+            {materialsArray.map((material) => (
+              <button
+                key={material}
+                className={`flex items-center justify-center space-x-2 h-8 relative py-2 px-2 rounded-xl focus:outline-none ${selectedMaterials.includes(material) ? 'ring-1 ring-main' : 'ring-1 ring-gray-200'}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleMaterialSelect(material);
+                }}
+              >
+                <span className={`text-sm font-medium ${selectedMaterials.includes(material) ? 'text-main' : 'text-gray-400'}`}>{material}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+
+
+        <hr className="my-12 border-gray-200" />
+        <div onClick={() => setDropdownOpenPattern(!dropdownOpenPattern)}>
+          <div className="mx-3 flex justify-between items-center">
+            <p className="text-lg font-semibold cursor-pointer">
+              패턴
+            </p>
+            <div className="flex-grow text-right">
+              {selectedPatterns.length > 0 ? (
+                <p className="mr-2 text-base font-medium text-quaternary">
+                  {selectedPatterns.join(', ')}
+                </p>
+              ) : (
+                <p className="text-base font-medium text-quaternary">선택된 패턴 없음</p>
+              )}
+            </div>
+            <img className="ml-1 size-5" src={downArrow} alt="아래화살표" />
+          </div>
+        </div>
+        {dropdownOpenPattern && (
+
+          <div className="flex flex-wrap mx-4 gap-2 items-center">
+            {patternsArray.map((pattern) => (
+              <button
+                key={pattern}
+                className={`flex items-center justify-center space-x-2 h-8 relative py-2 px-2 rounded-xl focus:outline-none ${selectedPatterns.includes(pattern) ? 'ring-1 ring-main' : 'ring-1 ring-gray-200'}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePatternSelect(pattern);
+                }}
+              >
+                <span className={`text-sm font-medium ${selectedPatterns.includes(pattern) ? 'text-main' : 'text-gray-400'}`}>{pattern}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+
+
+
         <div className="fixed inset-x-0 bottom-0">
           <button
             type="submit"
