@@ -161,11 +161,13 @@ public class LookbookService {
         });
 
         lookbookRequest.getTags().forEach(tagName -> {
-            Tag tag = Tag.builder()
-                    .name(tagName)
-                    .build();
-            tagRepository.save(tag);
-
+            Tag tag=tagRepository.findByName(tagName);
+            if(tag==null){
+                tag = Tag.builder()
+                        .name(tagName)
+                        .build();
+                tagRepository.save(tag);
+            }
             TagLookbook tagLookbook = TagLookbook.builder()
                     .lookbook(lookbook)
                     .tag(tag)
