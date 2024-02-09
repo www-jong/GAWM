@@ -18,7 +18,7 @@ public class TagLookbook extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_lookbook_id")
     private int tagLookbookId;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tag_id")
     private Tag tag;
     @ManyToOne(fetch = FetchType.LAZY)

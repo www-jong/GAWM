@@ -1,6 +1,5 @@
 package com.cute.gawm.domain.lookbook_image.entity;
 
-import com.cute.gawm.domain.image.entity.Image;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Builder
@@ -23,8 +23,7 @@ public class LookbookImage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lookbook_id")
     private Lookbook lookbook;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id")
-    private Image image;
+    @Column(name = "image_url")
+    private String image;
 
 }

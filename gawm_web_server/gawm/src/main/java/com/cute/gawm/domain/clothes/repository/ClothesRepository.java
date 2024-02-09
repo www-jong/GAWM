@@ -24,4 +24,6 @@ public interface ClothesRepository extends JpaRepository<Clothes,Integer> {
     List<Clothes> findByUserUserId(int userId);
 
     void deleteByUserUserId(Integer userId);
+
+    Clothes findByClothesId(Integer clothesId);
 }

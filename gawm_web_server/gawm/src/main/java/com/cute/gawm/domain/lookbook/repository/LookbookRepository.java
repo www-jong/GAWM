@@ -7,10 +7,16 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LookbookRepository extends JpaRepository<Lookbook,Integer> {
+public interface LookbookRepository extends JpaRepository<Lookbook, Integer>, LookbookRepositoryCustom {
     Integer countByUserUserId(Integer userId);
 
     List<Lookbook> findByUserUserId(Integer userId);
 
     void deleteByUser_UserId(Integer userId);
+
+    Lookbook findByLookbookId(Integer lookbookId);
+
+    void deleteByLookbookId(Integer lookbookId);
+
 }
+
