@@ -10,11 +10,13 @@ export default function StyleLog({ date, onClose }) {
     e.stopPropagation();
   };
 
-  useEffect(() => {  // 모달 참조가 있을 경우 애니메이션
-    if (modalRef.current) {
-      modalRef.current.classList.remove('translate-y-full');
-      modalRef.current.classList.add('translate-y-0');
-    }
+  useEffect(() => {
+    setTimeout(() => {
+      if (modalRef.current) {
+        modalRef.current.classList.remove('translate-y-full');
+        modalRef.current.classList.add('translate-y-0');
+      }
+    }, 10); // 렌더링 애니메이션 이슈때문에 10ms만 줌
   }, []);
 
   const handleAddLook = () => {
