@@ -20,6 +20,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
     private final OAuthService oAuthService;
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
@@ -38,7 +39,7 @@ public class SpringSecurityConfig {
                 .userInfoEndpoint()
                 .userService(oAuthService)
                 .and()
-                .successHandler(new CustomLoginSuccessHandler())
+                .successHandler(customLoginSuccessHandler)
                 .and()
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
 
