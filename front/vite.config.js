@@ -13,12 +13,4 @@ export default defineConfig({
 	server: {
 		port: 4000
 	},
-	// build: {
-	// 	rollupOptions: {
-	// 		input: {
-	// 			main: "./index.html",
-	// 			sw: "./sw.js",
-	// 		},
-	// 	},
-	// },
 })
