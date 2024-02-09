@@ -8,21 +8,9 @@ export default defineConfig({
 		react(),
 		VitePWA({
 			registerType: 'autoUpdate',
-			devOptions: {
-				enabled: true,
-				type: 'module',
-			},
 		})
 	],
 	server: {
 		port: 4000
-	},
-	build: {
-		rollupOptions: {
-			input: {
-				main: "./index.html",
-				sw: "./sw.js",
-			},
-		},
 	},
 })
