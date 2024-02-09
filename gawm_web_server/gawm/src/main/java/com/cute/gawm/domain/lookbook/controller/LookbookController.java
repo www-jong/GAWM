@@ -7,6 +7,7 @@ import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
+import com.cute.gawm.domain.lookbook.dto.response.LookbookThumbnailResponse;
 import com.cute.gawm.domain.lookbook.service.LookbookService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import com.nimbusds.oauth2.sdk.auth.SelfSignedTLSClientAuthentication;
@@ -37,6 +38,13 @@ public class LookbookController {
                     lookbookService.getLookbooks(pageable)
             );
     }
+
+    @GetMapping("/top_list")
+    public ResponseEntity<?> getTopLookbookList(){
+        List<LookbookThumbnailResponse> topLookbooks = lookbookService.getTopLookbooks();
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK,topLookbooks);
+    }
+
 
     @GetMapping("/{lookbookId}")
     public ResponseEntity<?> getLookbook(@PathVariable final int lookbookId){

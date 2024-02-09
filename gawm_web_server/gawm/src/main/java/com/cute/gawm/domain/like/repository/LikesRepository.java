@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface LikesRepository extends JpaRepository<Likes,Integer> {
     void deleteByLookbookLookbookId(Integer lookbookId);
     void deleteByLookbookAndUser(Lookbook lookbook, User user);
+
+    Integer countByLookbook(Lookbook lookbook);
 }
