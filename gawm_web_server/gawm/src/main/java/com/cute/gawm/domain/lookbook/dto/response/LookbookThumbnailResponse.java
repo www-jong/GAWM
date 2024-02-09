@@ -15,7 +15,6 @@ import java.util.List;
 @Builder
 public class LookbookThumbnailResponse {
     private int lookbookId;
-    private int userId;
     private String userNickname;
     private String userProfileImg;
     private Timestamp createdAt;

@@ -334,7 +334,6 @@ public class LookbookService {
                     .likeCnt(likeCnt)
                     .userNickname(user.getNickname())
                     .userProfileImg(user.getProfileImg())
-                    .userId(user.getUserId())
                             .images(ImageUrls)
                             .build();
                     responseList.add(build);
