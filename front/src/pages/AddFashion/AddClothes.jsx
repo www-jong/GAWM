@@ -9,8 +9,6 @@ export default function AddClothes() {
   const location = useLocation();
   const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
   const [selectedFile, setSelectedFile] = useState(null);
-  const [dropdownOpenMain, setDropdownOpenMain] = useState(null);
-  const [dropdownOpenSub, setDropdownOpenSub] = useState(false);
   const [dropdownOpenColor, setDropdownOpenColor] = useState(false);
   const [dropdownOpenMaterial, setDropdownOpenMaterial] = useState(false);
   const [dropdownOpenPattern, setDropdownOpenPattern] = useState(false);
@@ -25,7 +23,8 @@ export default function AddClothes() {
   const patternsInput = useRef(null);
 
   const [mainCategory, setMainCategory] = useState('');
-  const [subCategory, setSubCategory] = useState('');
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedSub, setSelectedSub] = useState('');
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedPatterns, setSelectedPatterns] = useState([]);
@@ -129,15 +128,16 @@ export default function AddClothes() {
 
 
 
-  // 컬러, 소재, 패턴 선택되어있으면 빼고 안되어있으면 넣고
-
-  const handleMainCategoryChange = (event) => {
-    setMainCategory(event.target.value);
-    setSubCategory(''); // 부 카테고리 초기화
+  const handleMainCategorySelect = (mCategory) => {
+    setMainCategory(mCategory);
+    setSubCategories(category.find((c) => c.m_category === mCategory).s_category);
+    setSelectedSub(''); // 서브 선택 초기화
+    mCategoryInput.current.value = mCategory;
   };
 
-  const handleSubCategoryChange = (event) => {
-    setSubCategory(event.target.value);
+  const handleSubCategorySelect = (sCategory) => {
+    setSelectedSub(sCategory);
+    sCategoryInput.current.value = sCategory;
   };
 
 
@@ -190,59 +190,65 @@ export default function AddClothes() {
         <input type="file" ref={fileInput} onChange={handleFileChange} style={{ visibility: 'hidden' }} />
         
         <div className="mx-3 text-lg font-semibold">이름</div>
-        <input className="w-80 mx-3 border-b-2 border-gray-100" type="text" ref={nameInput} placeholder="이름을 입력하세요" required />
+        <input className="w-80 mx-3 border-b-2 border-gray-100 my-1 " type="text" ref={nameInput} placeholder="이름을 입력하세요" required />
         
         {/* <hr className="my-12 border-gray-200" /> */}
         <div className="mt-3 mx-3 text-lg font-semibold">브랜드</div>
-        <input className="w-80 mx-3 border-b-2 border-gray-100" type="text" ref={brandInput} placeholder="브랜드를 입력하세요" required />
+        <input className="w-80 mx-3 border-b-2 border-gray-100 my-1" type="text" ref={brandInput} placeholder="브랜드를 입력하세요" required />
 
         
-        {/* 주 카테고리 드롭다운 */}
+        {/* 주 카테고리 선택 버튼 */}
         <div className="mx-3 my-3">
-          <label htmlFor="mainCategory" className="text-lg font-semibold">주 카테고리</label>
-          <select
-            id="mainCategory"
-            className="block w-full mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:border-main focus:ring focus:ring-main focus:ring-opacity-50"
-            value={mainCategory}
-            onChange={handleMainCategoryChange}
-            required
-          >
-            <option value="">선택하세요</option>
+          <p className="text-lg font-semibold my-2 mt-4">주 카테고리</p>
+          <div className="flex flex-wrap gap-2">
             {category.map((c) => (
-              <option key={c.m_category} value={c.m_category}>{c.m_category}</option>
+              <button
+                key={c.m_category}
+                className={`py-1 px-4 rounded-lg ${mainCategory === c.m_category ? 'bg-main text-white' : 'bg-gray-200'}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleMainCategorySelect(c.m_category);
+                }}
+              >
+                {c.m_category}
+              </button>
             ))}
-          </select>
+          </div>
+          <input type="hidden" ref={mCategoryInput} value={mainCategory} />
         </div>
 
-        {/* 부 카테고리 드롭다운 */}
+        {/* 부 카테고리 선택 버튼 */}
         <div className="mx-3 my-3">
-          <label htmlFor="subCategory" className="text-lg font-semibold">부 카테고리</label>
-          <select
-            id="subCategory"
-            className="block w-full mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:border-main focus:ring focus:ring-main focus:ring-opacity-50"
-            value={subCategory}
-            onChange={handleSubCategoryChange}
-            required
-            disabled={!mainCategory} // 주 카테고리가 선택되지 않으면 비활성화
-          >
-            <option value="">선택하세요</option>
-            {mainCategory && category.find((c) => c.m_category === mainCategory)?.s_category.map((sc) => (
-              <option key={sc} value={sc}>{sc}</option>
+          <p className="text-lg font-semibold mb-2">부 카테고리</p>
+          <div className="flex flex-wrap gap-2">
+            {subCategories.map((sCategory) => (
+              <button
+                key={sCategory}
+                className={`py-1 px-4 rounded-lg ${selectedSub === sCategory ? 'bg-main text-white' : 'bg-gray-200'}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSubCategorySelect(sCategory);
+                }}
+                disabled={!mainCategory}
+              >
+                {sCategory}
+              </button>
             ))}
-          </select>
+          </div>
+          <input type="hidden" ref={sCategoryInput} value={selectedSub} />
         </div>
 
 
 
-        <hr className="my-3 border-gray-200" />
+        <hr className="my-3 mt-5 border-gray-200" />
         <div onClick={() => setDropdownOpenColor(!dropdownOpenColor)}>
           <div className="mx-3 flex justify-between items-center">
-            <p className="text-lg font-semibold cursor-pointer" onClick={toggleDropdown}>
+            <p className="text-lg font-semibold cursor-pointer w-20" onClick={toggleDropdown}>
               색상
             </p>
-            <div className="flex-grow text-right">
+            <div className="flex-grow text-right min-w-0">
               {selectedColors.length > 0 ? (
-                <p className="mr-2 text-base font-medium text-quaternary">
+                <p className="mr-2 text-base font-medium text-quaternary truncate">
                   {selectedColors.join(', ')}
                 </p>
               ) : (
@@ -253,7 +259,7 @@ export default function AddClothes() {
           </div>
         </div>
         {dropdownOpenColor && (
-          <div className="flex flex-wrap mx-4 gap-2 items-center">
+          <div className="flex flex-wrap mx-4 my-3 gap-2 items-center">
             {colorsArray.map((colorItem) => (
               <button
                 key={colorItem.name}
@@ -272,15 +278,15 @@ export default function AddClothes() {
 
         
 
-        <hr className="my-3 border-gray-200" />
+        <hr className="my-4 border-gray-200" />
         <div onClick={() => setDropdownOpenMaterial(!dropdownOpenMaterial)}>
           <div className="mx-3 flex justify-between items-center">
-            <p className="text-lg font-semibold cursor-pointer">
+            <p className="text-lg font-semibold cursor-pointer w-20">
               소재
             </p>
-            <div className="flex-grow text-right">
+            <div className="flex-grow text-right min-w-0">
               {selectedMaterials.length > 0 ? (
-                <p className="mr-2 text-base font-medium text-quaternary">
+                <p className="mr-2 text-base font-medium text-quaternary truncate">
                   {selectedMaterials.join(', ')}
                 </p>
               ) : (
@@ -292,7 +298,7 @@ export default function AddClothes() {
         </div>
         {dropdownOpenMaterial && (
 
-          <div className="flex flex-wrap mx-4 gap-2 items-center">
+          <div className="flex flex-wrap mx-4 my-3 gap-2 items-center">
             {materialsArray.map((material) => (
               <button
                 key={material}
@@ -309,15 +315,15 @@ export default function AddClothes() {
         )}
 
 
-        <hr className="my-3 border-gray-200" />
+        <hr className="my-4 border-gray-200" />
         <div onClick={() => setDropdownOpenPattern(!dropdownOpenPattern)}>
           <div className="mx-3 flex justify-between items-center">
-            <p className="text-lg font-semibold cursor-pointer">
+            <p className="text-lg font-semibold cursor-pointer w-20">
               패턴
             </p>
-            <div className="flex-grow text-right">
+            <div className="flex-grow text-right min-w-0">
               {selectedPatterns.length > 0 ? (
-                <p className="mr-2 text-base font-medium text-quaternary">
+                <p className="mr-2 text-base font-medium text-quaternary truncate">
                   {selectedPatterns.join(', ')}
                 </p>
               ) : (
@@ -329,7 +335,7 @@ export default function AddClothes() {
         </div>
         {dropdownOpenPattern && (
 
-          <div className="flex flex-wrap mx-4 gap-2 items-center">
+          <div className="flex flex-wrap mx-4 my-3 gap-2 items-center">
             {patternsArray.map((pattern) => (
               <button
                 key={pattern}
