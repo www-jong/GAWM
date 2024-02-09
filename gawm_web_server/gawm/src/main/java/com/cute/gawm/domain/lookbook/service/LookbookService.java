@@ -1,6 +1,7 @@
 package com.cute.gawm.domain.lookbook.service;
 
 import com.cute.gawm.common.exception.ClothesNotFoundException;
+import com.cute.gawm.common.exception.DataMismatchException;
 import com.cute.gawm.common.exception.UserNotFoundException;
 import com.cute.gawm.common.exception.UserNotMatchException;
 import com.cute.gawm.common.response.PagingResponse;
@@ -337,6 +338,8 @@ public class LookbookService {
     public void likes(Integer userId, Integer lookbookId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
+        boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
+        if(isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 한 상태입니다.");
         Likes likes = Likes.builder().lookbook(lookbook).user(user).build();
         likesRepository.save(likes);
     }
@@ -345,7 +348,8 @@ public class LookbookService {
     public void unlikes(Integer userId, Integer lookbookId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
-
+        boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
+        if(!isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요하지 않은 상태입니다.");
         likesRepository.deleteByLookbookAndUser(lookbook, user);
     }
 
