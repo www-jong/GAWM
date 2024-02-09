@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import Backbutton from '@/components/Button/Backbutton.jsx';
 
 export default function AddClothes() {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ export default function AddClothes() {
 
   return (
     <>
-      <p>옷추가페이지</p>
+      <Backbutton />
       <form onSubmit={handleSubmit} className="space-y-4">
         {imagePreviewUrl ? (
           <div onClick={handleImageChange} style={{ cursor: 'pointer' }}>
@@ -98,8 +99,11 @@ export default function AddClothes() {
             <p>이미지 변경</p>
           </div>
         ) : (
-          <div onClick={triggerFileSelectPopup} style={{ cursor: 'pointer' }}>
-            <p>이미지 선택</p>
+          <div 
+          onClick={triggerFileSelectPopup}
+          className="w-full h-80 bg-gray-200 flex justify-center items-center cursor-pointer"
+          >
+            <p className="text-gray-500">이미지 선택</p>
           </div>
         )}
         <input type="file" ref={fileInput} onChange={handleFileChange} style={{ visibility: 'hidden' }} />
