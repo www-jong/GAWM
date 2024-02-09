@@ -144,23 +144,24 @@ public class LookbookService {
         });
     }
 
-    public PagingResponse<List<LookbookMiniResponse>> getLookbooks(Pageable pageable) {
+    public PagingResponse<List<LookbookThumbnailResponse>> getLookbooks(Pageable pageable) {
         Page<Lookbook> lookbooks = lookbookRepository.findAllLookbook(pageable);
-        List<LookbookMiniResponse> lookbookResponse = new ArrayList<>();
+        List<LookbookThumbnailResponse> lookbookResponse = new ArrayList<>();
 
         lookbooks.forEach(lookbook -> {
-            List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
-            List<String> images = new ArrayList<>();
-
-
-            LookbookMiniResponse response = LookbookMiniResponse.builder()
-                    .userId(lookbook.getUser().getUserId())
-                    .images(lookbookImages)
-                    .view(lookbook.getView())
+            List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+            List<String> ImageUrls=lookbookImage.stream().map(Image-> Image.getImage()).collect(Collectors.toList());
+            Integer likeCnt=likesRepository.countByLookbook(lookbook);
+            User user=lookbook.getUser();
+            LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
+                    .lookbookId(lookbook.getLookbookId())
                     .createdAt(lookbook.getCreatedAt())
+                    .likeCnt(likeCnt)
+                    .userNickname(user.getNickname())
+                    .userProfileImg(user.getProfileImg())
+                    .images(ImageUrls)
                     .build();
-
-            lookbookResponse.add(response);
+            lookbookResponse.add(build);
         });
 
         return new PagingResponse(

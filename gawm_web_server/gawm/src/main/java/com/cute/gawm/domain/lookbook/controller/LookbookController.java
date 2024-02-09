@@ -32,7 +32,7 @@ public class LookbookController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getLookbooks(
-            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt") final Pageable pageable
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt",direction = Sort.Direction.DESC) final Pageable pageable
     ){
         return ResponseEntity.ok(
                     lookbookService.getLookbooks(pageable)
