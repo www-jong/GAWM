@@ -249,16 +249,17 @@ public class LookbookService {
             tagLookbookRepository.deleteByLookbookLookbookId(lookbookId);
 
             lookbookUpdateRequest.getTags().forEach(tagName -> {
-                Tag tag = Tag.builder()
-                        .name(tagName)
-                        .build();
-                tagRepository.save(tag);
-
+                Tag tag=tagRepository.findByName(tagName);
+                if(tag==null){
+                    tag = Tag.builder()
+                            .name(tagName)
+                            .build();
+                    tagRepository.save(tag);
+                }
                 TagLookbook tagLookbook = TagLookbook.builder()
                         .tag(tag)
                         .lookbook(lookbook)
                         .build();
-
                 tagLookbookRepository.save(tagLookbook);
             });
         }
