@@ -9,6 +9,8 @@ export default function AddClothes() {
   const location = useLocation();
   const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [dropdownOpenMain, setDropdownOpenMain] = useState(null);
+  const [dropdownOpenSub, setDropdownOpenSub] = useState(false);
   const [dropdownOpenColor, setDropdownOpenColor] = useState(false);
   const [dropdownOpenMaterial, setDropdownOpenMaterial] = useState(false);
   const [dropdownOpenPattern, setDropdownOpenPattern] = useState(false);
@@ -22,6 +24,8 @@ export default function AddClothes() {
   const materialsInput = useRef(null);
   const patternsInput = useRef(null);
 
+  const [mainCategory, setMainCategory] = useState('');
+  const [subCategory, setSubCategory] = useState('');
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedPatterns, setSelectedPatterns] = useState([]);
@@ -94,7 +98,14 @@ export default function AddClothes() {
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
-  // 색상 선택 관련
+
+  const category = [
+    { m_category: '상의', s_category: ['티셔츠', '니트/스웨터', '셔츠', '블라우스', '맨투맨/스웨트셔츠', '후드', '민소매/슬리브리스'] },
+    { m_category: '원피스/점프수트', s_category: ['캐주얼 원피스', '미니원피스', '티셔츠 원피스', '셔츠 원피스', '맨투맨/후드 원피스', '니트 원피스', '자켓 원피스', '멜빵 원피스', '점프수트', '파티/이브닝 원피스', '기타'] },
+    { m_category: '바지', s_category: ['반바지', '청바지', '긴바지', '정장바지', '운동복', '레깅스', '기타'] },
+    { m_category: '스커트', s_category: ['미니', '미디', '롱', '기타'] },
+    { m_category: '아우터', s_category: ['카디건', '재킷', '레더재킷', '트위드재킷', '코트', '숏패딩', '롱패딩', '경량 패딩', '트렌치코트', '사파리/헌팅재킷', '점퍼', '무스탕', '베스트', '레인코트'] }
+  ];
 
   const colorsArray = [
     { name: '흰색', colorCode: '#FFFFFF' },
@@ -119,6 +130,17 @@ export default function AddClothes() {
 
 
   // 컬러, 소재, 패턴 선택되어있으면 빼고 안되어있으면 넣고
+
+  const handleMainCategoryChange = (event) => {
+    setMainCategory(event.target.value);
+    setSubCategory(''); // 부 카테고리 초기화
+  };
+
+  const handleSubCategoryChange = (event) => {
+    setSubCategory(event.target.value);
+  };
+
+
   const handleColorSelect = (color) => {
     if (selectedColors.includes(color)) {
       setSelectedColors(selectedColors.filter((selectedColor) => selectedColor !== color));
@@ -147,7 +169,7 @@ export default function AddClothes() {
   return (
     <>
       <Backbutton />
-      <form onSubmit={handleSubmit} className="space-y-4 mb-16">
+      <form onSubmit={handleSubmit} className="mb-16">
         {imagePreviewUrl ? (
           <div onClick={handleImageChange} style={{ cursor: 'pointer' }}>
             <img
@@ -171,16 +193,48 @@ export default function AddClothes() {
         <input className="w-80 mx-3 border-b-2 border-gray-100" type="text" ref={nameInput} placeholder="이름을 입력하세요" required />
         
         {/* <hr className="my-12 border-gray-200" /> */}
-        <div className="mx-3 text-lg font-semibold">브랜드</div>
+        <div className="mt-3 mx-3 text-lg font-semibold">브랜드</div>
         <input className="w-80 mx-3 border-b-2 border-gray-100" type="text" ref={brandInput} placeholder="브랜드를 입력하세요" required />
+
         
-        <div className="mx-3 text-lg font-semibold">주 카테고리</div>
-        <input type="text" ref={mCategoryInput} placeholder="주 카테고리" required />
+        {/* 주 카테고리 드롭다운 */}
+        <div className="mx-3 my-3">
+          <label htmlFor="mainCategory" className="text-lg font-semibold">주 카테고리</label>
+          <select
+            id="mainCategory"
+            className="block w-full mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:border-main focus:ring focus:ring-main focus:ring-opacity-50"
+            value={mainCategory}
+            onChange={handleMainCategoryChange}
+            required
+          >
+            <option value="">선택하세요</option>
+            {category.map((c) => (
+              <option key={c.m_category} value={c.m_category}>{c.m_category}</option>
+            ))}
+          </select>
+        </div>
 
-        <div className="mx-3 text-lg font-semibold">부 카테고리</div>
-        <input type="text" ref={sCategoryInput} placeholder="부 카테고리" required />
+        {/* 부 카테고리 드롭다운 */}
+        <div className="mx-3 my-3">
+          <label htmlFor="subCategory" className="text-lg font-semibold">부 카테고리</label>
+          <select
+            id="subCategory"
+            className="block w-full mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:border-main focus:ring focus:ring-main focus:ring-opacity-50"
+            value={subCategory}
+            onChange={handleSubCategoryChange}
+            required
+            disabled={!mainCategory} // 주 카테고리가 선택되지 않으면 비활성화
+          >
+            <option value="">선택하세요</option>
+            {mainCategory && category.find((c) => c.m_category === mainCategory)?.s_category.map((sc) => (
+              <option key={sc} value={sc}>{sc}</option>
+            ))}
+          </select>
+        </div>
 
 
+
+        <hr className="my-3 border-gray-200" />
         <div onClick={() => setDropdownOpenColor(!dropdownOpenColor)}>
           <div className="mx-3 flex justify-between items-center">
             <p className="text-lg font-semibold cursor-pointer" onClick={toggleDropdown}>
@@ -216,8 +270,9 @@ export default function AddClothes() {
           </div>
         )}
 
+        
 
-        <hr className="my-12 border-gray-200" />
+        <hr className="my-3 border-gray-200" />
         <div onClick={() => setDropdownOpenMaterial(!dropdownOpenMaterial)}>
           <div className="mx-3 flex justify-between items-center">
             <p className="text-lg font-semibold cursor-pointer">
@@ -254,8 +309,7 @@ export default function AddClothes() {
         )}
 
 
-
-        <hr className="my-12 border-gray-200" />
+        <hr className="my-3 border-gray-200" />
         <div onClick={() => setDropdownOpenPattern(!dropdownOpenPattern)}>
           <div className="mx-3 flex justify-between items-center">
             <p className="text-lg font-semibold cursor-pointer">
