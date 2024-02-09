@@ -1,7 +1,6 @@
 package com.cute.gawm.domain.lookbook.service;
 
 import com.cute.gawm.common.exception.ClothesNotFoundException;
-import com.cute.gawm.common.exception.TagNotFoundException;
 import com.cute.gawm.common.exception.UserNotFoundException;
 import com.cute.gawm.common.exception.UserNotMatchException;
 import com.cute.gawm.common.response.PagingResponse;
@@ -13,10 +12,12 @@ import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
 import com.cute.gawm.domain.clothes_lookbook.entity.ClothesLookbook;
 import com.cute.gawm.domain.clothes_lookbook.repository.ClothesLookbookRepository;
+import com.cute.gawm.domain.comment.dto.response.CommentResponse;
 import com.cute.gawm.domain.comment.entity.Comment;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
+import com.cute.gawm.domain.following.service.FollowService;
 import com.cute.gawm.domain.like.entity.Likes;
 import com.cute.gawm.domain.like.repository.LikesRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
@@ -28,6 +29,7 @@ import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.lookbook.repository.LookbookRepository;
 import com.cute.gawm.domain.lookbook_image.entity.LookbookImage;
 import com.cute.gawm.domain.lookbook_image.repository.LookbookImageRepository;
+import com.cute.gawm.domain.tag.dto.response.TagResponse;
 import com.cute.gawm.domain.tag.entity.Tag;
 import com.cute.gawm.domain.tag.repository.TagRepository;
 import com.cute.gawm.domain.tag_lookbook.entity.TagLookbook;
@@ -65,19 +67,24 @@ public class LookbookService {
     private final BookmarkRepository bookmarkRepository;
     private final FollowingRepository followingRepository;
     private final LikesRepository likesRepository;
+    private final FollowService followService;
 
-    public LookbookResponse getLookbook(final int lookbookId) {
+    public LookbookResponse getLookbook(final int sessionUserId,final int lookbookId) {
+        User sessionUser = userRepository.findById(sessionUserId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
+
         final Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         final List<ClothesLookbook> clotheLookbooks = clothesLookbookRepository.getAllByLookbookId(lookbookId);
         final List<TagLookbook> tagLookbooks = tagLookbookRepository.getAllByLookbookId(lookbookId);
-        final List<Comment> comments = commentRepository.getAllByLookbookId(lookbookId);
-
+        final List<Comment> commentList = commentRepository.getAllByLookbookId(lookbookId);
+        List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbookId);
+        final User user=lookbook.getUser();
 
         List<ClothesMiniResponse> miniResponses = new ArrayList<>();
         clotheLookbooks.forEach(clotheLookbook -> {
             final Clothes clothes = clotheLookbook.getClothes();
             final int id = clothes.getClothesId();
             ClothesMiniResponse clotheMiniResp = ClothesMiniResponse.builder()
+
                     .clothesId(id)
                     .name(clothes.getName())
                     .brand(clothes.getBrand())
@@ -86,18 +93,41 @@ public class LookbookService {
             miniResponses.add(clotheMiniResp);
         });
 
-        List<Tag> tags = new ArrayList<>();
-        tagLookbooks.forEach(tag -> {
-            tags.add(tag.getTag());
+        List<String> lookbookImgs=lookbookImages.stream().map(LookbookImage->LookbookImage.getImage()).collect(Collectors.toList());
+        Integer likeCnt = likesRepository.countByLookbook(lookbook);
+
+        List<TagResponse> tags=tagLookbooks.stream().map(tagLookbook -> new TagResponse(tagLookbook.getTag())).collect(Collectors.toList());
+
+        List<CommentResponse> comments=new ArrayList<>();
+        commentList.forEach(comment -> {
+            CommentResponse commentResp = CommentResponse.builder()
+                    .commentId(comment.getCommentId())
+                    .content(comment.getContent())
+                    .userNickname(comment.getUser().getNickname())
+                    .userProfileImg(comment.getUser().getProfileImg())
+                    .isCommentAuthor(comment.getUser().equals(sessionUser))
+                    .build();
+            comments.add(commentResp);
         });
 
+        boolean isLiked=likesRepository.existsByLookbookAndUserUserId(lookbook,sessionUserId);
+        boolean isBookmarked=bookmarkRepository.existsByLookbookAndUserUserId(lookbook,sessionUserId);
+        boolean isFollowed=followService.isFollowing(sessionUserId,user.getUserId());
+
         return LookbookResponse.builder()
-                .userId(lookbook.getUser().getUserId())
+                .lookbookId(lookbookId)
+                .userNickname(user.getNickname())
+                .userProfileImg(user.getProfileImg())
                 .createdAt(lookbook.getCreatedAt())
                 .clothes(miniResponses)
+                .lookbookImgs(lookbookImgs)
+                .likeCnt(likeCnt)
                 .view(lookbook.getView())
                 .tag(tags)
                 .comment(comments)
+                .isLiked(isLiked)
+                .isBookmarked(isBookmarked)
+                .isFollowed(isFollowed)
                 .build();
     }
 

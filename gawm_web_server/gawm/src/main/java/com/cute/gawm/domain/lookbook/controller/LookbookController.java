@@ -47,8 +47,8 @@ public class LookbookController {
 
 
     @GetMapping("/{lookbookId}")
-    public ResponseEntity<?> getLookbook(@PathVariable final int lookbookId){
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(lookbookId));
+    public ResponseEntity<?> getLookbook(@LoginUser SessionUser sessionUser, @PathVariable final int lookbookId){
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(sessionUser.getId(),lookbookId));
     }
 
     @PostMapping()
