@@ -3,6 +3,8 @@ package com.cute.gawm.domain.user.service;
 
 
 import com.cute.gawm.common.exception.DataNotFoundException;
+import com.cute.gawm.common.exception.UserNotFoundException;
+import com.cute.gawm.common.exception.UserNotMatchException;
 import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.bookmark.repository.BookmarkRepository;
@@ -261,6 +263,18 @@ public class UserService {
                 && !nickname.contains("  ")
                 && !nickname.endsWith(" ")
                 && !nickname.startsWith(" ");
+    }
+
+    public void givePointToBestUser(int sessionUserId,int userId, Integer point){
+        if(sessionUserId==userId) throw new UserNotMatchException("해당 유저에게 포인트를 줄 수 있는 권한이 없습니다.");
+        addPoint(userId,point);
+    }
+
+    public void addPoint(Integer userId, Integer point) {
+        User user = userRepository.findByUserId(userId);
+        if(user==null) throw new UserNotFoundException("해당 유저가 존재하지 않습니다.");
+
+        user.addPoint(point);
     }
 }
 

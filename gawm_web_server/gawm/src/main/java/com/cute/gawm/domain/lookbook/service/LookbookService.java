@@ -174,6 +174,9 @@ public class LookbookService {
                     .build();
             tagLookbookRepository.save(tagLookbook);
         });
+
+        user.addPoint(10);
+        userRepository.save(user);
     }
 
     public PagingResponse<List<LookbookThumbnailResponse>> getLookbooks(Pageable pageable) {

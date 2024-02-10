@@ -71,4 +71,23 @@ public class User {
     public String getRoleKey() {
         return this.role.getKey();
     }
+
+    public void addPoint(Integer point){
+        this.point+=point;
+        levelUp();
+    }
+
+    public void levelUp(){
+        if (this.level < 4) {
+            int[] levelThresholds = {100, 150, 200}; // 각 레벨의 필요한 포인트
+            for (int i = this.level - 1; i < levelThresholds.length; i++) {
+                if (this.point >= levelThresholds[i]) {
+                    this.point -= levelThresholds[i];
+                    this.level++;
+                } else {
+                    break; // 포인트가 필요한 레벨보다 적으면 더 이상 레벨 업은 할 수 없음
+                }
+            }
+        }
+    }
 }
