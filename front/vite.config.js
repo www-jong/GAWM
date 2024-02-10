@@ -15,17 +15,4 @@ export default defineConfig({
 	server: {
 		port: 4000
 	},
-	resolve: {
-		alias: {
-		  '@': path.resolve(__dirname, './src')
-		}
-	  }
-	// build: {
-	// 	rollupOptions: {
-	// 		input: {
-	// 			main: "./index.html",
-	// 			sw: "./sw.js",
-	// 		},
-	// 	},
-	// },
 })
