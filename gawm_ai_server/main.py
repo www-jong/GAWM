@@ -47,6 +47,7 @@ async def app_lifespan(app: FastAPI):
     print("종료")
 
 app = FastAPI(lifespan=app_lifespan)
+prefix_router = APIRouter(prefix="/gawm/ai")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],# 배포시, 프론트로 도메인바꾸기
@@ -56,14 +57,14 @@ app.add_middleware(
 )
 session=''
 
-@app.get("/healthcheck")
+@prefix_router.get("/healthcheck")
 async def root():
     return {"message": "Server On"}
 
 def calculate_distance(box_center, image_center):
     return sqrt((box_center[0] - image_center[0]) ** 2 + (box_center[1] - image_center[1]) ** 2)
 
-@app.post("/masking/")
+@prefix_router.post("/masking/")
 async def masking_image(image_file: UploadFile = File(...)):
     try:
         image_bytes = await image_file.read()
@@ -79,7 +80,7 @@ async def masking_image(image_file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"message": "이미지 처리 중 오류가 발생했습니다.", "error": str(e)})
 
 #omnicommers에 업로드
-@app.post("/tag/upload/")
+@prefix_router.post("/tag/upload/")
 async def upload_image(image_file: UploadFile = File(...)):
     try:
         file_uuid=uuid.uuid4()
@@ -99,7 +100,7 @@ async def upload_image(image_file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "이미지 저장 중 오류가 발생했습니다. :"+str(e)})
 
 #omnicommers에서 태그가져오기
-@app.post("/tag/get/{product_id}")
+@prefix_router.post("/tag/get/{product_id}")
 async def past_tagging(product_id: str):
     if not product_id:
         raise JSONResponse(status_code=400, content={"message":"product_id가 없습니다","error":"product_id 없음"})
@@ -113,7 +114,7 @@ async def past_tagging(product_id: str):
         return JSONResponse(status_code=500, content={"message": "태깅정보 조회 중 오류가 발생했습니다."})
 
 
-@app.post("/tagging/")
+@prefix_router.post("/tagging/")
 async def upload_image(image_file: UploadFile = File(...)):
     extension = image_file.filename.split(".")[-1]
     file_uuid=uuid.uuid4()
@@ -139,7 +140,7 @@ async def upload_image(image_file: UploadFile = File(...)):
     else:
         return result
 
-@app.post("/test/")
+@prefix_router.post("/test/")
 async def test(image_file: UploadFile = File(...)):
     image_bytes = await image_file.read()
     image = Image.open(io.BytesIO(image_bytes))
@@ -172,4 +173,5 @@ async def http_exception_handler(request, exc):
     )
 
 if __name__ == "__main__":
+    app.include_router(prefix_router)
     uvicorn.run(app, host="0.0.0.0", port=8000)
