@@ -11,5 +11,7 @@ public interface LikesRepository extends JpaRepository<Likes,Integer> {
     void deleteByLookbookLookbookId(Integer lookbookId);
     void deleteByLookbookAndUser(Lookbook lookbook, User user);
 
+    void deleteByUserUserId(Integer userId);
     Integer countByLookbook(Lookbook lookbook);
+    boolean existsByLookbookAndUserUserId(Lookbook lookbook, Integer userId);
 }
