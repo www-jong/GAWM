@@ -18,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findById(Integer id);
 
+    User findByUserId(Integer id);
+
     Optional<User> findByNickname(String nickname);
 
     Page<User> findByNicknameContainingAndUserIdNot(String nickname, Integer id, Pageable pageable);
