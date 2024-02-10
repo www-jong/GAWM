@@ -32,7 +32,7 @@ public class LookbookController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getLookbooks(
-            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt") final Pageable pageable
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt",direction = Sort.Direction.DESC) final Pageable pageable
     ){
         return ResponseEntity.ok(
                     lookbookService.getLookbooks(pageable)
@@ -47,8 +47,8 @@ public class LookbookController {
 
 
     @GetMapping("/{lookbookId}")
-    public ResponseEntity<?> getLookbook(@PathVariable final int lookbookId){
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(lookbookId));
+    public ResponseEntity<?> getLookbook(@LoginUser SessionUser sessionUser, @PathVariable final int lookbookId){
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(sessionUser.getId(),lookbookId));
     }
 
     @PostMapping()
@@ -59,6 +59,7 @@ public class LookbookController {
         lookbookService.createLookbook(userId, images, lookbookCreateRequest);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 생성 완료");
     }
+
 
     @PutMapping("/{lookbookId}")
     public ResponseEntity<?> updateLookbook(

@@ -1,5 +1,6 @@
 package com.cute.gawm.domain.comment.dto.response;
 
+import com.cute.gawm.domain.comment.entity.Comment;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,5 +9,7 @@ import lombok.Getter;
 public class CommentResponse {
     private int commentId;
     private String content;
-    private int userId;
+    private String userNickname;
+    private String userProfileImg;
+    private boolean isCommentAuthor;
 }
