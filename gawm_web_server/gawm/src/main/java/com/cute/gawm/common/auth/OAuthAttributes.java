@@ -44,7 +44,7 @@ public class OAuthAttributes {
         return OAuthAttributes.builder()
                 .email((String) kakaoAccount.get("email"))
                 .gender(kakaoAccount.get("gender").equals("female")? User.Gender.FEMALE: User.Gender.MALE)
-                .age(LocalDate.now().getYear()-Integer.parseInt(kakaoAccount.get("birthyear").toString())+1)
+                .age(calculateAge(Integer.parseInt(kakaoAccount.get("birthyear").toString())))
                 .provider(User.Provider.KAKAO)
                 .nameAttributeKey(userNameAttributeName)
                 .attributes(attributes)
@@ -74,5 +74,11 @@ public class OAuthAttributes {
                 .role(Role.GUEST)
                 .provider(provider)
                 .build();
+    }
+
+    public static int calculateAge(int birthYear) {
+        LocalDate currentDate = LocalDate.now(); // 현재 날짜
+        int currentYear = currentDate.getYear(); // 현재 년도
+        return currentYear - birthYear; //만 나이
     }
 }
