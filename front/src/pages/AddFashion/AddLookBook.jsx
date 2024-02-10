@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/Backbutton.jsx';
+import TagsInput from "@/components/TagsInput.jsx"
 import AddClothing from '@/assets/images/AddClothing.svg';
 
 export default function AddLookBook() {
@@ -100,9 +101,10 @@ export default function AddLookBook() {
 
         
         <hr className="my-4 border-gray-200" />
-        <div className="mx-3 flex justify-between items-center">
+        <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
-          <input type="text" ref={tagsInput} id="tags" placeholder="태그를 입력하세요, 쉼표로 구분" />
+          <TagsInput />
+          <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="(개발용)태그를 입력하세요, 쉼표로 구분" />
         </div>
         
         <hr className="my-4 border-gray-200" />
