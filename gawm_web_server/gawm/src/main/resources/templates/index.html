@@ -9,7 +9,7 @@
 <body>
 <div sec:authorize="isAuthenticated()">
     Logged in as: <span id="user" th:text="${userName}">None</span>
-    <a href="/gawm/logout" class="btn btn-info active" role="button">Logout</a><br>
+    <a href="/gawm/back/user/logout" class="btn btn-info active" role="button">Logout</a><br>
     <a href="/gawm/back/user/kakao" class="btn btn-info active" role="button">Kakao signout</a>
     <a href="/gawm/back/user/google" class="btn btn-info active" role="button">Google signout</a>
 </div>

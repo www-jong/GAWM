@@ -35,6 +35,11 @@ public class CommentService {
                 .lookbook(lookbook).build();
         commentRepository.save(comment);
 
+        user.addPoint(5);
+        userRepository.save(user);
+        User author=lookbook.getUser();
+        author.addPoint(10);
+        userRepository.save(author);
     }
 
     @Transactional
@@ -57,6 +62,13 @@ public class CommentService {
         if(comment.getUser().getUserId()!=userId) throw new UserNotMatchException("해당 유저에게 댓글 삭제 권한이 존재하지 않습니다.");
         Lookbook lookbook=lookbookRepository.findByLookbookId(lookbookId);
         if(lookbook==null) throw new DataNotFoundException("해당 댓글의 룩북이 존재하지 않습니다.");
+
+        user.minusPoint(5);
+        userRepository.save(user);
+        User author=lookbook.getUser();
+        author.minusPoint(10);
+        userRepository.save(author);
+
         commentRepository.deleteByCommentId(commentId);
     }
 }
