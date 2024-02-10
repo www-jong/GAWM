@@ -1,8 +1,8 @@
-package com.cute.gawm.common.openvidu.controller;
+package com.cute.gawm.domain.openvidu.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
-import com.cute.gawm.common.openvidu.service.OpenviduService;
 import com.cute.gawm.domain.live.dto.request.LiveCreateRequest;
+import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,11 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 
-@CrossOrigin(origins = "https://i10e203.p.ssafy.io/")
+@CrossOrigin(origins = {"https://i10e203.p.ssafy.io/", "localhost:3000"})
 @RestController
 @RequiredArgsConstructor
 public class OpenviduController {
-
-    private final OpenviduService openviduService;
+    private final LiveService liveService;
 
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
@@ -39,7 +38,7 @@ public class OpenviduController {
      * @param params The Session properties
      * @return The Session ID
      */
-    @PostMapping("/api/sessions")
+    @PostMapping("/back/api/sessions")
     public ResponseEntity<String> initializeSession(
             @LoginUser SessionUser sessionUser,
             @RequestBody(required = false) Map<String, Object> params,
@@ -48,9 +47,7 @@ public class OpenviduController {
             throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
-
-
-        openviduService.saveLive(session.getSessionId(), sessionUser.getId(), liveCreateRequest.getName());
+        liveService.createLive(session.getSessionId(), sessionUser.getId(), liveCreateRequest, params);
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
 
@@ -59,7 +56,7 @@ public class OpenviduController {
      * @param params    The Connection properties
      * @return The Token associated to the Connection
      */
-    @PostMapping("/api/sessions/{sessionId}/connections")
+    @PostMapping("/back/api/sessions/{sessionId}/connections")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
                                                    @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
@@ -67,8 +64,9 @@ public class OpenviduController {
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
-        Connection connection = session.createConnection(properties);
+        Connection connection = liveService.enterLive(session, params);
+//        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+//        Connection connection = session.createConnection(properties);
         return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
     }
 }

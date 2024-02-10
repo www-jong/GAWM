@@ -1,5 +1,6 @@
 package com.cute.gawm.common;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -8,8 +9,9 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.sql.Timestamp;
 @Getter
+@Builder
 @MappedSuperclass
-public abstract class  BaseEntity {
+public abstract class BaseEntity {
     @Column(name = "created_at")
     @CreationTimestamp
     private Timestamp createdAt;
