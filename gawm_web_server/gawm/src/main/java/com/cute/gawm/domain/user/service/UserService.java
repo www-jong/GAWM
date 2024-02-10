@@ -68,7 +68,7 @@ public class UserService {
     public boolean validateUserExistence(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
         if (!user.isPresent()) {
-            log.error("[validateUserExistence] 존재하지 않은 유저가 있습니다.");
+            log.error("[validateUserExistence] 존재하지 않은 유저{}가 있습니다.",userId);
             return false;
         }
         return true;

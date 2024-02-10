@@ -3,8 +3,8 @@ package com.cute.gawm.domain.lookbook.repository;
 import com.cute.gawm.common.QueryDslSupport;
 import com.cute.gawm.domain.clothes.entity.QClothes;
 import com.cute.gawm.domain.clothes_lookbook.entity.QClothesLookbook;
+import com.cute.gawm.domain.like.entity.QLikes;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
-import com.cute.gawm.domain.lookbook.entity.QLookbook;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,6 +25,7 @@ public class LookbookRepositoryCustomImpl extends QueryDslSupport implements Loo
     public LookbookRepositoryCustomImpl(EntityManager entityManager) {
         super(Lookbook.class, entityManager);
     }
+
 
     @Override
     public PageImpl<Lookbook> findAllLookbook(Pageable pageable){
@@ -66,5 +68,15 @@ public class LookbookRepositoryCustomImpl extends QueryDslSupport implements Loo
         return new PageImpl<>(lookbookList, pageable, count);
     }
 
-
+    @Override
+    public List<Lookbook> findTopLookbook(Timestamp startDate, Timestamp endDate) {
+        return queryFactory.select(lookbook)
+                .from(QLikes.likes)
+                .join(QLikes.likes.lookbook, lookbook)
+                .where(lookbook.createdAt.between(startDate, endDate))
+                .groupBy(lookbook)
+                .orderBy(QLikes.likes.count().desc())
+                .limit(15)
+                .fetch();
+    }
 }

@@ -32,4 +32,8 @@ public class Follower {
     public void update(List<Integer> followerList){
         this.followerList=followerList;
     }
+
+    public boolean unfollow(Integer followerId){ //나를 팔로우한들 목록에서 followerId 삭제
+        return this.followerList.removeIf(Id -> Id.equals(followerId));
+    }
 }

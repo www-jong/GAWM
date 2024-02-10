@@ -7,6 +7,7 @@ import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
+import com.cute.gawm.domain.lookbook.dto.response.LookbookThumbnailResponse;
 import com.cute.gawm.domain.lookbook.service.LookbookService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import com.nimbusds.oauth2.sdk.auth.SelfSignedTLSClientAuthentication;
@@ -31,16 +32,23 @@ public class LookbookController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getLookbooks(
-            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt") final Pageable pageable
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt",direction = Sort.Direction.DESC) final Pageable pageable
     ){
         return ResponseEntity.ok(
                     lookbookService.getLookbooks(pageable)
             );
     }
 
+    @GetMapping("/top_list")
+    public ResponseEntity<?> getTopLookbookList(){
+        List<LookbookThumbnailResponse> topLookbooks = lookbookService.getTopLookbooks();
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK,topLookbooks);
+    }
+
+
     @GetMapping("/{lookbookId}")
-    public ResponseEntity<?> getLookbook(@PathVariable final int lookbookId){
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(lookbookId));
+    public ResponseEntity<?> getLookbook(@LoginUser SessionUser sessionUser, @PathVariable final int lookbookId){
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(sessionUser.getId(),lookbookId));
     }
 
     @PostMapping()
@@ -51,6 +59,7 @@ public class LookbookController {
         lookbookService.createLookbook(userId, images, lookbookCreateRequest);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 생성 완료");
     }
+
 
     @PutMapping("/{lookbookId}")
     public ResponseEntity<?> updateLookbook(
@@ -169,4 +178,6 @@ public class LookbookController {
                 "감있어요 취소 완료"
         );
     }
+
+
 }

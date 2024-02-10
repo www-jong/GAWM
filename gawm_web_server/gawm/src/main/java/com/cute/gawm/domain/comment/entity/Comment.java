@@ -26,4 +26,8 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lookbook_id")
     private Lookbook lookbook;
+
+    public void updateContent(String content){
+        this.content=content;
+    }
 }
