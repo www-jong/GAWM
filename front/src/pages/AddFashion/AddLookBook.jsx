@@ -1,51 +1,130 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Backbutton from '@/components/Button/Backbutton.jsx';
+import TagsInput from "@/components/TagsInput.jsx"
+import AddClothing from '@/assets/images/AddClothing.svg';
 
 export default function AddLookBook() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const fileInput = useRef(null);
   const tagsInput = useRef(null);
   const clothesInput = useRef(null);
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isPublic, setIsPublic] = useState(false);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileSelectPopup = () => fileInput.current.click();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(); // 파일을 formData에 추가
-    formData.append('image', fileInput.current.files[0]);
-    // 태그와 옷 정보를 JSON 문자열로 변환하여 formData에 추가
-    formData.append('tag', JSON.stringify(tagsInput.current.value.split(',').map(tag => tag.trim())));
-    formData.append('clothe', JSON.stringify(clothesInput.current.value.split(',').map(clothe => clothe.trim())));
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    const data = {
+      isPublic: isPublic, // 기본 비공개로
+      clothes: clothesInput.current.value.split(',').map(id => parseInt(id.trim())), // 옷 id 배열
+      tags: tagsInput.current.value.split(',').map(tag => tag.trim()) // 태그 배열
+    };
+
+    formData.append('data', JSON.stringify(data));
 
     try {
-      const response = await fetch('http://localhost:8080/stylelog', {
+      const response = await fetch('/look-book', {
         method: 'POST',
-        headers: {
-          // 인증 넣어야하는지?? 세션이라 안넣어도 되려나
-        },
-        body: formData
+        body: formData,
+        credentials: 'include', // 쿠키 포함
       });
 
       if (response.ok) {
         const result = await response.json();
-        alert('룩북 등록 성공!: ' + result.data);
-      } else if (response.status === 401) {
-        const errorResult = await response.json();
-        alert('인증 오류: ' + errorResult.message);
+        console.log(result);
+        alert('룩북 생성 완료');
+        // navigate('/somewhere'); // 성공 시 해당 룩북으로 리다이렉트(나중에 룩북 상세페이지별 라우팅 하고나서)
       } else {
-        throw new Error('서버 오류ㅠ');
+        console.error('Server error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('오류가 발생했습니다ㅠ: ' + error.message);
     }
   };
 
   return (
     <>
-      <p className="text-2xl font-extrabold">감각추가페이지</p>
-      <form onSubmit={handleSubmit}>
-        <input type="file" ref={fileInput} required />
-        <input type="text" ref={tagsInput} placeholder="태그 (쉼표로 구분)" required />
-        <input type="text" ref={clothesInput} placeholder="옷 (쉼표로 구분)" required />
-        <button type="submit">룩 등록</button>
+      <Backbutton />
+      <form onSubmit={handleSubmit} className="space-y-4 mb-16">
+        {imagePreviewUrl ? (
+          <div onClick={triggerFileSelectPopup} style={{ cursor: 'pointer' }}>
+            <img src={imagePreviewUrl} alt="미리보기" style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }} />
+            <p>이미지 변경</p>
+          </div>
+        ) : (
+          <div onClick={triggerFileSelectPopup} className="w-full h-80 bg-gray-200 flex justify-center items-center cursor-pointer">
+            <p className="text-gray-500">이미지 선택</p>
+          </div>
+        )}
+        <input type="file" className="h-0" ref={fileInput} onChange={handleFileChange} style={{ visibility: 'hidden' }} />
+
+        <div className="mx-3 flex justify-between items-center">
+          <p className="text-lg font-semibold cursor-pointer w-20">공개 여부</p>
+          <div>
+            <button
+              type="button"
+              className={`mr-2 ${isPublic ? 'bg-main text-white' : 'bg-gray-200'} px-4 py-1 rounded-md`}
+              onClick={() => setIsPublic(true)}
+            >
+              공개
+            </button>
+            <button
+              type="button"
+              className={`${!isPublic ? 'bg-main text-white' : 'bg-gray-200'} px-4 py-1 rounded-md`}
+              onClick={() => setIsPublic(false)}
+            >
+              비공개
+            </button>
+          </div>
+        </div>
+
+        
+        <hr className="my-4 border-gray-200" />
+        <div className="mx-3 flex flex-col justify-between">
+          <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
+          <TagsInput />
+          <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="(개발용)태그를 입력하세요, 쉼표로 구분" />
+        </div>
+        
+        <hr className="my-4 border-gray-200" />
+        <div className="mx-3 flex flex-col justify-between">
+          <p className="text-lg font-semibold cursor-pointer">코디한 옷</p>
+          <img className="mt-2" src={AddClothing} alt="함께 입은 옷 추가" />
+          <input className="mt-2" type="text" ref={clothesInput} id="clothes" placeholder="(개발용)옷 ID를 입력하세요, 쉼표로 구분" />
+        </div>
+
+
+
+        <div className="fixed inset-x-0 bottom-0">
+          <button
+            type="submit"
+            className="w-full h-12 bg-main text-white font-medium text-lg"
+            onClick={handleSubmit}
+          >
+            저장
+          </button>
+        </div>
       </form>
     </>
   );

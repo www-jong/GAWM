@@ -1,6 +1,6 @@
 import SocialKakao from './SocialKakao.jsx';
 import SocialGoogle from './SocialGoogle.jsx';
-import landImage1 from '../../assets/images/LandingPage_1.svg';
+import landImage1 from '@/assets/images/LandingPage_1.svg';
 import landImage2 from '../../assets/images/LandingPage_2.svg';
 import landImage3 from '../../assets/images/LandingPage_3.svg';
 import { Swiper, SwiperSlide } from 'swiper/react';

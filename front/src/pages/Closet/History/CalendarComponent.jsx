@@ -2,11 +2,23 @@ import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import moment from 'moment';
 import './Calendar.css';
+import StyleLogModal from '../../../components/Modal/StyleLogModal.jsx';
 
 function ReactCalendar() {
     const curDate = new Date();
-    const [value, onChange] = useState(curDate); // 클릭한 날짜 (초기값으로 현재 날짜 넣어줌)
+    const [value, onChange] = useState(curDate); // 클릭한 날짜, 초기값: 현재 날짜
+
+    const [selectedDate, setSelectedDate] = useState(moment(curDate).format('YYYY-MM-DD'));
     const activeDate = moment(value).format('YYYY-MM-DD'); // 클릭한 날짜 (년-월-일)
+
+    const [isModalOpen, setIsModalOpen] = useState(false); // StyleLogModal 상태 관리
+
+    const handleDayClick = (value, event) => {
+        setIsModalOpen(true);
+        const newActiveDate = moment(value).format('YYYY년 M월 D일');
+        setSelectedDate(newActiveDate);
+    };
+    
 
     // 클릭한 날짜의 월을 추출하여 상태 관리
     const monthOfActiveDate = moment(value).format('YYYY-MM');
@@ -44,7 +56,7 @@ function ReactCalendar() {
             <Calendar
                 locale="ko" // 영어 en 한국 ko
                 onChange={onChange}
-                onClickDay={(value, event) => console.log(value)}
+                onClickDay={handleDayClick}
                 value={value}
                 next2Label={null}
                 prev2Label={null}
@@ -55,6 +67,7 @@ function ReactCalendar() {
                     getActiveMonth(activeStartDate)
                 }
             />
+            {isModalOpen && <StyleLogModal date={selectedDate} onClose={() => setIsModalOpen(false)} />}
         </div>
     );
 }
