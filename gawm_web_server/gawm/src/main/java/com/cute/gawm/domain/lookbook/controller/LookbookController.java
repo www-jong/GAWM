@@ -60,6 +60,7 @@ public class LookbookController {
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 생성 완료");
     }
 
+
     @PutMapping("/{lookbookId}")
     public ResponseEntity<?> updateLookbook(
             @LoginUser SessionUser sessionUser,

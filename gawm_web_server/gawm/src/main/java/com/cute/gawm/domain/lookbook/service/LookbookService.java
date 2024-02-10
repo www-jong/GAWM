@@ -293,17 +293,19 @@ public class LookbookService {
         List<LookbookMiniResponse> responseList = new ArrayList<>();
 
         followingList.getFollowingList().forEach(followingId -> {
-            List<Lookbook> lookbooks = lookbookRepository.findByUserUserId(followingId);
-            lookbooks.forEach(lookbook -> {
-                List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
-                LookbookMiniResponse lookbookMiniResponse = LookbookMiniResponse.builder()
-                        .images(lookbookImages)
-                        .createdAt(lookbook.getCreatedAt())
-                        .view(lookbook.getView())
-                        .userId(lookbook.getUser().getUserId())
-                        .build();
-                responseList.add(lookbookMiniResponse);
-            });
+            if(userRepository.existsById(followingId)){
+                List<Lookbook> lookbooks = lookbookRepository.findByUserUserId(followingId);
+                lookbooks.forEach(lookbook -> {
+                    List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+                    LookbookMiniResponse lookbookMiniResponse = LookbookMiniResponse.builder()
+                            .images(lookbookImages)
+                            .createdAt(lookbook.getCreatedAt())
+                            .view(lookbook.getView())
+                            .userId(lookbook.getUser().getUserId())
+                            .build();
+                    responseList.add(lookbookMiniResponse);
+                });
+            }
         });
         System.out.println(responseList);
         return new PageImpl<>(responseList, pageable, responseList.size());
