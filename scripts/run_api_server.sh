@@ -7,5 +7,5 @@ then
 else
         echo no process
 fi
-chmod +x ../gawm_web_server/gawm/build/libs/gawm_web_server-0.0.1-SNAPSHOT.jar
-nohup java -jar ../gawm_web_server/gawm/build/libs/gawm_web_server-0.0.1-SNAPSHOT.jar >> application.log 2> /dev/null &
+sudo chmod a+rx ../gawm_web_server/gawm/build/libs/gawm-0.0.1-SNAPSHOT.jar
+nohup java -jar ../gawm_web_server/gawm/build/libs/gawm-0.0.1-SNAPSHOT.jar >> application.log 2> /dev/null &

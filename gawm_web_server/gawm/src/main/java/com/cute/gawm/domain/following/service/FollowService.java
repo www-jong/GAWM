@@ -91,7 +91,7 @@ public class FollowService {
         saveFollower(followFollower);
     }
 
-    public boolean isFollowing(int followerId, int targetUserId) {
+    public boolean isFollowing(int followerId, int targetUserId) { //followerId가 targetUserId를 following 하고 있는지 여부
         // 캐시에서 팔로잉 목록을 조회
         List<Integer> followingList = followingCache.get(followerId);
 

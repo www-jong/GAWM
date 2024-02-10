@@ -20,8 +20,15 @@ public class Live extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @Column
+    private String name;
     @Column(name = "before_img")
     private String beforeImg;
     @Column(name = "after_img")
     private String afterImg;
+    @Column(name = "session")
+    private String session;
+//    public void endLive() {
+//        this.isDeleted=true;
+//    }
 }

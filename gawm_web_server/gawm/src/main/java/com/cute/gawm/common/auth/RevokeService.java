@@ -1,15 +1,24 @@
 package com.cute.gawm.common.auth;
 
+import com.cute.gawm.common.exception.DataMismatchException;
 import com.cute.gawm.common.exception.DataNotFoundException;
+import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.bookmark.repository.BookmarkRepository;
 import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.clothes.repository.ClothesDetailRepository;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
+import com.cute.gawm.domain.clothes_lookbook.repository.ClothesLookbookRepository;
 import com.cute.gawm.domain.clothes_stylelog.repository.ClothesStylelogRepository;
 import com.cute.gawm.domain.comment.repository.CommentRepository;
+import com.cute.gawm.domain.following.entity.Follower;
+import com.cute.gawm.domain.following.entity.Following;
+import com.cute.gawm.domain.following.repository.FollowerRepository;
+import com.cute.gawm.domain.following.repository.FollowingRepository;
 import com.cute.gawm.domain.like.repository.LikesRepository;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
 import com.cute.gawm.domain.lookbook.repository.LookbookRepository;
+import com.cute.gawm.domain.lookbook_image.entity.LookbookImage;
+import com.cute.gawm.domain.lookbook_image.repository.LookbookImageRepository;
 import com.cute.gawm.domain.stylelog.entity.Stylelog;
 import com.cute.gawm.domain.stylelog.repository.StylelogRepository;
 import com.cute.gawm.domain.tag_lookbook.repository.TagLookbookRepository;
@@ -40,6 +49,11 @@ public class RevokeService {
     private final BookmarkRepository bookmarkRepository;
     private final LookbookRepository lookbookRepository;
     private final LikesRepository likesRepository;
+    private final FollowingRepository followingRepository;
+    private final FollowerRepository followerRepository;
+    private final ClothesLookbookRepository clothesLookbookRepository;
+    private final LookbookImageRepository lookbookImageRepository;
+    private final S3Uploader s3Uploader;
 
     @Transactional
     public void deleteGoogleAccount(Integer sessionUserId, OAuth2AuthorizedClient oAuth2AuthorizedClient) {
@@ -129,12 +143,53 @@ public class RevokeService {
 
         List<Lookbook> lookbookList = lookbookRepository.findByUserUserId(sessionUserId);
         for (Lookbook lookbook : lookbookList) {
-            tagLookbookRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //Tag-Lookbook 삭제
-            commentRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //comment 삭제
-            bookmarkRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //bookmark 삭제
-            likesRepository.deleteByLookbookLookbookId(lookbook.getLookbookId()); //like 삭제
+            Integer lookbookId=lookbook.getLookbookId();
+            tagLookbookRepository.deleteByLookbookLookbookId(lookbookId); //Tag-Lookbook 삭제
+            commentRepository.deleteByLookbookLookbookId(lookbookId); //comment 삭제
+            bookmarkRepository.deleteByLookbookLookbookId(lookbookId); //bookmark 삭제
+            likesRepository.deleteByLookbookLookbookId(lookbookId); //like 삭제
+            clothesLookbookRepository.deleteAllByLookbook(lookbook); //clothesLookbook삭제
+
+            //lookbookImage 삭제
+            List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbookId);
+            lookbookImages.forEach((lookbookImage) -> {
+                s3Uploader.deleteFile(lookbookImage.getImage());
+            });
+            lookbookImageRepository.deleteByLookbook(lookbook);
         }
         lookbookRepository.deleteByUser_UserId(sessionUserId); //lookbook 삭제
+        likesRepository.deleteByUserUserId(sessionUserId);
+        bookmarkRepository.deleteByUserUserId(sessionUserId);
+        commentRepository.deleteByUserUserId(sessionUserId);
+
+        //following들에서 userId 삭제
+        Following userFollowing = followingRepository.findByUserId(sessionUserId);
+        userFollowing.getFollowingList().forEach(followId->{
+            Follower follower=followerRepository.findByUserId(followId); //내가 팔로우한 사람들
+            if(follower==null) return; //이미 followId가 회원탈퇴한 경우
+            boolean unfollowed = follower.unfollow(sessionUserId); //내가 팔로우한 사람들의 follwer 목록에서 나를 삭제
+            if(!unfollowed){
+                log.error("내가 팔로우한 사람의 follower 목록에 내가 없습니다. followId={}",followId);
+                throw new DataMismatchException("내가 팔로우한 사람의 follower 목록에 내가 없습니다.");
+            }
+            followerRepository.save(follower);
+        });
+        //following 삭제
+        followingRepository.deleteByUserId(sessionUserId);
+
+        //follower들에서 userId삭제
+        Follower userFollower = followerRepository.findByUserId(sessionUserId);
+        userFollower.getFollowerList().forEach(followId->{
+            Following following=followingRepository.findByUserId(followId); //나를 팔로우한 사람들
+            if(following==null) return;
+            boolean unfollowed=following.unfollow(sessionUserId); //나를 팔로우한 사람들의 following 목록에서 나를 삭제
+            if(!unfollowed){
+                log.error("나를 팔로우한 사람의 following 목록에 내가 없습니다. followId={}",followId);
+                throw new DataMismatchException("나를 팔로우한 사람의 following 목록에 내가 없습니다.");
+            }
+            followingRepository.save(following);
+        });
+        followerRepository.deleteByUserId(sessionUserId);
     }
 
 }
