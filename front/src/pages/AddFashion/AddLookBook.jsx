@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/Backbutton.jsx';
+import AddClothing from '@/assets/images/AddClothing.svg';
 
 export default function AddLookBook() {
   const navigate = useNavigate();
@@ -75,9 +76,8 @@ export default function AddLookBook() {
             <p className="text-gray-500">이미지 선택</p>
           </div>
         )}
-        <input type="file" ref={fileInput} onChange={handleFileChange} style={{ visibility: 'hidden' }} />
+        <input type="file" className="h-0" ref={fileInput} onChange={handleFileChange} style={{ visibility: 'hidden' }} />
 
-        <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex justify-between items-center">
           <p className="text-lg font-semibold cursor-pointer w-20">공개 여부</p>
           <div>
@@ -100,16 +100,20 @@ export default function AddLookBook() {
 
         
         <hr className="my-4 border-gray-200" />
-        <div>
-          <label htmlFor="tags">태그:</label>
+        <div className="mx-3 flex justify-between items-center">
+          <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
           <input type="text" ref={tagsInput} id="tags" placeholder="태그를 입력하세요, 쉼표로 구분" />
         </div>
         
         <hr className="my-4 border-gray-200" />
-        <div>
-          <label htmlFor="clothes">옷 ID:</label>
-          <input type="text" ref={clothesInput} id="clothes" placeholder="옷 ID를 입력하세요, 쉼표로 구분" />
+        <div className="mx-3 flex flex-col justify-between">
+          <p className="text-lg font-semibold cursor-pointer">코디한 옷</p>
+          <img className="mt-2" src={AddClothing} alt="함께 입은 옷 추가" />
+          <input className="mt-2" type="text" ref={clothesInput} id="clothes" placeholder="(개발용)옷 ID를 입력하세요, 쉼표로 구분" />
         </div>
+
+
+
         <div className="fixed inset-x-0 bottom-0">
           <button
             type="submit"
