@@ -30,7 +30,7 @@ public class SpringSecurityConfig {
                 .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile","/back/oauth2/authorization/**","/back/healthcheck/**","/back/login/**","**").permitAll()
                 .antMatchers("/api/**").hasRole(Role.USER.name())
                 .anyRequest().authenticated().and()
-                .logout().logoutSuccessUrl("/").and()
+                .logout().logoutUrl("/back/user/logout").logoutSuccessUrl("/").and()
                 .oauth2Login()
                 .authorizationEndpoint()
                 .baseUri("/back/oauth2/authorization")
