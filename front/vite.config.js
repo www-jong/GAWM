@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path';
+
 
 export default defineConfig({
 	base: '/gawm/',
@@ -13,12 +15,9 @@ export default defineConfig({
 	server: {
 		port: 4000
 	},
-	// build: {
-	// 	rollupOptions: {
-	// 		input: {
-	// 			main: "./index.html",
-	// 			sw: "./sw.js",
-	// 		},
-	// 	},
-	// },
+	resolve: {
+		alias: [
+			{ find: '@', replacement: path.resolve(__dirname, './src') }
+		]
+	}
 })

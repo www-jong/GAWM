@@ -8,6 +8,7 @@ import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";
 import Landing from "./pages/Landing";
 import Look from './pages/Look';
+import Loading from './pages/Loading';
 import AddClothes from "./pages/AddFashion/AddClothes";
 import AddLook from "./pages/AddFashion/AddLookBook";
 import MyPageMenu from "./pages/MyPage/Menu";
@@ -26,7 +27,6 @@ function App() {
 					<Route path="live" element={<Live />} />
 					<Route path="browse" element={<Browse />} />
 					<Route path="closet" element={<Closet />} />
-					<Route path="closet/add" element={<AddClothes />} />
 					<Route path="mypage" element={<MyPage />}>
 						<Route index element={<MyPageMenu />} />
 						<Route path="settings">
@@ -40,10 +40,12 @@ function App() {
 						<Route path="followers" element={<MyPageAccountList />} />
 					</Route>
 					<Route path="look" element={<Look />} />
-					<Route path="look/add" element={<AddLook />} />
 					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
+				<Route path="closet/add" element={<AddClothes />} />
+				<Route path="look/add" element={<AddLook />} />
 				<Route path="landing" element={<Landing />} />
+				<Route path="loading" element={<Loading />} />
 			</Routes>
 		</BrowserRouter>
 	)
