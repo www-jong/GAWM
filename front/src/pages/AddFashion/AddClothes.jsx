@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import Backbutton from '@/components/Button/Backbutton.jsx';
+import Backbutton from '@/components/Button/BackButton.jsx';
 import downArrow from '@/assets/images/down-arrow.png';
 
 export default function AddClothes() {

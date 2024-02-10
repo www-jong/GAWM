@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Backbutton from '@/components/Button/Backbutton.jsx';
+import Backbutton from '@/components/Button/BackButton.jsx';
 import TagsInput from "@/components/TagsInput.jsx"
 import AddClothing from '@/assets/images/AddClothing.svg';
 
