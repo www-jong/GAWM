@@ -35,9 +35,11 @@ import com.cute.gawm.domain.tag_lookbook.repository.TagLookbookRepository;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,12 +48,15 @@ import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LookbookService {
     private final LookbookRepository lookbookRepository;
     private final CommentRepository commentRepository;
@@ -291,44 +296,64 @@ public class LookbookService {
         lookbookRepository.deleteByLookbookId(lookbookId);
     }
 
-    public PageImpl<LookbookMiniResponse> getFollowingLookbooks(Integer userId, Pageable pageable) {
+    public PageImpl<LookbookThumbnailResponse> getFollowingLookbooks(Integer userId, Pageable pageable) {
         Following followingList = followingRepository.findByUserId(userId);
-        List<LookbookMiniResponse> responseList = new ArrayList<>();
+        List<LookbookThumbnailResponse> lookbookResponse = new ArrayList<>();
 
         followingList.getFollowingList().forEach(followingId -> {
             if(userRepository.existsById(followingId)){
                 List<Lookbook> lookbooks = lookbookRepository.findByUserUserId(followingId);
                 lookbooks.forEach(lookbook -> {
-                    List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
-                    LookbookMiniResponse lookbookMiniResponse = LookbookMiniResponse.builder()
-                            .images(lookbookImages)
+                    List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+                    List<String> ImageUrls=lookbookImage.stream().map(Image-> Image.getImage()).collect(Collectors.toList());
+                    Integer likeCnt=likesRepository.countByLookbook(lookbook);
+                    User user=lookbook.getUser();
+                    LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
+                            .lookbookId(lookbook.getLookbookId())
                             .createdAt(lookbook.getCreatedAt())
-                            .view(lookbook.getView())
-                            .userId(lookbook.getUser().getUserId())
+                            .likeCnt(likeCnt)
+                            .userNickname(user.getNickname())
+                            .userProfileImg(user.getProfileImg())
+                            .images(ImageUrls)
                             .build();
-                    responseList.add(lookbookMiniResponse);
+                    lookbookResponse.add(build);
                 });
             }
         });
-        System.out.println(responseList);
-        return new PageImpl<>(responseList, pageable, responseList.size());
+        if (pageable.getSort().isSorted()) {
+            // createdAt 필드를 기준으로 정렬
+            Comparator<LookbookThumbnailResponse> comparator = Comparator.comparing(LookbookThumbnailResponse::getCreatedAt);
+            if (pageable.getSort().getOrderFor("createdAt").getDirection().equals(Sort.Direction.DESC)) {
+                // 내림차순 정렬
+                comparator = comparator.reversed();
+            }
+            // 정렬 적용
+            Collections.sort(lookbookResponse, comparator);
+        }
+        System.out.println(lookbookResponse);
+        return new PageImpl<>(lookbookResponse, pageable, lookbookResponse.size());
     }
 
 
-    public PageImpl<LookbookMiniResponse> getSearchLookbook(String keyword, Pageable pageable) {
+    public PageImpl<LookbookThumbnailResponse> getSearchLookbook(String keyword, Pageable pageable) {
+        log.info("keyword={}",keyword);
         PageImpl<Lookbook> lookbooks = lookbookRepository.searchLookbook(keyword, pageable);
-        List<LookbookMiniResponse> responseList = new ArrayList<>();
+        List<LookbookThumbnailResponse> responseList = new ArrayList<>();
         lookbooks.forEach(lookbook -> {
             List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
-            LookbookMiniResponse build = LookbookMiniResponse.builder()
+            List<String> ImageUrls=lookbookImage.stream().map(Image-> Image.getImage()).collect(Collectors.toList());
+            Integer likeCnt=likesRepository.countByLookbook(lookbook);
+            User user=lookbook.getUser();
+            LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
+                    .lookbookId(lookbook.getLookbookId())
                     .createdAt(lookbook.getCreatedAt())
-                    .view(lookbook.getView())
-                    .userId(lookbook.getUser().getUserId())
-                    .images(lookbookImage)
+                    .likeCnt(likeCnt)
+                    .userNickname(user.getNickname())
+                    .userProfileImg(user.getProfileImg())
+                    .images(ImageUrls)
                     .build();
             responseList.add(build);
         });
-
         return new PageImpl<>(responseList, pageable, responseList.size());
     }
 
@@ -367,6 +392,12 @@ public class LookbookService {
         if(isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 한 상태입니다.");
         Likes likes = Likes.builder().lookbook(lookbook).user(user).build();
         likesRepository.save(likes);
+
+        user.addPoint(3);
+        userRepository.save(user);
+        User author=lookbook.getUser();
+        author.addPoint(5);
+        userRepository.save(author);
     }
 
     @Transactional
@@ -377,6 +408,13 @@ public class LookbookService {
         boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
         if(!isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 하지 않은 상태입니다.");
         likesRepository.deleteByLookbookAndUser(lookbook, user);
+
+
+        user.minusPoint(3);
+        userRepository.save(user);
+        User author=lookbook.getUser();
+        author.minusPoint(5);
+        userRepository.save(author);
     }
 
     public List<LookbookThumbnailResponse> getTopLookbooks() {
