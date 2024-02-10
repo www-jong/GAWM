@@ -392,6 +392,12 @@ public class LookbookService {
         if(isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 한 상태입니다.");
         Likes likes = Likes.builder().lookbook(lookbook).user(user).build();
         likesRepository.save(likes);
+
+        user.addPoint(3);
+        userRepository.save(user);
+        User author=lookbook.getUser();
+        author.addPoint(5);
+        userRepository.save(author);
     }
 
     @Transactional
@@ -402,6 +408,13 @@ public class LookbookService {
         boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
         if(!isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 하지 않은 상태입니다.");
         likesRepository.deleteByLookbookAndUser(lookbook, user);
+
+
+        user.minusPoint(3);
+        userRepository.save(user);
+        User author=lookbook.getUser();
+        author.minusPoint(5);
+        userRepository.save(author);
     }
 
     public List<LookbookThumbnailResponse> getTopLookbooks() {

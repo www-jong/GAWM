@@ -268,6 +268,8 @@ public class UserService {
     public void givePointToBestUser(int sessionUserId,int userId, Integer point){
         if(sessionUserId==userId) throw new UserNotMatchException("해당 유저에게 포인트를 줄 수 있는 권한이 없습니다.");
         addPoint(userId,point);
+        User sessionUser = userRepository.findByUserId(sessionUserId);
+        sessionUser.minusPoint(point);
     }
 
     public void addPoint(Integer userId, Integer point) {
