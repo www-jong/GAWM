@@ -35,6 +35,7 @@ import com.cute.gawm.domain.tag_lookbook.repository.TagLookbookRepository;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +56,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LookbookService {
     private final LookbookRepository lookbookRepository;
     private final CommentRepository commentRepository;
@@ -330,20 +332,25 @@ public class LookbookService {
     }
 
 
-    public PageImpl<LookbookMiniResponse> getSearchLookbook(String keyword, Pageable pageable) {
+    public PageImpl<LookbookThumbnailResponse> getSearchLookbook(String keyword, Pageable pageable) {
+        log.info("keyword={}",keyword);
         PageImpl<Lookbook> lookbooks = lookbookRepository.searchLookbook(keyword, pageable);
-        List<LookbookMiniResponse> responseList = new ArrayList<>();
+        List<LookbookThumbnailResponse> responseList = new ArrayList<>();
         lookbooks.forEach(lookbook -> {
             List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
-            LookbookMiniResponse build = LookbookMiniResponse.builder()
+            List<String> ImageUrls=lookbookImage.stream().map(Image-> Image.getImage()).collect(Collectors.toList());
+            Integer likeCnt=likesRepository.countByLookbook(lookbook);
+            User user=lookbook.getUser();
+            LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
+                    .lookbookId(lookbook.getLookbookId())
                     .createdAt(lookbook.getCreatedAt())
-                    .view(lookbook.getView())
-                    .userId(lookbook.getUser().getUserId())
-                    .images(lookbookImage)
+                    .likeCnt(likeCnt)
+                    .userNickname(user.getNickname())
+                    .userProfileImg(user.getProfileImg())
+                    .images(ImageUrls)
                     .build();
             responseList.add(build);
         });
-
         return new PageImpl<>(responseList, pageable, responseList.size());
     }
 

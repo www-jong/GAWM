@@ -110,7 +110,7 @@ public class LookbookController {
             @RequestParam("search") String keyword,
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ) {
-        PageImpl<LookbookMiniResponse> lookbooks = lookbookService.getSearchLookbook(keyword, pageable);
+        PageImpl<LookbookThumbnailResponse> lookbooks = lookbookService.getSearchLookbook(keyword, pageable);
 
         return ResponseUtil.buildPagingResponse(
                 HttpStatus.OK,
@@ -123,7 +123,6 @@ public class LookbookController {
                 true,
                 false,
                 false
-
         );
     }
 
