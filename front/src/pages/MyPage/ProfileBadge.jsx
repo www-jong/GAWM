@@ -36,8 +36,15 @@ export default function ProfileBadge() {
 				<div className="flex flex-col gap-1 text-sm md:text-base">
 					<span>레벨 {1}</span>
 					<div className="self-stretch h-2 flex flex-row justify-start content-stretch rounded-full bg-white">
-						{/* TODO: Progress bar 문제 해결 */}
-						<div className={`flex-none basis-[${46}%] rounded-full bg-[${"#f26444"}]`}>
+						<div
+							style={
+								{
+									"--progress": `${46}%`,
+									"--progress-color": `${"#f26444"}`
+								}
+							}
+							className="flex-none basis-[var(--progress)] rounded-full bg-[var(--progress-color)]"
+						>
 							<span className="sr-only">{`${46}%`}</span>
 						</div>
 					</div>
