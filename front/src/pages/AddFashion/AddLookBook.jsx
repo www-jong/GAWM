@@ -14,6 +14,7 @@ export default function AddLookBook() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isPublic, setIsPublic] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
+  const [tags, setTags] = useState([]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -29,6 +30,12 @@ export default function AddLookBook() {
 
   const triggerFileSelectPopup = () => fileInput.current.click();
 
+  const handleTagsChange = (newTags) => {
+    setTags(newTags);
+};
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,10 +45,11 @@ export default function AddLookBook() {
     const data = {
       isPublic: isPublic, // 기본 비공개로
       clothes: clothesInput.current.value.split(',').map(id => parseInt(id.trim())), // 옷 id 배열
-      tags: tagsInput.current.value.split(',').map(tag => tag.trim()) // 태그 배열
+      tags: tags
     };
 
     formData.append('data', JSON.stringify(data));
+    
 
     try {
       const response = await fetch('/look-book', {
@@ -103,7 +111,7 @@ export default function AddLookBook() {
         <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
-          <TagsInput />
+          <TagsInput onTagsChange={handleTagsChange}/>
           <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="(개발용)태그를 입력하세요, 쉼표로 구분" />
         </div>
         
