@@ -14,6 +14,7 @@ from transformers import pipeline
 from math import sqrt
 from util.image_util import check_status_until_done,get_tagging_dto,resize_image,submit_product_info,get_tagging_info
 from util.s3_util import upload_file_to_s3
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 load_dotenv()
 
@@ -55,9 +56,9 @@ app.add_middleware(
 )
 session=''
 
-@app.get("/")
+@app.get("/healthcheck")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Server On"}
 
 def calculate_distance(box_center, image_center):
     return sqrt((box_center[0] - image_center[0]) ** 2 + (box_center[1] - image_center[1]) ** 2)
@@ -86,7 +87,7 @@ async def upload_image(image_file: UploadFile = File(...)):
         file_name = f"{file_uuid}.{extension}"
         s3_response = await upload_file_to_s3(file=image_file,file_name=file_name)
         if s3_response['status']==200:
-            result = await submit_product_info(product_id=file_name,image_url=s3_response["data"]["url"])
+            result = await submit_product_info(product_id=str(file_uuid),image_url=s3_response["data"]["url"])
             print(result.json())
             if result.status_code in [200,202]:
                 return JSONResponse(status_code=200, content={"status":200,"data": {"uuid":str(file_uuid),"file_name":file_name}})
@@ -130,7 +131,6 @@ async def upload_image(image_file: UploadFile = File(...)):
             if status_response.get("status") == "DONE":
                 #print('태그조회완')
                 tagging_info = await get_tagging_info(product_id)# 완료되었을 경우 태그값 조회
-                print(tagging_info)
                 return tagging_info
             else:
                 return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회 중 오류가 발생했습니다."})
@@ -158,6 +158,18 @@ async def test(image_file: UploadFile = File(...)):
     objects_sorted_by_distance = sorted(objects_with_distance, key=lambda x: x['distance'])
     return objects_sorted_by_distance
 
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    if exc.status_code == 404:
+        return JSONResponse(
+            status_code=404,
+            content={"status":exc.status_code,"message": "요청하신 페이지를 찾을 수 없습니다.", "error": "Not Found"},
+        )
+    # 다른 상태 코드에 대한 기본 처리
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"status":exc.status_code,"message": exc.detail,"error": "Not Found"},
+    )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
