@@ -8,6 +8,7 @@ import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";
 import Landing from "./pages/Landing";
 import Look from './pages/Look';
+import EditLook from './pages/Look/EditLookBook.jsx';
 import Loading from './pages/Loading';
 import AddClothes from "./pages/AddFashion/AddClothes";
 import AddLook from "./pages/AddFashion/AddLookBook";
@@ -40,7 +41,9 @@ function App() {
 						<Route path="followers" element={<MyPageAccountList />} />
 					</Route>
 					<Route path="look" element={<Look />} />
-					{/* <Route path="/look/:id" element={<Look />} /> */}
+					<Route path="look/:lookbookId" element={<Look />} />
+                    <Route path="look/edit" element={<EditLook />} />
+					<Route path="look/:lookbookId" element={<EditLook />} />                    
 				</Route>
 				<Route path="closet/add" element={<AddClothes />} />
 				<Route path="look/add" element={<AddLook />} />
