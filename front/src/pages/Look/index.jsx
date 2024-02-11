@@ -1,6 +1,7 @@
 import LookTest from "./LookTest.json"
 import Backbutton from '@/components/Button/BackButton.jsx';
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Mascot from '@/assets/images/Mascot.svg';
 import LookTestImg1 from './LookTestImg1.png';
 import LookTestImg2 from './LookTestImg2.png';
@@ -11,8 +12,8 @@ import views from '@/assets/images/views.png';
 import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
 import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
-
-
+import { fetchLookbookById } from '@/apis/lookbook.js';
+import Loading from "@/pages/Loading";
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -21,7 +22,28 @@ import './index.css';
 
 
 export default function Look() {
+    // useEffect(() => {
+    //     const fetchLookData = async () => {
+    //         try {
+    //             const response = await fetchLookbookById(id); // API 호출
+    //             if (response.status === 200) {
+    //                 setLookData(response.data); // 상태 업데이트
+    //             } else {
+    //                 console.error('룩북을 불러오는 데 실패했습니다.');
+    //             }
+    //         } catch (error) {
+    //             console.error('Error:', error);
+    //         }
+    //     };
+
+    //     fetchLookData();
+    // }, [id]); // id가 변경될 때마다 API 호출
+    
+    // if (!lookData) return <div><Loading /></div>;
     const { lookbookId, userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = LookTest.data;
+    // (lookData? lookData : LookTest.data)로 나중에 수정
+
+
 
     const [commentVisible, setCommentVisible] = useState(false);
     const [repliesVisible, setRepliesVisible] = useState(false);
@@ -30,7 +52,9 @@ export default function Look() {
     const [commentModalVisible, setCommentModalVisible] = useState(false);
     const [comments, setComments] = useState(LookTest.data.comment); // 코멘트 데이터들을 상태로 관리
     const [isModalOpen, setIsModalOpen] = useState(false);
-    
+
+    const { id } = useParams(); // URL에서 룩북 ID 가져옴
+    const [lookData, setLookData] = useState(null); // API 호출 결과 저장
 
 
     const handleSubmit = (e) => {
