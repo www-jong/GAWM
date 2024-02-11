@@ -56,7 +56,9 @@ export function getFollowingList({ page = 0, size = 10, sortBy = 'create_at', so
 		sortBy,
 		sortDirection
 	  },
-	//   withCredentials: true 해야하나 모르겠네
 	});
   }
+
+
+  
   
