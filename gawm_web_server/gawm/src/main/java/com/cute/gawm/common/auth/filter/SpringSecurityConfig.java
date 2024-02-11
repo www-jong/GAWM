@@ -48,7 +48,7 @@ public class SpringSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://i10e203.p.ssafy.io/gawm","http://localhost:4000/gawm")); // 프론트엔드 도메인 허용
+        configuration.setAllowedOrigins(Arrays.asList("https://i10e203.p.ssafy.io/gawm","http://localhost:4000")); // 프론트엔드 도메인 허용
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true); // 중요: 쿠키를 포함시키기 위해 true로 설정

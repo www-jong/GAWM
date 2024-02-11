@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState,useEffect} from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/BackButton.jsx';
 import downArrow from '@/assets/images/down-arrow.png';
-
+import {get_tagging_status} from '../../apis/clothes'
 export default function AddClothes() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -12,6 +12,9 @@ export default function AddClothes() {
   const [dropdownOpenColor, setDropdownOpenColor] = useState(false);
   const [dropdownOpenMaterial, setDropdownOpenMaterial] = useState(false);
   const [dropdownOpenPattern, setDropdownOpenPattern] = useState(false);
+  const [product_id, setProduct_id] = useState(location.state?.product_id || '');
+  const [aiTaggingStatus, setAiTaggingStatus] = useState(false);
+  const [aiTaggingInProgress, setAiTaggingInProgress] = useState(false); // AI 태깅 진행 중 상태
 
   const fileInput = useRef(null);
   const nameInput = useRef(null);
@@ -28,6 +31,41 @@ export default function AddClothes() {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedPatterns, setSelectedPatterns] = useState([]);
+    // 이미지가 정상적으로 로딩되었는지 확인하는 함수
+    const checkImageStatus = async () => {
+      try {
+        const response = await get_tagging_status(product_id); // get_tagging_status 함수는 상태를 확인하는 API 요청을 구현해야 함
+        if (response.status === 200) {
+          setAiTaggingStatus(true); // 상태가 200일 경우 AI 태깅 상태를 true로 변경
+        }
+      } catch (error) {
+        console.error('태깅 상태 확인 중 오류 발생:', error);
+      }
+    };
+    useEffect(() => {
+      if (imagePreviewUrl && product_id) {
+        setAiTaggingInProgress(true); // AI 태깅 시작 전 상태를 진행 중으로 설정
+        const checkImageStatus = async () => {
+          try {
+            const response = await get_tagging_status(product_id);
+            if (response.status === 200) {
+              setAiTaggingStatus(true);
+              setAiTaggingInProgress(false); // AI 태깅 완료 후 상태를 진행 중이 아님으로 설정
+            }
+          } catch (error) {
+            console.error('태깅 상태 확인 중 오류 발생:', error);
+            setAiTaggingInProgress(false); // 오류 발생 시에도 진행 중 상태 해제
+          }
+        };
+        checkImageStatus();
+      }
+    }, [imagePreviewUrl, product_id]);
+  
+    // AI 태그 버튼 클릭 이벤트 핸들러
+    const handleAiTagClick = (e) => {
+      e.preventDefault();
+      // AI 태깅 로직 구현
+    };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -44,6 +82,7 @@ export default function AddClothes() {
   const triggerFileSelectPopup = () => fileInput.current.click();
 
 
+  // 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -68,25 +107,25 @@ export default function AddClothes() {
     };
 
     formData.append('data', JSON.stringify(jsonData));
+    console.log(formData);
+    try {
+      const response = await fetch('http://localhost:8080/gawm/back/clothes', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
 
-    // try {
-    //   const response = await fetch('http://localhost:8080/gawm/clothes', {
-    //     method: 'POST',
-    //     body: formData,
-    //     credentials: 'include',
-    //   });
-
-    //   if (response.ok) {
-    //     const result = await response.json();
-    //     alert('성공: ' + result.data);
-    //     navigate('/closet');
-    //   } else {
-    //     const errorResult = await response.json();
-    //     alert('오류: ' + errorResult.message);
-    //   }
-    // } catch (error) {
-    //   console.error('Error:', error);
-    // }
+      if (response.ok) {
+        const result = await response.json();
+        alert('성공: ' + result.data);
+        navigate('/closet');
+      } else {
+        const errorResult = await response.json();
+        alert('오류: ' + errorResult.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleImageChange = () => {
@@ -178,6 +217,20 @@ export default function AddClothes() {
               style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }}
             />
             <p>이미지 변경</p>
+            <button
+              className={`ai-tag-button ${aiTaggingStatus ? 'bg-green-500' : 'bg-gray-500'}`}
+              onClick={handleAiTagClick}
+              style={{
+                color: 'white',
+                padding: '6px 12px',
+                margin: '4px 0',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              {aiTaggingInProgress ? 'AI 태그 분석 중...' : 'AI 태그'}
+            </button>
           </div>
         ) : (
           <div
@@ -188,15 +241,15 @@ export default function AddClothes() {
           </div>
         )}
         <input type="file" ref={fileInput} onChange={handleFileChange} style={{ visibility: 'hidden' }} />
-        
+
         <div className="mx-3 text-lg font-semibold">이름</div>
         <input className="w-80 mx-3 border-b-2 border-gray-100 my-1 " type="text" ref={nameInput} placeholder="이름을 입력하세요" required />
-        
+
         {/* <hr className="my-12 border-gray-200" /> */}
         <div className="mt-3 mx-3 text-lg font-semibold">브랜드</div>
         <input className="w-80 mx-3 border-b-2 border-gray-100 my-1" type="text" ref={brandInput} placeholder="브랜드를 입력하세요" required />
 
-        
+
         {/* 주 카테고리 선택 버튼 */}
         <div className="mx-3 my-3">
           <p className="text-lg font-semibold my-2 mt-4">주 카테고리</p>
@@ -276,7 +329,7 @@ export default function AddClothes() {
           </div>
         )}
 
-        
+
 
         <hr className="my-4 border-gray-200" />
         <div onClick={() => setDropdownOpenMaterial(!dropdownOpenMaterial)}>

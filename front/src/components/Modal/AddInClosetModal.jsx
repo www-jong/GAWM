@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
+import { maskingImage,uploadImageForTagging } from '../../apis/clothes'; // apiService에서 함수 가져오기
+
 
 export default function AddInCloset({ onClose }) {
   const navigate = useNavigate();
@@ -20,16 +22,26 @@ export default function AddInCloset({ onClose }) {
       formData.append('image_file',image);
 
       try{
-        const response = await fetch('http://localhost:8000/masking/',{
-          method: 'POST',
-          body: formData  
-        });
-        console.log(response)
-        if(response.ok){
-          const precessedImage = await response.blob();
-          console.log(URL.createObjectURL(precessedImage))
-          navigate('/closet/add', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
-          onClose();
+        //const response = await fetch('https://i10e203.p.ssafy.io/gawm/ai/masking/',{
+        const response = await maskingImage(formData);
+        if(response.status==200){
+          try{
+            
+            const response2 = await uploadImageForTagging(formData);
+            console.log('check')
+            console.log(response2)
+            console.log(response2.data.data)
+            console.log('이거',response2.data.data.uuid)
+            navigate('/closet/add', { state: {
+               processedImageURL:URL.createObjectURL(response.data),
+               originalImageURL:URL.createObjectURL(image),
+              product_id:response2.data.data.uuid } });
+            onClose();
+          }catch(errer){
+            console.errer('옴니커머스 업로드 실패',error)
+            navigate('/closet/add')
+          }
+
         }else{
           console.error('Server error');
         }
@@ -46,7 +58,6 @@ export default function AddInCloset({ onClose }) {
     navigate('/look/add');
     onClose();
   };
-
 
 
   return (

@@ -25,30 +25,63 @@ export function getAllClothesInfo() {
 }
 
 /**
- * 이미지 마스킹 처리를 요청하는 객체를 생성합니다
- * 
- * @param {FormData} data image가 있는 FormData 객체
- * @returns Promise 객체
- */
-export function maskingImage(data) {
-	return aiAxios.post(
-		"masking",
-		data
-	);
-}
-
-/**
- * 로그인한 사용자의 옷을 추가 요청하는 객체를 생성합니다
+ * 옷 마스킹처리
  * 
  * @param {FormData} data 옷 데이터가 있는 FormData 객체
  * @returns Promise 객체
  */
-export function createClothes(data) {
-	return axios.post(
-		`${prefix}`,
-		data
-	);
-}
+export const maskingImage = async (formData) => {
+	try {
+	  const response = await aiApiAxios().post('/masking/', formData,{
+		responseType:'blob',
+	  });
+      return response;
+	} catch (error) {
+	  // 오류 처리 로직을 여기에 추가할 수 있습니다.
+	  console.error("옷 추가 중 오류 발생:", error);
+	  throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+	}
+  };
+
+
+  /**
+ * AI 태깅 상태를 조회하는 함수
+ * 
+ * @param {string} productId AI 태깅 상태를 조회할 제품의 ID
+ * @returns Promise 객체, AI 태깅 상태 조회 응답을 반환
+ */
+export const get_tagging_status = async (productId) => {
+    try {
+        // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
+		console.log('조회시도',productId)
+        const response = await aiApiAxios().get(`/tag/status/${productId}`);
+		console.log("조회결과",response)
+        return response; // 응답 객체 반환
+    } catch (error) {
+        console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
+/**
+ * 옷 이미지를 AI 서버에 업로드하여 태깅 정보를 받아오는 함수
+ * 
+ * @param {FormData} formData 옷 이미지 데이터가 있는 FormData 객체
+ * @returns Promise 객체
+ */
+export const uploadImageForTagging = async (formData) => {
+    try {
+        // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 엔드포인트로 POST 요청
+        const response = await aiApiAxios().post('/tag/upload/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response;
+    } catch (error) {
+        console.error("태그 업로드 중 오류 발생:", error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
 
 /**
  * 로그인한 사용자의 옷을 수정 요청하는 객체를 생성합니다

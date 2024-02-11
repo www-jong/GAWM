@@ -6,7 +6,8 @@ const SocialKakao = () => {
     const redirect_uri = 'http://localhost:4000/gawm/'; // Redirect URI
     // oauth 요청 URL
     const kakaoURL = `http://localhost:8080/gawm/back/oauth2/authorization/kakao?redirect_uri=${redirect_uri}`;
-
+    //const kakaoURL = `https://i10e203.p.ssafy.io/gawm/back/oauth2/authorization/kakao?redirect_uri=${redirect_uri}`;
+    
     const handleLogin = () => {
         window.location.href = kakaoURL;
     };

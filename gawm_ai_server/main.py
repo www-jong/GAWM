@@ -77,7 +77,7 @@ async def masking_image(image_file: UploadFile = File(...)):
         output_image_bytes = remove(image_bytes,session=app.state.rembg_session)
         return StreamingResponse(io.BytesIO(output_image_bytes), media_type="image/png")
     except Exception as e:
-        return JSONResponse(status_code=500, content={"message": "이미지 처리 중 오류가 발생했습니다.", "error": str(e)})
+        return JSONResponse(status_code=500, content={"status":500,"message": "이미지 처리 중 오류가 발생했습니다.", "error": str(e)})
 
 #omnicommers에 업로드
 @prefix_router.post("/tag/upload/")
@@ -91,6 +91,7 @@ async def upload_image(image_file: UploadFile = File(...)):
             result = await submit_product_info(product_id=str(file_uuid),image_url=s3_response["data"]["url"])
             print(result.json())
             if result.status_code in [200,202]:
+                print('done')
                 return JSONResponse(status_code=200, content={"status":200,"data": {"uuid":str(file_uuid),"file_name":file_name}})
             else:
                 return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "이미지 저장 중 오류가 발생했습니다. :"+result})
@@ -100,10 +101,22 @@ async def upload_image(image_file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "이미지 저장 중 오류가 발생했습니다. :"+str(e)})
 
 #omnicommers에서 태그가져오기
+@prefix_router.get("/tag/status/{product_id}")
+async def tagging_status(product_id: str):
+    print('태그조회')
+    if not product_id:
+        raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
+    status_response = await check_status_until_done(product_id)# 등록완료되었는지 조회
+    if status_response.get("status") == "DONE":
+        return JSONResponse(status_code=200,content={"status":200,"data":"done"})
+    else:
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"})
+
+#omnicommers에서 태그가져오기
 @prefix_router.post("/tag/get/{product_id}")
 async def past_tagging(product_id: str):
     if not product_id:
-        raise JSONResponse(status_code=400, content={"message":"product_id가 없습니다","error":"product_id 없음"})
+        raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
     status_response = await check_status_until_done(product_id)# 등록완료되었는지 조회
     print('옷 처리결과',status_response)
     if status_response.get("status") == "DONE":
@@ -111,7 +124,7 @@ async def past_tagging(product_id: str):
         response=get_tagging_dto(tagging_info)
         return JSONResponse(status_code=200,content=response)
     else:
-        return JSONResponse(status_code=500, content={"message": "태깅정보 조회 중 오류가 발생했습니다."})
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"})
 
 
 @prefix_router.post("/tagging/")
