@@ -20,60 +20,6 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) {
 	const [clothes, setClothes] = useState(undefined);
 
-	const testData = {
-		8: {
-			"data": {
-				"data": {
-					"clothesId": 8,
-					"userId": 1,
-					"orderNum": 4,
-					"clothesImg": "img_url",
-					"mCategory": "Outerwear",
-					"sCategory": "Jacket",
-					"brand": "Brand A",
-					"name": "Outfit 1",
-					"colors": ["black", "white"],
-					"materials": ["wool", "cotton"],
-					"patterns": ["striped"]
-				}
-			}
-		},
-		15: {
-			"data": {
-				"data": {
-					"clothesId": 15,
-					"userId": 1,
-					"orderNum": 3,
-					"clothesImg": "img_url",
-					"mCategory": "Outerwear",
-					"sCategory": "Jacket",
-					"brand": "Brand B",
-					"name": "Outfit 2",
-					"colors": ["blue"],
-					"materials": ["polyester"],
-					"patterns": ["solid"]
-				}
-			}
-		},
-		22: {
-			"data": {
-				"data": {
-					"clothesId": 22,
-					"userId": 1,
-					"orderNum": 2,
-					"clothesImg": "img_url",
-					"mCategory": "Innerwear",
-					"sCategory": "Blazer",
-					"brand": "Brand C",
-					"name": "Outfit 3",
-					"colors": ["grey", "black"],
-					"materials": ["linen", "silk"],
-					"patterns": ["checked"]
-				}
-			}
-		}
-	};
-
 	// 옷 정보 불러오기
 	useEffect(
 		() => {
@@ -86,11 +32,7 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 					setClothes(data);
 				}
 				catch(error) {
-					// TODO: API 연동 시 아래 줄 주석 해제 및 테스트 코드 삭제
-					// setClothes(null);
-
-					// 테스트 데이터
-					setClothes(testData[clothesId].data.data);
+					setClothes(null);
 				}
 			};
 

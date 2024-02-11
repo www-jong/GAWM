@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import CategoryList from "./CategoryList";
 import ClothesList from "./ClothesList";
 import ClothesDetail from "./ClothesDetail";
-import axios from "axios";
-import ListGroup from "../../../components/ListGroup";
-import ListItem from "../../../components/ListGroup/ListItem";
 import { getAllClothesInfo } from "../../../apis/clothes";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
 
@@ -39,58 +36,11 @@ export default function MyCloset() {
 		() => {
 			const fetchCloset = async () => {
 				try {
-					// TODO: API 연동 후 테스트 데이터 삭제
-					// const response = await getAllClothesInfo();
-					const response = {
-						"data": {
-							"data": [
-								{
-									"clothesId": 8,
-									"userId": 1,
-									"orderNum": 4,
-									"clothesImg": "img_url",
-									"mCategory": "Outerwear",
-									"sCategory": "Jacket",
-									"brand": "Brand A",
-									"name": "Outfit 1",
-									"colors": ["black", "white"],
-									"materials": ["wool", "cotton"],
-									"patterns": ["striped"]
-								},
-								{
-									"clothesId": 15,
-									"userId": 1,
-									"orderNum": 3,
-									"clothesImg": "img_url",
-									"mCategory": "Outerwear",
-									"sCategory": "Jacket",
-									"brand": "Brand B",
-									"name": "Outfit 2",
-									"colors": ["blue"],
-									"materials": ["polyester"],
-									"patterns": ["solid"]
-								},
-								{
-									"clothesId": 22,
-									"userId": 1,
-									"orderNum": 2,
-									"clothesImg": "img_url",
-									"mCategory": "Outerwear",
-									"sCategory": "Blazer",
-									"brand": "Brand C",
-									"name": "Outfit 3",
-									"colors": ["grey", "black"],
-									"materials": ["linen", "silk"],
-									"patterns": ["checked"]
-								}
-							]
-						}
-					};
+					const response = await getAllClothesInfo();
 					const data = response.data.data;
 
 					if(data.length) {
-						// "m_category"로 분류
-						// ES2024
+						// "mCategory"로 분류
 						setCloset(
 							Map.groupBy(data, (item) => item["mCategory"])
 						);
