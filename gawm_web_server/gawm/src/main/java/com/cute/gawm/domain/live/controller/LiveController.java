@@ -47,18 +47,6 @@ public class LiveController {
         );
     }
 
-    @PostMapping
-    public ResponseEntity<?> createLive(
-            @LoginUser SessionUser sessionUser,
-            @RequestBody LiveCreateRequest liveCreateRequest,
-            @RequestBody(required = false) Map<String, Object> params
-    )throws OpenViduJavaClientException, OpenViduHttpException {
-        liveService.createLive(sessionUser.getId(), liveCreateRequest,params);
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 생성 완료");
-    }
-
-
-
     @DeleteMapping("/{liveId}")
     public ResponseEntity<?> deleteLive(
             @LoginUser SessionUser sessionUser,
@@ -74,5 +62,6 @@ public class LiveController {
     ){
         List<ClothesInfoResponse> closet = liveService.getLiveUserAllCloset(liveId);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, closet);
+
     }
 }

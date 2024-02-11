@@ -9,9 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.sql.Timestamp;
 @Getter
-@Builder
 @MappedSuperclass
-public abstract class BaseEntity {
+public class BaseEntity {
     @Column(name = "created_at")
     @CreationTimestamp
     private Timestamp createdAt;
