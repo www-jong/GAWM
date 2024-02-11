@@ -17,6 +17,8 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import io.openvidu.java.client.*;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,13 +35,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LiveService {
     private final LiveRepository liveRepository;
     private final FollowingRepository followingRepository;
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
     private final ClothesDetailRepository clothesDetailRepository;
+
     private OpenVidu openvidu;
 
     @Value("${OPENVIDU_URL}")
