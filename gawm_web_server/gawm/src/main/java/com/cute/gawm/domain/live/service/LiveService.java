@@ -122,11 +122,11 @@ public class LiveService {
         return connection;
     }
 
-    public String initSession(SessionProperties properties,  Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException{
+    public String initSession(Integer userId, SessionProperties properties,  Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException{
         String name = null;
         boolean isPublic = true;
         if(params.get("deleted").equals("on")) {
-            this.deleteLiveByUserId(3);
+            this.deleteLiveByUserId(userId);
             return "라이브 생성 완료";
         }
         if(params.get("name") instanceof  String) {

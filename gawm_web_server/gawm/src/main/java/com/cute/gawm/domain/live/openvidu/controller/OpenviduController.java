@@ -29,7 +29,7 @@ public class OpenviduController {
             @RequestBody(required = false) Map<String, Object> params
     ) throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
-        String response = liveService.initSession(properties, params);
+        String response = liveService.initSession(sessionUser.getId(), properties, params);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
