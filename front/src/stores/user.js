@@ -8,7 +8,7 @@ export const useUserStore = create(
 	(set) => (
 		{
 			// 사용자 정보
-			"nickname": null,
+			"nickname": '특별한 일몰',
 			"gender": null,
 			"age": null,
 			"point": null,
@@ -99,3 +99,17 @@ export async function updateGender(gender) {
 export async function updateAge(age) {
 	await updateUserInfo({ age });
 }
+
+
+/**
+ * 로그인한 유저의 팔로잉 목록의 닉네임 배열을 불러와 저장합니다
+ */
+export async function fetchFollowingNicknames() {
+	try {
+	  const response = await getFollowingList({});
+	  const followingNicknames = response.data.content.map(user => user.nickname);
+	  useUserStore.setState(state => ({ ...state, followingNicknames }));
+	} catch (error) {
+	  console.error('팔로잉 목록을 불러오는데 실패했습니다:', error);
+	}
+  }

@@ -1,6 +1,6 @@
 import LookTest from "./LookTest.json"
 import Backbutton from '@/components/Button/BackButton.jsx';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Mascot from '@/assets/images/Mascot.svg';
 import LookTestImg1 from './LookTestImg1.png';
 import LookTestImg2 from './LookTestImg2.png';
@@ -8,6 +8,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
 import BackButtonImg from '@/assets/images/back_button_img.png';
 import views from '@/assets/images/views.png';
+import { toggleFollow } from '@/apis/user';
+import { useUserStore } from '@/stores/user.js'; // Zustand
+
 
 
 import 'swiper/css';
@@ -25,6 +28,7 @@ export default function Look() {
     const [likes, setLikes] = useState(likeCnt);
     const [commentModalVisible, setCommentModalVisible] = useState(false);
     const [comments, setComments] = useState(LookTest.data.comment); // 코멘트 데이터들을 상태로 관리
+    
 
 
     const handleSubmit = (e) => {
@@ -45,6 +49,46 @@ export default function Look() {
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Intl.DateTimeFormat('ko-KR', options).format(new Date(dateString));
+    };
+
+
+    // zustand 스토어에서 현재 로그인한 사용자의 정보 가져오기
+    const currentUserNickname = useUserStore(state => state.nickname);
+    const currentUserId = useUserStore(state => state.nickname);
+
+    // 로그인한 사용자가 작성한 글인지 확인하는 함수
+    const isMyLookbook = () => {
+        return userNickname === currentUserNickname;
+    };
+
+
+    // 팔로우 버튼 관련
+
+    const followingNicknames = useUserStore(state => state.followingNicknames);
+
+    const [isFollowing, setIsFollowing] = useState(null);
+
+    useEffect(() => {
+        if (followingNicknames && followingNicknames.includes(userNickname)) {
+            setIsFollowing(true);
+        } else {
+            setIsFollowing(false);
+        }
+    }, [followingNicknames, userNickname]);
+
+    const handleToggleFollow = async () => {
+        try {
+            await toggleFollow({
+                fromId: currentUserId,
+                toId: userId
+            });
+
+            setIsFollowing(!isFollowing);
+
+            // 팔로잉 목록 업데이트하는 함수 호출해도 될듯 여기
+        } catch (error) {
+            console.error('팔로우 상태 변경 실패:', error.response || error);
+        }
     };
 
 
@@ -72,11 +116,26 @@ export default function Look() {
                         {/* <span className="text-xs mx-2">•</span>
                         <button className="text-indigo-500 text-sm capitalize flex justify-start items-start">follow</button> */}
                     </div>
-                    <button type="button" className="relative p-2 focus:outline-none border-none bg-gray-100 rounded-full">
-                        <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                        </svg>
-                    </button>
+
+                    {/* 팔로우버튼 or 수정버튼 */}
+                    {
+                        isMyLookbook() ?
+                            <button type="button" className="relative p-2 focus:outline-none border-none bg-gray-100 rounded-full">
+                                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+                            :
+                            <button
+                            type="button"
+                            onClick={handleToggleFollow}
+                            className={`w-16 h-8 focus:outline-none border border-transparent text-xs rounded-full transition-colors ${
+                                isFollowing ? 'bg-main opacity-90 text-white' : 'bg-gray-100 text-main'
+                            }`}
+                        >
+                            {isFollowing ? '팔로우 중' : '팔로우'}
+                        </button>
+                    }
                 </div>
 
 
@@ -122,10 +181,12 @@ export default function Look() {
                             <span className="text-sm text-gray-400">{view}</span>
                         </div>
                     </div>
+
+                    {/* 태그 */}
                     <div className="p-2">
                         <div className="flex flex-wrap gap-2">
                             {tag.map((tagItem, index) => (
-                                <div key={index} className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-3 py-1 rounded-full">
+                                <div key={index} className="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
                                     #{tagItem.name}
                                 </div>
                             ))}
