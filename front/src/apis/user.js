@@ -27,3 +27,16 @@ export function logout() {
 export function userInfo() {
 	return axios.get(`${prefix}/userInfo`);
 }
+
+/**
+ * 로그인한 사용자의 정보를 수정합니다
+ * 
+ * @param {Object} data 요청 데이터
+ * @returns Promise 객체
+ */
+export function edit(data) {
+	return axios.patch(
+		`${prefix}/userInfo`,
+		data
+	);
+}
