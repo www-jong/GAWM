@@ -60,5 +60,16 @@ export function getFollowingList({ page = 0, size = 10, sortBy = 'create_at', so
   }
 
 
-  
+/**
+ * 사용자를 팔로우하거나 언팔로우합니다.
+ * 
+ * @param {Object} data 요청 데이터 { fromId: Long, toId: Long }
+ * @returns Promise 객체
+ */
+export function toggleFollow(data) {
+    return axios.post(`${prefix}/follow`, data);
+}
+
+
+
   
