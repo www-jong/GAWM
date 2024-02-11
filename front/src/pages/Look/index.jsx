@@ -12,7 +12,7 @@ import views from '@/assets/images/views.png';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
-// import './index.css';
+import './index.css';
 
 
 
@@ -41,6 +41,12 @@ export default function Look() {
         setCommentModalVisible(!commentModalVisible); // 댓글 입력 창 토글
     };
 
+    // createdAt 값 예쁘게 포맷
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Intl.DateTimeFormat('ko-KR', options).format(new Date(dateString));
+    };
+
 
 
 
@@ -60,7 +66,7 @@ export default function Look() {
                                 {userNickname}
                             </p>
                             <p className="text-gray-400 text-xs">
-                                {createdAt}
+                                {formatDate(createdAt)}
                             </p>
                         </div>
                         {/* <span className="text-xs mx-2">•</span>
@@ -162,7 +168,7 @@ export default function Look() {
 
 
                 {/* 댓글 입력 폼 */}
-                <div className="">
+                <div className="mt-3">
                     <form onSubmit={handleSubmit}>
                         <div className="flex justify-between border-t items-center w-full">
                             <div className="w-full">
