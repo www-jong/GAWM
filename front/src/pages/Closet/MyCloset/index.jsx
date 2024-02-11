@@ -5,7 +5,7 @@ import ClothesDetail from "./ClothesDetail";
 import axios from "axios";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
-
+import {clothesListInfo} from '../../../apis/clothes'
 /**
  * 내 옷장 페이지 내 옷장 영역을 표시하는 요소를 반환합니다
  * 
@@ -32,14 +32,15 @@ export default function MyCloset() {
 			const fetchCloset = async () => {
 				try {
 					// TODO: API 연동 시 주소 수정
-					const response = await axios.get("https://ssafyfood-www-jong.koyeb.app/webapp/clothe/list");
-					const data = response.data.content;
-		
+					const response = await clothesListInfo();
+					console.log(response.data)
+					const data = response.data;
+					
 					if(data?.length !== 0) {
 						// "m_category"로 분류
 						// ES2024
 						setCloset(
-							Map.groupBy(data, (item) => item["m_category"])
+							Map.groupBy(data, (item) => item["mcategory"])
 						);
 		
 						// Pre-ES2024

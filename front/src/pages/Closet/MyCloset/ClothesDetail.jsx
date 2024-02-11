@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
 import axios from "axios";
-
+import {getClothesInfo} from "../../../apis/clothes"
 /**
  * 옷의 상세정보를 표시하는 component를 생성합니다
  * 
@@ -22,9 +22,9 @@ export default function ClothesDetail({ clothesId, clothesIdSetter }) {
 			const fetchClothes = async () => {
 				try {
 					// TODO: API 연동 시 주소 수정
-					const response = await axios.get(`https://ssafyfood-www-jong.koyeb.app/webapp/clothes/${clothesId}`);
+					const response = await getClothesInfo(clothedId);
 					const data = response.data.data;
-		
+					console.log(data)
 					setClothes(data);
 				}
 				catch(error) {
@@ -39,7 +39,7 @@ export default function ClothesDetail({ clothesId, clothesIdSetter }) {
 								"clothesId": 3,
 								"userId": 2,
 								"orderNum": 1,
-								"clothesImg": "afa8b099-0d8b-4a76-9cea-5a303bdc2288.jpg",
+								"clothesImg": `https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/`+"afa8b099-0d8b-4a76-9cea-5a303bdc2288.jpg",
 								"brand": "싸피",
 								"name": "싸피후드3",
 								"colors": [

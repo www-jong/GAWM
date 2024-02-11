@@ -28,9 +28,11 @@ export default function ClothesList({ className, clothes, categorySetter, clothe
 						{
 							clothes.map(
 								(clothing) => (
+									
 									<ListItem
-										key={clothing.clothe_id}
-										onClick={() => clothesIdSetter(clothing.clothe_id)}
+								
+										key={clothing.clothesId}
+										onClick={() => clothesIdSetter(clothing.clothesId)}
 									>
 										{clothing.name}
 									</ListItem>

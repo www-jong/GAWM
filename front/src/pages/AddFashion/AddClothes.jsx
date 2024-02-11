@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/BackButton.jsx';
 import downArrow from '@/assets/images/down-arrow.png';
-import {get_tagging_status} from '../../apis/clothes'
+import {get_tagging_status,get_tag} from '../../apis/clothes'
 export default function AddClothes() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,39 +31,45 @@ export default function AddClothes() {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedPatterns, setSelectedPatterns] = useState([]);
-    // 이미지가 정상적으로 로딩되었는지 확인하는 함수
-    const checkImageStatus = async () => {
-      try {
-        const response = await get_tagging_status(product_id); // get_tagging_status 함수는 상태를 확인하는 API 요청을 구현해야 함
-        if (response.status === 200) {
-          setAiTaggingStatus(true); // 상태가 200일 경우 AI 태깅 상태를 true로 변경
-        }
-      } catch (error) {
-        console.error('태깅 상태 확인 중 오류 발생:', error);
+
+  const checkImageStatus = async () => {
+    try {
+      const response = await get_tagging_status(product_id);
+      if (response.status === 200) {
+        setAiTaggingStatus(true);
+        setAiTaggingInProgress(false); // AI 태깅 완료 후 상태를 진행 중이 아님으로 설정
       }
-    };
+    } catch (error) {
+      console.error('태깅 상태 확인 중 오류 발생:', error);
+      setAiTaggingInProgress(false); // 오류 발생 시에도 진행 중 상태 해제
+    }
+  };
+  // 처음 들어올 때, ai태깅상태 조회하기
     useEffect(() => {
       if (imagePreviewUrl && product_id) {
         setAiTaggingInProgress(true); // AI 태깅 시작 전 상태를 진행 중으로 설정
-        const checkImageStatus = async () => {
-          try {
-            const response = await get_tagging_status(product_id);
-            if (response.status === 200) {
-              setAiTaggingStatus(true);
-              setAiTaggingInProgress(false); // AI 태깅 완료 후 상태를 진행 중이 아님으로 설정
-            }
-          } catch (error) {
-            console.error('태깅 상태 확인 중 오류 발생:', error);
-            setAiTaggingInProgress(false); // 오류 발생 시에도 진행 중 상태 해제
-          }
-        };
+
         checkImageStatus();
       }
     }, [imagePreviewUrl, product_id]);
   
     // AI 태그 버튼 클릭 이벤트 핸들러
-    const handleAiTagClick = (e) => {
+    const handleAiTagClick =async (e) => {
+      e.stopPropagation();
       e.preventDefault();
+      if(aiTaggingStatus&&!aiTaggingInProgress){
+        try{
+          const tagResult = await get_tag(product_id);
+          console.log("태깅결과",tagResult);
+        }catch(error){
+          console.error("태깅가져오기 실패",error)
+        }
+
+      }
+      else{
+        setAiTaggingInProgress(true);
+        checkImageStatus();
+      }
       // AI 태깅 로직 구현
     };
 

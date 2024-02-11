@@ -16,14 +16,22 @@ const aiAxios = aiApiAxios();
 const prefix = "clothes";
 
 /**
- * 로그인한 사용자의 옷을 조회하는 객체를 생성합니다
+ * 로그인한 유저의 옷을 조회
  * 
- * @returns Promise 객체
+ * @returns Promise 객체, 조회된 데이터를 반환합니다.
  */
-export function getAllClothesInfo() {
-	return axios.get(`${prefix}/list`);
-}
-
+export const clothesListInfo = async () => {
+    try {
+        // gawmApiAxios 인스턴스를 사용하여 요청을 보냅니다.
+        // URL은 전체 경로를 명시해야 합니다.
+        const response = await gawmApiAxios().get("/clothes/list");
+        console.log("조회 결과:", response);
+        return response.data; // 응답 데이터 반환
+    } catch (error) {
+        console.error("외부 API 조회 중 오류 발생:", error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
 /**
  * 옷 마스킹처리
  * 
@@ -55,6 +63,25 @@ export const get_tagging_status = async (productId) => {
         // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
 		console.log('조회시도',productId)
         const response = await aiApiAxios().get(`/tag/status/${productId}`);
+		console.log("조회결과",response)
+        return response; // 응답 객체 반환
+    } catch (error) {
+        console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
+
+  /**
+ * AI 태그 가져오기
+ * 
+ * @param {string} productId AI 태깅 상태를 조회할 제품의 ID
+ * @returns Promise 객체, AI 태깅 상태 조회 응답을 반환
+ */
+  export const get_tag = async (productId) => {
+    try {
+        // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
+		console.log('조회시도',productId)
+        const response = await aiApiAxios().get(`/tag/get/${productId}`);
 		console.log("조회결과",response)
         return response; // 응답 객체 반환
     } catch (error) {
@@ -113,9 +140,19 @@ export function deleteClothes(clothesId) {
  * @param {number|string} clothesId 조회할 옷 ID
  * @returns Promise 객체
  */
-export function getClothesInfo(clothesId) {
-	return axios.get(`${prefix}/${clothesId}`);
+export const getClothesInfo = async (clothesId) => {
+	try{
+        // gawmApiAxios 인스턴스를 사용하여 요청을 보냅니다.
+        // URL은 전체 경로를 명시해야 합니다.
+        const response = await gawmApiAxios().get(`/clothes/${productId}`);
+        console.log("조회 결과:", response);
+        return response.data; // 응답 데이터 반환
+    } catch (error) {
+        console.error("외부 API 조회 중 오류 발생:", error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
 }
+
 
 /**
  * 로그인한 사용자의 옷을 특정한 조건으로 검색하는 객체를 생성합니다

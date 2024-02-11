@@ -113,18 +113,16 @@ async def tagging_status(product_id: str):
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"})
 
 #omnicommers에서 태그가져오기
-@prefix_router.post("/tag/get/{product_id}")
+@prefix_router.get("/tag/get/{product_id}")
 async def past_tagging(product_id: str):
     if not product_id:
         raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
-    status_response = await check_status_until_done(product_id)# 등록완료되었는지 조회
-    print('옷 처리결과',status_response)
-    if status_response.get("status") == "DONE":
+    try:
         tagging_info = await get_tagging_info(product_id)# 완료되었을 경우 태그값 조회
-        response=get_tagging_dto(tagging_info)
-        return JSONResponse(status_code=200,content=response)
-    else:
-        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"})
+        result=get_tagging_dto(tagging_info)
+        return JSONResponse(status_code=200,content=result)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"+e})
 
 
 @prefix_router.post("/tagging/")
