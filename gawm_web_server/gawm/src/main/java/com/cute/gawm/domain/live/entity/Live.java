@@ -28,6 +28,8 @@ public class Live extends BaseEntity {
     private String afterImg;
     @Column(name = "session")
     private String session;
+    @Column(name = "is_public")
+    private Boolean isPublic;
 //    public void endLive() {
 //        this.isDeleted=true;
 //    }

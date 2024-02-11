@@ -1,8 +1,7 @@
 package com.cute.gawm.domain.comment.repository;
 
-import com.cute.gawm.common.QueryDslSupport;
+import com.cute.gawm.common.util.QueryDslSupport;
 import com.cute.gawm.domain.clothes_lookbook.entity.ClothesLookbook;
-import com.cute.gawm.domain.clothes_lookbook.repository.ClothesLookbookRepositoryCustom;
 import com.cute.gawm.domain.comment.entity.Comment;
 import com.cute.gawm.domain.comment.entity.QComment;
 import org.springframework.beans.factory.annotation.Autowired;
