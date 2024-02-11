@@ -12,6 +12,9 @@ class App extends Component {
             mySessionId: 'SessionA',
             myUserName: 'OpenVidu_User_' + Math.floor(Math.random() * 100),
             token: undefined,
+            liveName: '26°C 라이브',
+            isPublic: true,
+            deleted: false,
         };
 
         this.handlerJoinSessionEvent = this.handlerJoinSessionEvent.bind(this);
@@ -20,6 +23,28 @@ class App extends Component {
         this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
         this.handleChangeUserName = this.handleChangeUserName.bind(this);
         this.joinSession = this.joinSession.bind(this);
+        this.handlerChangeLiveName= this.handlerChangeLiveName.bind(this);
+        this.handlerChangeIsPublic = this.handlerChangeIsPublic.bind(this);
+        this.handlerChangeDelete = this.handlerChangeDelete.bind(this);
+    
+    }
+
+    handlerChangeLiveName(e){
+        this.setState({
+            liveName: e.target.value,
+        })
+    }
+
+    handlerChangeDelete(e){
+        this.setState({
+            deleted : e.target.value,
+        })
+    }
+
+    handlerChangeIsPublic(e){
+        this.setState({
+            isPublic: e.target.value,
+        })
     }
 
     handlerJoinSessionEvent() {
@@ -64,6 +89,9 @@ class App extends Component {
         const mySessionId = this.state.mySessionId;
         const myUserName = this.state.myUserName;
         const token = this.state.token;
+        const liveName = this.state.liveName;
+        const isPublic = this.state.isPublic;
+        const deleted = this.state.deleted;
         return (
             <div>
                 {this.state.session === undefined ? (
@@ -92,6 +120,35 @@ class App extends Component {
                                     />
                                 </p>
                                 <p>
+                                    <label> LiveName: </label>
+                                    <input
+                                        type="text"
+                                        id="liveName"
+                                        value={liveName}
+                                        onChange={this.handleChangeLiveName}
+                                        required
+                                    />
+                                </p>
+                                <p>
+                                    <label> isPublic: </label>
+                                    <input
+                                        type="checkbox"
+                                        id="isPublic"
+                                        checked={this.state.isPublic}
+                                        onChange={this.handlerChangeIsPublic}
+                                        required
+                                    />
+                                </p>
+                                <p>
+                                    <label> 퇴장하기 : </label>
+                                    <input
+                                        type="checkbox"
+                                        id="deleted"
+                                        checked={this.state.deleted}
+                                        onChange={this.handlerChangeDelete}
+                                    />
+                                </p>
+                                <p>
                                     <input name="commit" type="submit" value="JOIN" />
                                 </p>
                             </form>
@@ -104,6 +161,9 @@ class App extends Component {
                             sessionName={mySessionId}
                             user={myUserName}
                             token={token}
+                            liveName={liveName}
+                            isPublic={isPublic}
+                            deleted = {deleted}
                             joinSession={this.handlerJoinSessionEvent}
                             leaveSession={this.handlerLeaveSessionEvent}
                             error={this.handlerErrorEvent}
@@ -131,19 +191,19 @@ class App extends Component {
      * more about the integration of OpenVidu in your application server.
      */
     async getToken() {
-        const sessionId = await this.createSession(this.state.mySessionId);
+        const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
         return await this.createToken(sessionId);
     }
 
-    async createSession(sessionId) {
-        const response = await axios.post(this.APPLICATION_SERVER_URL + 'api/sessions', { customSessionId: sessionId }, {
+    async createSession(sessionId, liveName, isPublic, deleted) {
+        const response = await axios.post(this.APPLICATION_SERVER_URL + 'back/gawm/api/sessions', { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
             headers: { 'Content-Type': 'application/json', },
         });
         return response.data; // The sessionId
     }
 
     async createToken(sessionId) {
-        const response = await axios.post(this.APPLICATION_SERVER_URL + 'api/sessions/' + sessionId + '/connections', {}, {
+        const response = await axios.post(this.APPLICATION_SERVER_URL + 'back/gawm/api/sessions/' + sessionId + '/connections', {}, {
             headers: { 'Content-Type': 'application/json', },
         });
         return response.data; // The token
