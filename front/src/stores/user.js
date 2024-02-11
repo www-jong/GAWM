@@ -8,7 +8,7 @@ export const useUserStore = create(
 	(set) => (
 		{
 			// 사용자 정보
-			"nickname": null,
+			"nickname": '특별한 일몰',
 			"gender": null,
 			"age": null,
 			"point": null,

@@ -84,9 +84,10 @@
 			<div class="relative w-full h-full">
 				<img src="https://wallpaperaccess.com/full/345330.jpg" alt="saman" class="rounded-lg w-full h-full object-cover">
             </div>
-				<div class="">
+				
 
 					<!-- Comment -->
+					<div class="">
 					<div class="overflow-y-scroll w-full absolute inset-0 bg-white transform transition duration-200"
 						x-show="comment" x-transition:enter="transition ease-out duration-200"
 						x-transition:enter-start="opacity-0 transform scale-90"
@@ -121,40 +122,8 @@
 												<div class="time mt-1 text-gray-400 text-xs">
 													<p>2d</p>
 												</div>
-												<button type="button" class="focus:outline-none time mt-1 text-gray-400 text-xs">
-                                            <p>replay</p>
-                                        </button>
+												
 											</div>
-											<button type="button" @click="replies = !replies" class="focus:outline-none  mt-3 flex justify-center items-center">
-                                        <p class="text-xs text-center text-indigo-500 flex space-x-2">
-                                            <span>____ View replies (1)</span> <svg class="w-3 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                        </p>
-                                    </button>
-											<div x-show="replies" x-transition
-												class="flex justify-start flex-col space-y-3 items-start px-2 border-b border-gray-100">
-												<div class="relative mt-1 mb-3 pt-2 flex">
-													<div class="mr-2">
-														<img src="https://avatars.githubusercontent.com/u/68494287?v=4" alt="saman sayyar"
-                                                                    class="w-8 h-8 rounded-full object-cover">
-                                                            </div>
-														<div class="ml-2 w-full" x-data="{ replies : true }">
-															<p class="text-gray-600 md:text-sm text-xs w-full">
-																<!-- Username User -->
-																<span class="font-normal text-gray-900">samansayyar</span>
-																<!-- Username User -->
-																You Can see?
-															</p>
-															<div class="flex space-x-4">
-																<div class="time mt-1 text-gray-400 text-xs">
-																	<p>2d</p>
-																</div>
-																<button type="button" class="focus:outline-none time mt-1 text-gray-400 text-xs">
-                                                                        <p>replay</p>
-                                                                    </button>
-															</div>
-														</div>
-													</div>
-												</div>
 											</div>
 										</div>
 									</div>
