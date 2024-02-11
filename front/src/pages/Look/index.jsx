@@ -116,12 +116,13 @@ export default function Look() {
                             <span className="text-sm text-gray-400">{view}</span>
                         </div>
                     </div>
-                    <div className="p-2 flex flex-col space-y-3">
-                        <div className="w-full">
-                            <p className="font-bold text-sm text-gray-700">{likes} likes</p>
-                        </div>
-                        <div className="w-full">
-                            <p className="font-normal text-xs text-gray-500">10 hours ago</p>
+                    <div className="p-2">
+                        <div className="flex flex-wrap gap-2">
+                            {tag.map((tagItem, index) => (
+                                <div key={index} className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-3 py-1 rounded-full">
+                                    #{tagItem.name}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
