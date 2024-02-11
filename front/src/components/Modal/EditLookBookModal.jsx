@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateLookbook, deleteLookbook } from '@/apis/lookbook.js'; // API 함수의 정확한 경로를 지정해주세요.
+import { deleteLookbook } from '@/apis/lookbook.js';
 
 export default function EditLookBook({ lookbookId, onClose, }) {
     const navigate = useNavigate();
@@ -21,12 +21,13 @@ export default function EditLookBook({ lookbookId, onClose, }) {
 
 
     const handleEdit = async () => {
-        navigate('/look/add');  // edit page 만들어야지.. 보내야할 정보들이 너무 많네
+        navigate('/look/edit');
+        // navigate(`/look/edit/${lookbookId}`); 나중에 이걸로 수정
         onClose();
     };
 
     const handleDelete = async () => {
-        if (window.confirm('정말로 삭제하시겠습니까?')) {  // 아니 윈도우컨펌 써도되나
+        if (window.confirm('정말로 삭제하시겠습니까?')) {
             try {
                 await deleteLookbook(lookbookId);
                 alert('룩북이 삭제되었습니다.');
