@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import './App.css';
 
+import './App.css';
+import cookies from 'js-cookie';
 import axios from 'axios';
 import OpenViduSession from 'openvidu-react';
+
 
 class App extends Component {
     constructor(props) {
@@ -195,12 +197,27 @@ class App extends Component {
         return await this.createToken(sessionId);
     }
 
+    // async createSession(sessionId, liveName, isPublic, deleted) {
+    //     const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions', 
+    //     { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
+    //         headers: { 'Content-Type': 'application/json', },
+    //     });
+    //     return response.data; // The sessionId
+    // }
+
+   
+
     async createSession(sessionId, liveName, isPublic, deleted) {
-        const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions', { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
-            headers: { 'Content-Type': 'application/json', },
+        return axios.post(this.APPLICATION_SERVER_URL+'gawm/back/api/sessions',  { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
+          headers: {
+            'Content-Type': 'application/json',
+            access_token: cookies.get('SESSION'),
+          }
         });
-        return response.data; // The sessionId
-    }
+      }
+    /**
+     * Backend API 서버 요청 Promise를 생성하는 데 사용되는 axios 객체입니다
+     */
 
     async createToken(sessionId) {
         const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
@@ -208,6 +225,8 @@ class App extends Component {
         });
         return response.data; // The token
     }
+
+
 }
 
 export default App;

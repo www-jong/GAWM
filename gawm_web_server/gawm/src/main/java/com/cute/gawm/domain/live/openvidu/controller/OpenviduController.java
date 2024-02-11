@@ -15,6 +15,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = {"https://i10e203.p.ssafy.io/", "http://localhost:3000"})
 @RestController
+@RequestMapping("/back/api/sessions")
 @RequiredArgsConstructor
 public class OpenviduController {
     private final LiveService liveService;
@@ -23,7 +24,7 @@ public class OpenviduController {
      * @param params The Session properties
      * @return The Session ID
      */
-    @PostMapping("/back/api/sessions")
+    @PostMapping
     public ResponseEntity<String> initializeSession(
             @LoginUser SessionUser sessionUser,
             @RequestBody(required = false) Map<String, Object> params
@@ -39,7 +40,7 @@ public class OpenviduController {
      * @param params    The Connection properties
      * @return The Token associated to the Connection
      */
-    @PostMapping("/back/api/sessions/{sessionId}/connections")
+    @PostMapping("/{sessionId}/connections")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
                                                    @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
