@@ -10,6 +10,7 @@ import BackButtonImg from '@/assets/images/back_button_img.png';
 import views from '@/assets/images/views.png';
 import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
+import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
 
 
 
@@ -28,6 +29,7 @@ export default function Look() {
     const [likes, setLikes] = useState(likeCnt);
     const [commentModalVisible, setCommentModalVisible] = useState(false);
     const [comments, setComments] = useState(LookTest.data.comment); // 코멘트 데이터들을 상태로 관리
+    const [isModalOpen, setIsModalOpen] = useState(false);
     
 
 
@@ -92,6 +94,12 @@ export default function Look() {
     };
 
 
+    const handleEditClick = (value, event) => {
+        setIsModalOpen(true);
+    };
+    
+
+
 
 
     return (
@@ -120,7 +128,7 @@ export default function Look() {
                     {/* 팔로우버튼 or 수정버튼 */}
                     {
                         isMyLookbook() ?
-                            <button type="button" className="relative p-2 focus:outline-none border-none bg-gray-100 rounded-full">
+                            <button type="button" className="relative p-2 focus:outline-none border-none bg-gray-100 rounded-full" onClick={handleEditClick}>
                                 <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                                 </svg>
@@ -172,7 +180,7 @@ export default function Look() {
                             </button>
                             <button className="focus:outline-none save">
                                 <svg className="w-7 h-7 text-gray-600 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
                                 </svg>
                             </button>
                         </div>
@@ -254,6 +262,7 @@ export default function Look() {
 
 
             </div>
+            {isModalOpen && <EditLookBookModal lookbookId={lookbookId} onClose={() => setIsModalOpen(false)} />}
         </div>
     );
 }
