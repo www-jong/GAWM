@@ -2,6 +2,7 @@ import LookTest from "./LookTest.json"
 import Backbutton from '@/components/Button/BackButton.jsx';
 import React, { useState } from 'react';
 import Mascot from '@/assets/images/Mascot.svg';
+import LookTestImg from './LookTestImg2.png';
 
 
 export default function Look() {
@@ -12,11 +13,12 @@ export default function Look() {
     return (
         <div className="mx-auto">
             <Backbutton />
-            <div className="h-full relative px-3">
-                <div className="flex justify-between items-center py-4 mt-2">
+            <div className="h-full relative ">
+
+                <div className="flex justify-between items-center px-3 py-4 mt-2">
                     <div className="relative mt-1 flex">
                         <div className="mr-2">
-                            <img src={userProfileImg ? userProfileImg : Mascot } alt="프로필이미지" className="w-10 h-10 rounded-full object-cover" />
+                            <img src={userProfileImg ? userProfileImg : Mascot} alt="프로필이미지" className="w-10 h-10 rounded-full object-cover" />
                         </div>
                         <div className="ml-1 flex justify-start flex-col items-start">
                             <p className="text-gray-900 text-sm">
@@ -34,6 +36,11 @@ export default function Look() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                         </svg>
                     </button>
+                </div>
+
+                {/* 룩 이미지 */}
+                <div className="relative w-full pt" style={{ paddingTop: "100%" }}>
+                    <img className="absolute top-0 left-0 w-full h-full object-cover" src={LookTestImg} alt="룩이미지" />
                 </div>
 
             </div>
