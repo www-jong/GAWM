@@ -196,14 +196,14 @@ class App extends Component {
     }
 
     async createSession(sessionId, liveName, isPublic, deleted) {
-        const response = await axios.post(this.APPLICATION_SERVER_URL + 'back/gawm/api/sessions', { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
+        const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions', { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
             headers: { 'Content-Type': 'application/json', },
         });
         return response.data; // The sessionId
     }
 
     async createToken(sessionId) {
-        const response = await axios.post(this.APPLICATION_SERVER_URL + 'back/gawm/api/sessions/' + sessionId + '/connections', {}, {
+        const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
             headers: { 'Content-Type': 'application/json', },
         });
         return response.data; // The token
