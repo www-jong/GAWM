@@ -50,6 +50,16 @@ export const updateLookbook = (lookbookId, formData) => {
     });
 };
 
+/**
+ * 룩북 삭제
+ * 
+ * @param {number|string} lookbookId 삭제할 룩북의 ID
+ * @returns {Promise} 룩북 삭제 결과를 반환하는 Promise 객체
+ */
+export const deleteLookbook = (lookbookId) => {
+    return axios.delete(`${prefix}/${lookbookId}`);
+};
+
 
 /**
  * 친구 룩북 전체 조회를 위한 API 호출
