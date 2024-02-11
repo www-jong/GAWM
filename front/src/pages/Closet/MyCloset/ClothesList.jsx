@@ -32,7 +32,7 @@ function SubcategoryButton({ subcategory, subcategorySetter, selected }) {
 function ClothesThumbnail({ name, image, clothesIdSetter }) {
 	return (
 		<div
-			className="aspect-[3/4] flex flex-col px-4 pt-4 gap-2 bg-[#efefef] cursor-pointer"
+			className="aspect-[3/4] flex flex-col px-4 pt-4 gap-2 cursor-pointer outline outline-1 outline-offset-0 outline-[#efefef]"
 			onClick={clothesIdSetter}
 		>
 			<div
@@ -89,7 +89,7 @@ export default function ClothesList({ categoryName, clothes, categorySetter, clo
 					}
 				</div>
 
-				<div className="grid grid-cols-3 lg:grid-cols-4 divide-x">
+				<div className="grid grid-cols-3 lg:grid-cols-4 gap-[1px] mt-4">
 					{
 						list.map(
 							(item) => (
