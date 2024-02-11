@@ -221,7 +221,7 @@ class App extends Component {
 
     async createToken(sessionId) {
         const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
-            headers: { 'Content-Type': 'application/json', },
+            headers: { 'Content-Type': 'application/json', Authorization : cookies.get('SESSION'),},
         });
         return response.data; // The token
     }
