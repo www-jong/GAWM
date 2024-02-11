@@ -211,7 +211,7 @@ class App extends Component {
         return axios.post(this.APPLICATION_SERVER_URL+'gawm/back/api/sessions',  { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
           headers: {
             'Content-Type': 'application/json',
-            access_token: cookies.get('SESSION'),
+            Authorization : cookies.get('SESSION'),
           }
         });
       }
