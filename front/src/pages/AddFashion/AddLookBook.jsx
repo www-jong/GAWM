@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/BackButton.jsx';
 import TagsInput from "@/components/TagsInput.jsx"
 import AddClothing from '@/assets/images/AddClothing.svg';
+import AddClothingModal from '@/components/Modal/AddClothingModal.jsx';
 
 export default function AddLookBook() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function AddLookBook() {
   const [isPublic, setIsPublic] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
   const [tags, setTags] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -32,7 +34,15 @@ export default function AddLookBook() {
 
   const handleTagsChange = (newTags) => {
     setTags(newTags);
-};
+  };
+
+  const handleModalClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
 
 
@@ -49,7 +59,7 @@ export default function AddLookBook() {
     };
 
     formData.append('data', JSON.stringify(data));
-    
+
 
     try {
       const response = await fetch('/look-book', {
@@ -107,18 +117,18 @@ export default function AddLookBook() {
           </div>
         </div>
 
-        
+
         <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
-          <TagsInput onTagsChange={handleTagsChange}/>
+          <TagsInput onTagsChange={handleTagsChange} />
           <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="(개발용)태그를 입력하세요, 쉼표로 구분" />
         </div>
-        
+
         <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer">코디한 옷</p>
-          <img className="mt-2" src={AddClothing} alt="함께 입은 옷 추가" />
+          <img className="mt-2" onClick={handleModalClick} src={AddClothing} alt="함께 입은 옷 추가" />
           <input className="mt-2" type="text" ref={clothesInput} id="clothes" placeholder="(개발용)옷 ID를 입력하세요, 쉼표로 구분" />
         </div>
 
@@ -134,6 +144,7 @@ export default function AddLookBook() {
           </button>
         </div>
       </form>
+      {isModalOpen && <AddClothingModal onClose={handleCloseModal}/>}
     </>
   );
 }
