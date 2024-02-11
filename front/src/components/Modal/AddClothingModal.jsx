@@ -21,17 +21,16 @@ export default function AddClothing({ onClose }) {
   }, []);
 
   useEffect(() => {
-    // 이벤트 리스너를 등록하여 클릭 이벤트가 document에 전파될 때 모달 외부 클릭인지 확인합니다.
     function handleOutsideClick(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
-        onClose(); // 모달 외부 클릭 시 onClose 함수를 호출하여 모달을 닫습니다.
+        onClose();
       }
     }
 
     document.addEventListener('mousedown', handleOutsideClick);
 
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick); // 클린업 함수에서 이벤트 리스너를 제거합니다.
+      document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, [onClose]);
 
@@ -43,7 +42,7 @@ export default function AddClothing({ onClose }) {
         <div className="flex justify-start w-full mt-2">
           <p className="text-xl font-bold text-main">코디한 옷 추가하기</p>
         </div>
-        <div className="flex flex-row justify-center gap-4 mt-4">
+        <div className="flex flex-row justify-center gap-4 mt-4 mb-2">
           <button>
             <img src={SelectClothing1} alt="Select Clothing 1" />
           </button>
