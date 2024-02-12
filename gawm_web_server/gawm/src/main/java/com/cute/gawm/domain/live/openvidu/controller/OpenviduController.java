@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-
-
 @CrossOrigin(origins = {"https://i10e203.p.ssafy.io/", "http://localhost:3000"})
 @RestController
 @RequestMapping("/back/api/sessions")

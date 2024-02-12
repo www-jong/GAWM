@@ -29,12 +29,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        System.out.println(httpSession.getAttribute("user"));
-        System.out.println(httpSession.getAttribute("SESSION"));
-        System.out.println(httpSession.getAttribute("Authorization"));
-        System.out.println(httpSession.getAttribute("access_token"));
-        System.out.println(SecurityContextHolder.getContext().getAuthentication());
-
         return httpSession.getAttribute("user");
     }
 

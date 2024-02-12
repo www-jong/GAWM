@@ -50,9 +50,7 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-        System.out.println(attributes.getAttributes());
-        System.out.println(attributes.getAge());
-        System.out.println(attributes.getNickname());
+
         User user = saveOrUpdate(attributes);
         followService.saveFollowing(getOrCreateFollowing(user.getUserId()));
         followService.saveFollower(getOrCreateFollower(user.getUserId()));
