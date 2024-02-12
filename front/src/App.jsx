@@ -17,6 +17,7 @@ import MyPageSettings from "./pages/MyPage/Settings";
 import MyPageBookmark from "./pages/MyPage/Bookmark";
 import MyPageSettingsPropertySetter from "./pages/MyPage/Settings/PropertySetter";
 import MyPageAccountList from "./pages/MyPage/AccountList";
+import Image from "./pages/AddFashion/ImageEdit.jsx";
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
 					<Route path="look/:lookbookId" element={<EditLook />} />                    
 				</Route>
 				<Route path="closet/add" element={<AddClothes />} />
+				<Route path="image" element={<Image />} />
 				<Route path="look/add" element={<AddLook />} />
 				<Route path="landing" element={<Landing />} />
 				<Route path="loading" element={<Loading />} />

@@ -28,14 +28,14 @@ export default function AddInCloset({ onClose }) {
         if(response.ok){
           const precessedImage = await response.blob();
           console.log(URL.createObjectURL(precessedImage))
-          navigate('/closet/add', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
+          navigate('/image', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
           onClose();
         }else{
           console.error('Server error');
         }
       }catch(error){
         console.error('사진업로드 실패',error)
-        navigate('/closet/add')  // 테스트 용도
+        navigate('/image')  // 테스트 용도
       }
     
     }
