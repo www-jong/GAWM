@@ -29,6 +29,7 @@ export default function ImageEdit() {
         };
     };
 
+
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
@@ -44,15 +45,24 @@ export default function ImageEdit() {
 
     useEffect(() => {
         const handleTouchMove = (event) => {
-            const actualPos = getActualPosition(canvasRef.current, event);
+            const canvas = canvasRef.current;
+            const context = canvas.getContext('2d');
+            const actualPos = getActualPosition(canvas, event);
+
+            const calculateActualSize = (size) => { //이미지 크기에 따라 지우개크기 조절 
+                const imageSize = Math.max(canvas.width, canvas.height);
+                return size * (imageSize / 1000); // 예: 1000px 기준으로 size 조정
+            };
+
+            const adjustedEraseSize = calculateActualSize(eraseSize);
             if (selectedTool === 'erase') {
-                canvasRef.current.getContext('2d').clearRect(actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize);
+                canvasRef.current.getContext('2d').clearRect(actualPos.x - adjustedEraseSize / 2, actualPos.y - adjustedEraseSize / 2, adjustedEraseSize, adjustedEraseSize);
             } else if (selectedTool === 'maskingErase') {
                 const context = canvasRef.current.getContext('2d');
                 const originalImage = new Image();
                 originalImage.src = originalImageURL;
                 originalImage.onload = () => {
-                    context.drawImage(originalImage, actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize, actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize);
+                    context.drawImage(originalImage, actualPos.x - adjustedEraseSize / 2, actualPos.y - adjustedEraseSize / 2, adjustedEraseSize, adjustedEraseSize, actualPos.x - adjustedEraseSize / 2, actualPos.y - adjustedEraseSize / 2, adjustedEraseSize, adjustedEraseSize);
                 };
             }
             event.preventDefault();
