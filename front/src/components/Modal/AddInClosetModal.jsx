@@ -35,7 +35,7 @@ export default function AddInCloset({ onClose }) {
         }
       }catch(error){
         console.error('사진업로드 실패',error)
-        navigate('/image')  // 테스트 용도
+        navigate('/image');  // 테스트 용도
       }
     
     }
