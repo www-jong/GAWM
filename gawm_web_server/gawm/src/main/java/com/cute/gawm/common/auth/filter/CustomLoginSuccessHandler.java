@@ -2,6 +2,7 @@ package com.cute.gawm.common.auth.filter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,8 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
+        System.out.println("succees login ");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         //String redirectUrl = "http://localhost:4000/gawm/";
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }

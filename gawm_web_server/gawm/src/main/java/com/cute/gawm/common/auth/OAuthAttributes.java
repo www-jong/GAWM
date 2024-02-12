@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.time.LocalDate;
@@ -40,7 +41,7 @@ public class OAuthAttributes {
 
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
-
+        System.out.println("!!!!!!!!!!");
         return OAuthAttributes.builder()
                 .email((String) kakaoAccount.get("email"))
                 .gender(kakaoAccount.get("gender").equals("female")? User.Gender.FEMALE: User.Gender.MALE)
@@ -49,6 +50,7 @@ public class OAuthAttributes {
                 .nameAttributeKey(userNameAttributeName)
                 .attributes(attributes)
                 .build();
+
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {

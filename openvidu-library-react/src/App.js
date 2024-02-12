@@ -9,7 +9,7 @@ import OpenViduSession from 'openvidu-react';
 class App extends Component {
     constructor(props) {
         super(props);
-        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
+        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
         this.state = {
             mySessionId: 'SessionA',
             myUserName: 'OpenVidu_User_' + Math.floor(Math.random() * 100),
@@ -211,7 +211,7 @@ class App extends Component {
         return axios.post(this.APPLICATION_SERVER_URL+'gawm/back/api/sessions',  { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
           headers: {
             'Content-Type': 'application/json',
-            Authorization : cookies.get('SESSION'),
+            access_token : cookies.get('SESSION'),
           }
         });
       }
@@ -221,7 +221,7 @@ class App extends Component {
 
     async createToken(sessionId) {
         const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
-            headers: { 'Content-Type': 'application/json', Authorization : cookies.get('SESSION'),},
+            headers: { 'Content-Type': 'application/json', access_token : cookies.get('SESSION'),},
         });
         return response.data; // The token
     }
