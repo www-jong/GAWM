@@ -1,6 +1,6 @@
 #!/bin/bash
 # 4443 도커 프로세스 kill
-sudo docker container stop $(sudo docker container ls -q --filter "publish=4443")
+# sudo docker container stop $(sudo docker container ls -q --filter "publish=4443")
 
 # 8080번 포트에 해당하는 PID 찾기
 PID_8080=$(sudo lsof -t -i:8080)
