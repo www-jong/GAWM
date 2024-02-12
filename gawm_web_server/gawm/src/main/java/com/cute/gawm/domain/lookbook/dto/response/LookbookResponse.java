@@ -25,6 +25,7 @@ public class LookbookResponse {
     private int view;
     private List<TagResponse> tag;
     private List<CommentResponse> comment;
+    private boolean isPublish;
 
     private boolean isLiked;
     private boolean isBookmarked;

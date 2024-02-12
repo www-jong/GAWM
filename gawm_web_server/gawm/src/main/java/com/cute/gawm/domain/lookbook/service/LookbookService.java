@@ -130,6 +130,7 @@ public class LookbookService {
                 .view(lookbook.getView())
                 .tag(tags)
                 .comment(comments)
+                .isPublish(lookbook.isPublic())
                 .isLiked(isLiked)
                 .isBookmarked(isBookmarked)
                 .isFollowed(isFollowed)
