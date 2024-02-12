@@ -32,113 +32,41 @@ export default function ImageEdit() {
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        const originalImage = new Image();
-        originalImage.src = originalImageURL;
-        originalImage.onload = () => {
-            // 로딩대기용
-        };
-
-        const calculateActualSize = (size) => { //이미지 크기에 따라 지우개크기 조절 
-            const imageSize = Math.max(canvas.width, canvas.height);
-            return size * (imageSize / 1000); // 예: 1000px 기준으로 size 조정
-        };
-
-        /**
-        const getActualPosition = (x, y) => {
-            // 캔버스와 터치 좌표 사이의 비율을 고려하여 실제 좌표 계산
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width; // 캔버스 너비 대비 실제 너비의 비율
-            const scaleY = canvas.height / rect.height; // 캔버스 높이 대비 실제 높이의 비율
-            return {
-                x: (x - rect.left) * scaleX,
-                y: (y - rect.top) * scaleY
-            };
-        };
- */
-        const getTouchPos = (canvasDom, touchEvent) => {
-            var rect = canvasDom.getBoundingClientRect();
-            return {
-                x: touchEvent.touches[0].clientX - rect.left,
-                y: touchEvent.touches[0].clientY - rect.top
-            };
-        };
-
-        const eraseAtPosition = (x, y, eraseSize) => {
-            context.clearRect(x - eraseSize / 2, y - eraseSize / 2, eraseSize, eraseSize);
-        };
-
-        // M지우개 기능: 원본 이미지에서 지정된 영역을 복원합니다.
-        const restoreAtPosition = (x, y, eraseSize) => {
-            context.drawImage(originalImage, x - eraseSize / 2, y - eraseSize / 2, eraseSize, eraseSize, x - eraseSize / 2, y - eraseSize / 2, eraseSize, eraseSize);
-        };
-
-
-        const handleTouchMove = (event) => {
-            const touchPos = getTouchPos(canvas, event);
-            const actualPos = getActualPosition(canvasRef.current, event);
-            // const eraseSize = calculateActualSize(20);
-            if (selectedTool === 'erase') { // 지우개 작동
-                eraseAtPosition(actualPos.x, actualPos.y, eraseSize);
-            }
-            if (selectedTool === 'maskingErase') { // M지우개 작동
-                restoreAtPosition(actualPos.x, actualPos.y, eraseSize);
-            }
-            event.preventDefault(); // 스크롤 등 기본 이벤트 방지
-        };
-
-        if (selectedTool === 'erase' || selectedTool === 'maskingErase') {
-            canvas.addEventListener('touchmove', handleTouchMove);
-        }
-
-        return () => {
-            if (selectedTool === 'erase' || selectedTool === 'maskingErase') {
-                canvas.removeEventListener('touchmove', handleTouchMove);
-            }
-        };
-    }, [selectedTool, originalImageURL]); // 도구가 변경될 때마다 작업 변경사항을 적용
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-    
-        // eraseSize에 의존하는 터치 이벤트 핸들러
-        const handleTouchMove = (event) => {
-            const actualPos = getActualPosition(canvas, event);
-            if (selectedTool === 'erase') {
-                context.clearRect(actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize);
-            } else if (selectedTool === 'maskingErase') {
-                context.drawImage(originalImage, actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize, actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize);
-            }
-            event.preventDefault();
-        };
-    
-        if (selectedTool === 'erase' || selectedTool === 'maskingErase') {
-            canvas.addEventListener('touchmove', handleTouchMove);
-        }
-    
-        return () => {
-            if (selectedTool === 'erase' || selectedTool === 'maskingErase') {
-                canvas.removeEventListener('touchmove', handleTouchMove);
-            }
-        };
-    }, [eraseSize]);
-    
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
         const image = new Image();
         image.src = processedImageURL;
         image.onload = () => {
             canvas.width = image.naturalWidth;
             canvas.height = image.naturalHeight;
             context.drawImage(image, 0, 0);
-            contextRef.current = context;
             saveCanvasState();
         };
+    }, [processedImageURL]);
 
+    useEffect(() => {
+        const handleTouchMove = (event) => {
+            const actualPos = getActualPosition(canvasRef.current, event);
+            if (selectedTool === 'erase') {
+                canvasRef.current.getContext('2d').clearRect(actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize);
+            } else if (selectedTool === 'maskingErase') {
+                const context = canvasRef.current.getContext('2d');
+                const originalImage = new Image();
+                originalImage.src = originalImageURL;
+                originalImage.onload = () => {
+                    context.drawImage(originalImage, actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize, actualPos.x - eraseSize / 2, actualPos.y - eraseSize / 2, eraseSize, eraseSize);
+                };
+            }
+            event.preventDefault();
+        };
 
-    }, [processedImageURL]); // selectedTool이 변경될 때마다 이펙트를 다시 실행합니다.
+        if (selectedTool === 'erase' || selectedTool === 'maskingErase') {
+            canvasRef.current.addEventListener('touchmove', handleTouchMove);
+        }
+
+        return () => {
+            canvasRef.current.removeEventListener('touchmove', handleTouchMove);
+        };
+    }, [selectedTool, eraseSize, originalImageURL]);
+    
 
     const handleToolSelect = (tool) => {
         if (tool === 'doBack') {
@@ -203,6 +131,7 @@ export default function ImageEdit() {
         };
         setSelectedTool(null); // '되돌리기' 후 도구 선택 취소
     };
+    
     return (
         <div className="flex flex-col min-h-screen">
             <div className="bg-gray-100 p-1 flex justify-between items-center">
