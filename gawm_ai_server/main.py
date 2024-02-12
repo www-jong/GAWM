@@ -74,7 +74,7 @@ async def masking_image(image_file: UploadFile = File(...)):
         resized_image.save(buf, format='PNG')
         output_image_bytes = buf.getvalue()
 
-        output_image_bytes = remove(image_bytes,session=app.state.rembg_session)
+        output_image_bytes = remove(output_image_bytes,session=app.state.rembg_session)
         return StreamingResponse(io.BytesIO(output_image_bytes), media_type="image/png")
     except Exception as e:
         return JSONResponse(status_code=500, content={"status":500,"message": "이미지 처리 중 오류가 발생했습니다.", "error": str(e)})

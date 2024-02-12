@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { maskingImage,uploadImageForTagging } from '../../apis/clothes'; // apiService에서 함수 가져오기
-
+import {resizeImage} from '../../apis/image_controll'
 
 export default function AddInCloset({ onClose }) {
   const navigate = useNavigate();
@@ -17,25 +17,23 @@ export default function AddInCloset({ onClose }) {
     if(image){
       setSelectedImage(image);
       navigate('/loading');
+      
 
-      const formData= new FormData();
-      formData.append('image_file',image);
 
       try{
-        //const response = await fetch('https://i10e203.p.ssafy.io/gawm/ai/masking/',{
+        const resizedImage = await resizeImage(image,512,512);
+        const formData= new FormData();
+        formData.append('image_file',resizedImage);
         const response = await maskingImage(formData);
         if(response.status==200){
           try{
             
             const response2 = await uploadImageForTagging(formData);
-            console.log('check')
-            console.log(response2)
-            console.log(response2.data.data)
-            console.log('이거',response2.data.data.uuid)
+
             //navigate('/image', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
             navigate('/image', { state: {
                processedImageURL:URL.createObjectURL(response.data),
-               originalImageURL:URL.createObjectURL(image),
+               originalImageURL:URL.createObjectURL(resizedImage),
               product_id:response2.data.data.uuid } });
             onClose();
           }catch(errer){
