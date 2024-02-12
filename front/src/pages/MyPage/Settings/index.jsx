@@ -22,6 +22,18 @@ export default function Settings() {
 		)
 	);
 
+	const navigate = useNavigate();
+	useEffect(
+		() => {
+			// 속성이 준비되지 않았을 시 마이페이지로 되돌리기
+			if(
+				nickname !== null ||
+				gender !== null ||
+				age !== null
+			) navigate("/mypage");
+		}
+	);
+
 	const genderNames = {
 		"FEMALE": "여성",
 		"MALE": "남성"
