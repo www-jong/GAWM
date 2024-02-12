@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 public class UserInfoDto {
 
+    private Integer userId;
+    private String profileImg;
     private String nickname;
     private String gender;
     private Integer age;
@@ -16,6 +18,8 @@ public class UserInfoDto {
     private User.Provider provider;
 
     public UserInfoDto(User user) {
+        this.userId=user.getUserId();
+        this.profileImg=user.getProfileImg();
         this.nickname = user.getNickname();
         this.gender = (user.getGender() != null) ? user.getGender().toString() : null;
         this.age = user.getAge();

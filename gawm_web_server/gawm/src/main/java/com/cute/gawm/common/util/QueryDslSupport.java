@@ -1,4 +1,4 @@
-package com.cute.gawm.common;
+package com.cute.gawm.common.util;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
