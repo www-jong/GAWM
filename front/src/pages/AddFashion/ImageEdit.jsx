@@ -76,7 +76,7 @@ export default function ImageEdit() {
             canvasRef.current.removeEventListener('touchmove', handleTouchMove);
         };
     }, [selectedTool, eraseSize, originalImageURL]);
-    
+
 
     const handleToolSelect = (tool) => {
         if (tool === 'doBack') {
@@ -141,7 +141,7 @@ export default function ImageEdit() {
         };
         setSelectedTool(null); // '되돌리기' 후 도구 선택 취소
     };
-    
+
     return (
         <div className="flex flex-col min-h-screen">
             <div className="bg-gray-100 p-1 flex justify-between items-center">
@@ -153,26 +153,30 @@ export default function ImageEdit() {
                 </button>
             </div>
 
-            <div className="flex-grow flex justify-center items-center bg-black">
-                <canvas
-                    ref={canvasRef}
-                    className="max-w-full max-h-400px"
-                    style={{ objectFit: 'contain' }}
-                />
-            </div>
-
-            {['erase', 'masking', 'maskingErase'].includes(selectedTool) && (
-                <div className="flex justify-center p-4">
-                    <input
-                        type="range"
-                        min="1"
-                        max="100"
-                        value={eraseSize}
-                        onChange={handleEraseSizeChange}
-                        className="w-full"
+            <div className="relative flex-grow">
+                {/* 이미지 영역 */}
+                <div className="absolute inset-0 flex justify-center items-center bg-black" style={{ minHeight: 'calc(100vh - 200px)' }}>
+                    <canvas
+                        ref={canvasRef}
+                        className="max-w-full max-h-400px"
+                        style={{ objectFit: 'contain' }}
                     />
                 </div>
-            )}
+
+                {/* 슬라이더 영역 */}
+                {['erase', 'masking', 'maskingErase'].includes(selectedTool) && (
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-white">
+                        <input
+                            type="range"
+                            min="1"
+                            max="100"
+                            value={eraseSize}
+                            onChange={handleEraseSizeChange}
+                            className="w-full"
+                        />
+                    </div>
+                )}
+            </div>
 
             <div className="bg-gray-100 p-2 flex justify-around items-center mt-auto">
                 {/* Tool buttons */}
