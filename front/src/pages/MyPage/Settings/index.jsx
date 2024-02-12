@@ -3,6 +3,8 @@ import CenteredTopBar from "../CenteredTopBar";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
 import { useUserStore } from "../../../stores/user";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 /**
  * 마이페이지 내 설정 페이지를 생성합니다
