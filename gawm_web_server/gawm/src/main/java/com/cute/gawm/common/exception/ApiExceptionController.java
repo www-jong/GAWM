@@ -84,42 +84,42 @@ public class ApiExceptionController {
         return constructErrorResponse(e,HttpStatus.INTERNAL_SERVER_ERROR, "S3FileDeleteException");
     }
 
-    // 유저를 찾을 수 없음.
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(UserNotFoundException ex) {
-        return constructErrorResponse(ex, HttpStatus.NOT_FOUND, "UserNotFoundException");
-    }
+//    // 유저를 찾을 수 없음.
+//    @ExceptionHandler(UserNotFoundException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    public ErrorResponse handleUserNotFoundException(UserNotFoundException ex) {
+//        return constructErrorResponse(ex, HttpStatus.NOT_FOUND, "UserNotFoundException");
+//    }
 
     // 해당 유저가 아님.
-    @ExceptionHandler(UserNotMatchException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(UserNotMatchException ex) {
-        return constructErrorResponse(ex, HttpStatus.NOT_FOUND, "UserNotMatchException");
-    }
+//    @ExceptionHandler(UserNotMatchException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    public ErrorResponse handleUserNotFoundException(UserNotMatchException ex) {
+//        return constructErrorResponse(ex, HttpStatus.NOT_FOUND, "UserNotMatchException");
+//    }
 
     // 옷을 찾을 수 없음
-    @ExceptionHandler(ClothesNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleClothesNotFoundException(ClothesNotFoundException ex) {
-        return constructErrorResponse(ex, HttpStatus.NOT_FOUND, "ClothesNotFoundException");
-    }
+//    @ExceptionHandler(ClothesNotFoundException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    public ErrorResponse handleClothesNotFoundException(ClothesNotFoundException ex) {
+//        return constructErrorResponse(ex, HttpStatus.NOT_FOUND, "ClothesNotFoundException");
+//    }
 
     // 데이터 request 에러
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        log.error("[HttpMessageNotReadableException]={}",e.getMessage());
-        String errorDetail = "요청 본문을 파싱할 수 없습니다. JSON 형식을 확인해주세요.";
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "HttpMessageNotReadableException", errorDetail);
-    }
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+//        log.error("[HttpMessageNotReadableException]={}",e.getMessage());
+//        String errorDetail = "요청 본문을 파싱할 수 없습니다. JSON 형식을 확인해주세요.";
+//        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "HttpMessageNotReadableException", errorDetail);
+//    }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED) //404
-    @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity<?> dataNotFoundException(DataNotFoundException e) {
-        log.error("[exceptionHandle] ex={}", e.getMessage());
-        return ResponseUtil.buildErrorResponse(HttpStatus.NOT_FOUND,"DataNotFoundException",e.getMessage());
-    }
+//    @ResponseStatus(HttpStatus.UNAUTHORIZED) //404
+//    @ExceptionHandler(DataNotFoundException.class)
+//    public ResponseEntity<?> dataNotFoundException(DataNotFoundException e) {
+//        log.error("[exceptionHandle] ex={}", e.getMessage());
+//        return ResponseUtil.buildErrorResponse(HttpStatus.NOT_FOUND,"DataNotFoundException",e.getMessage());
+//    }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
     @ExceptionHandler(DataMismatchException.class)
@@ -127,23 +127,24 @@ public class ApiExceptionController {
         return constructErrorResponse(e,HttpStatus.INTERNAL_SERVER_ERROR, "DataMismatchException");
     }
 
-    // 실행중 에러
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
-    public ErrorResponse handleRuntimeException(RuntimeException e) {
-        log.error("[RuntimeException]={}",e.getMessage());
-        String errorDetail = "실행 중 예외가 발생했습니다.";
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "RuntimeException", errorDetail);
-    }
+//    // 실행중 에러
+//    @ExceptionHandler(RuntimeException.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
+//    public ErrorResponse handleRuntimeException(RuntimeException e) {
+//        log.error("[RuntimeException]={}",e.getMessage());
+//        String errorDetail = "실행 중 예외가 발생했습니다.";
+//        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "RuntimeException", errorDetail);
+//    }
 
-    // 기타 예외
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleAllUncaughtException(Exception e) {
-        log.error("[Exception]={}",e.getMessage());
-        String errorDetail = "예외가 발생했습니다.";
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "handleAllUncaughtException", errorDetail);
-    }
+//    // 기타 예외
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleAllUncaughtException(Exception e) {
+//        log.error("[Exception]={}",e.getMessage());
+//        String errorDetail = "예외가 발생했습니다.";
+//        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "handleAllUncaughtException", errorDetail);
+//    }
+
 
     private ErrorResponse constructErrorResponse(Exception e, HttpStatus status, String errorType) {
         log.error("[exceptionHandle] ex={}", e.getMessage(), e);

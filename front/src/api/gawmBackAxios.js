@@ -10,7 +10,7 @@ const instance = axios.create({
         language : "ko-KR",
     },
   	headers: {
-    Authorization: cookies.get('SESSION'),
+    Authorization: cookies.get('sessionId'),
   }
 });
 
