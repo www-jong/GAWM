@@ -32,6 +32,7 @@ export default function AddInCloset({ onClose }) {
             console.log(response2)
             console.log(response2.data.data)
             console.log('이거',response2.data.data.uuid)
+            //navigate('/image', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
             navigate('/closet/add', { state: {
                processedImageURL:URL.createObjectURL(response.data),
                originalImageURL:URL.createObjectURL(image),
@@ -47,7 +48,7 @@ export default function AddInCloset({ onClose }) {
         }
       }catch(error){
         console.error('사진업로드 실패',error)
-        navigate('/closet/add')  // 테스트 용도
+        navigate('/image');  // 테스트 용도
       }
     
     }
