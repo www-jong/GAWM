@@ -7,8 +7,6 @@ import com.cute.gawm.domain.live.dto.request.LiveCreateRequest;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
