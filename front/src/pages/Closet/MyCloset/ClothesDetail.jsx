@@ -15,47 +15,22 @@ import {getClothesInfo} from "../../../apis/clothes"
  */
 export default function ClothesDetail({ clothesId, clothesIdSetter }) {
 	const [clothes, setClothes] = useState(undefined);
-
 	// 옷 정보 불러오기
 	useEffect(
 		() => {
 			const fetchClothes = async () => {
 				try {
 					// TODO: API 연동 시 주소 수정
-					const response = await getClothesInfo(clothedId);
-					const data = response.data.data;
-					console.log(data)
+					const response = await getClothesInfo(clothesId);
+					const data = response.data;
 					setClothes(data);
 				}
 				catch(error) {
 					// TODO: API 연동 시 아래 줄 주석 해제 및 테스트 코드 삭제
 					// setClothes(null);
-
-					// 테스트 코드
-					setClothes(
-						{
-							"status": 200,
-							"data": {
-								"clothesId": 3,
-								"userId": 2,
-								"orderNum": 1,
-								"clothesImg": `https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/`+"afa8b099-0d8b-4a76-9cea-5a303bdc2288.jpg",
-								"brand": "싸피",
-								"name": "싸피후드3",
-								"colors": [
-									"파랑",
-									"초록"
-								],
-								"materials": [
-									"면",
-									"폴리에스테르"
-								],
-								"patterns": [],
-								"scategory": "후드",
-								"mcategory": "아우터"
-							}
-						}.data
-					);
+					console.error(error)
+					console.log(await getClothesInfo(clothesId))
+					
 				}
 			};
 

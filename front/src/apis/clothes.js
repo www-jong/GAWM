@@ -144,8 +144,9 @@ export const getClothesInfo = async (clothesId) => {
 	try{
         // gawmApiAxios 인스턴스를 사용하여 요청을 보냅니다.
         // URL은 전체 경로를 명시해야 합니다.
-        const response = await gawmApiAxios().get(`/clothes/${productId}`);
+        const response = await gawmApiAxios().get(`/clothes/${clothesId}`);
         console.log("조회 결과:", response);
+		response.data.data.clothesImg=`https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/`+response.data.data.clothesImg
         return response.data; // 응답 데이터 반환
     } catch (error) {
         console.error("외부 API 조회 중 오류 발생:", error);
