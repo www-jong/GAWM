@@ -7,7 +7,6 @@ import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
 import axios from "axios";
-import {getClothesInfo} from "../../../apis/clothes"
 import { TrashIcon } from "@heroicons/react/24/outline";
 /**
  * 옷의 상세정보를 표시하는 component를 생성합니다

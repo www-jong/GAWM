@@ -33,7 +33,7 @@ export default function AddInCloset({ onClose }) {
             console.log(response2.data.data)
             console.log('이거',response2.data.data.uuid)
             //navigate('/image', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
-            navigate('/closet/add', { state: {
+            navigate('/image', { state: {
                processedImageURL:URL.createObjectURL(response.data),
                originalImageURL:URL.createObjectURL(image),
               product_id:response2.data.data.uuid } });

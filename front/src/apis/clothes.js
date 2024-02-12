@@ -20,7 +20,7 @@ const prefix = "clothes";
  * 
  * @returns Promise 객체, 조회된 데이터를 반환합니다.
  */
-export const clothesListInfo = async () => {
+export const getAllClothesInfo = async () => {
     try {
         // gawmApiAxios 인스턴스를 사용하여 요청을 보냅니다.
         // URL은 전체 경로를 명시해야 합니다.
