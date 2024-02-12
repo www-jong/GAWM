@@ -41,6 +41,19 @@ export function edit(data) {
 	);
 }
 
+/**
+ * 프로필 사진을 수정 요청하는 객체를 생성합니다
+ * 
+ * @param {FormData} data 사진을 포함한 FormData 객체
+ * @returns Promise 객체
+ */
+export function updateProfileImge(data) {
+	return axios.patch(
+		`${prefix}/profile-img`,
+		data
+	);
+}
+
 
 /**
  * 로그인한 사용자의 팔로잉 목록을 받아오는 객체를 생성합니다
