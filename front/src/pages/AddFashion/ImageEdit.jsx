@@ -18,7 +18,7 @@ export default function ImageEdit() {
 
     const [cropStart, setCropStart] = useState(null);
     const [cropEnd, setCropEnd] = useState(null);
-    
+
     const croppingRef = useRef(false);
 
     const originalImageRef = useRef(new Image());
@@ -145,16 +145,16 @@ export default function ImageEdit() {
 
             setCropStart(pos);
             croppingRef.current = true;
-const cropLeft = pos.x + canvasLeft;
-const cropTop = pos.y + canvasTop - headerHeight;
+            const cropLeft = pos.x + canvasLeft;
+            const cropTop = pos.y + canvasTop - headerHeight;
 
-// 크롭 영역을 표시합니다.
-const cropArea = document.getElementById('cropArea');
-cropArea.style.left = `${cropLeft}px`;
-cropArea.style.top = `${cropTop}px`;
-cropArea.style.width = `0px`;
-cropArea.style.height = `0px`;
-cropArea.style.display = 'block';
+            // 크롭 영역을 표시합니다.
+            const cropArea = document.getElementById('cropArea');
+            cropArea.style.left = `${cropLeft}px`;
+            cropArea.style.top = `${cropTop}px`;
+            cropArea.style.width = `0px`;
+            cropArea.style.height = `0px`;
+            cropArea.style.display = 'block';
         };
 
         const handleTouchMove = (event) => {
