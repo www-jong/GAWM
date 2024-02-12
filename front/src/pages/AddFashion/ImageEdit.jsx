@@ -34,7 +34,7 @@ export default function ImageEdit() {
                 <button onClick={goBack} className="my-1 flex items-start">
                     <img src={BackButtonImg} alt="뒤로 가기" className="size-6 ml-2 mt-1" />
                 </button>
-                <button className="bg-main text-white font-semibold py-1 px-4 rounded" onClick={handleSaveButton}>
+                <button className="text-main font-semibold py-1 px-4 rounded" onClick={handleSaveButton}>
                     저장
                 </button>
             </div>
