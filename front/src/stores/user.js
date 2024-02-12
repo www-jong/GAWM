@@ -39,11 +39,15 @@ export async function fetchUserInfo() {
 }
 
 /**
- * 사용자 정보를 수정하기 위해 내부에서 호출되는 함수입니다
+ * 사용자의 정보를 수정합니다
+ * 
+ * - nickname: 속성 존재 시 닉네임 수정
+ * - gender: 속성 존재 시 성별 수정
+ * - age: 속성 존재 시 나이 수정
  * 
  * @param {Object} data 수정할 데이터
  */
-async function updateUserInfo(data) {
+export async function updateUserInfo(data) {
 	// 현재 값 불러오기
 	const {
 		nickname, gender, age
@@ -56,6 +60,15 @@ async function updateUserInfo(data) {
 			}
 		)
 	);
+
+	// data에 필요한 속성이 없으면 중지
+	if(
+		!(
+			"nickname" in data ||
+			"gender" in data ||
+			"age" in data
+		)
+	) return;
 
 	// 새로운 값 존재 시 업데이트
 	const payload = {};
