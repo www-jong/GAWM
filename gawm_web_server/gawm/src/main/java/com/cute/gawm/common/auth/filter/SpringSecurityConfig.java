@@ -33,7 +33,7 @@ public class SpringSecurityConfig {
                 .logout().logoutSuccessUrl("/").and()
                 .oauth2Login()
                 .authorizationEndpoint()
-                .baseUri("/back/oauth2/authorization")
+                .baseUri("/oauth2/authorization")
                 .and()
                 .userInfoEndpoint()
                 .userService(oAuthService)
