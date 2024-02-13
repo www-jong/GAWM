@@ -60,8 +60,8 @@ function Home() {
 					}} pagination={{
 						clickable: true,
 					}} modules={[Autoplay, Pagination]} className="mySwiper">
-						<SwiperSlide><img src={introduce1} alt="소개이미지1" className="flex justify-center items-center" /></SwiperSlide>
-						<SwiperSlide><img src={introduce2} alt="소개이미지2" className="flex justify-center items-center" /></SwiperSlide>
+						<SwiperSlide><img src={introduce1} alt="소개이미지1" className="w-screen object-contain" /></SwiperSlide>
+						<SwiperSlide><img src={introduce2} alt="소개이미지2" className="w-screen object-contain" /></SwiperSlide>
 					</Swiper>
 				</div>
 				<div className="flex gap-4 items-center scroll-pl-4 px-2.5 pr-4 snap-x overflow-x-auto">
