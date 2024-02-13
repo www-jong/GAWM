@@ -14,7 +14,7 @@ export default function styleLogSelect() {
     // 저장버튼
     const handleSave = () => {
         navigate('/closet');
-      };
+    };
 
     // 카테고리용
     const [selectedCategory, setSelectedCategory] = useState('outers');
@@ -63,6 +63,9 @@ export default function styleLogSelect() {
             {/* canvas영역 */}
             <div className="bg-gray-200 h-96">
                 <p className="text-center">캔버스영역</p>
+                <p className="text-center">
+                    {selectedClothes.map(clothe => clothe.clothe_img).join(', ')}
+                </p>
             </div>
 
 
