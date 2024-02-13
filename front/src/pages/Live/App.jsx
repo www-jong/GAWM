@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import './App.css';
 import UserVideoComponent from './UserVideoComponent.jsx';
 import cookies from 'js-cookie';
+import { OpenVidu } from 'openvidu-browser';
 
 const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
 
@@ -17,9 +18,11 @@ class Live extends Component {
             session: undefined,
             mainStreamManager: undefined,
             publisher: undefined,
-            subscribers: [],
-            isPublic : undefined,
-            liveName: "26C 라이브 이름",
+            subscribers: [],         
+            liveName: "26C 라이브 이름",  
+            isPublic: true,
+            deleted: false,
+            token: "initial token",
         };
 
         // Bind this to the event handlers
@@ -33,6 +36,7 @@ class Live extends Component {
         this.handleChangeIspublic = this.handleChangeIspublic.bind(this);
         this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
         this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
+        this.handleChangeToken = this.handleChangeToken.bind(this);
     }
 
     componentDidMount() {
@@ -59,16 +63,21 @@ class Live extends Component {
         });
     }
 
+    handleChangeToken(e) {
+        this.setState({
+            token: e.target.value,
+        });
+    }
+
     handleChangeIspublic(e) {
         this.setState({
             isPublic: e.target.value,
         });
     }
 
-    handleChangeDeleted(e) {
-        this.setState({
-            deleted: e.target.value,
-        });
+    handleChangeDeleted(event) {
+        const isChecked = event.target.checked;
+        this.setState({ deleted: isChecked });
     }
 
     handleChangeUserName(e) {
@@ -97,6 +106,18 @@ class Live extends Component {
     }
 
     async joinSession() {
+        event.preventDefault();
+        if (this.state.mySessionId && this.state.myUserName) {
+            const token = await this.getToken();
+            console.log(token);
+            this.setState({
+                token: token,
+                session: true,
+            });
+        }
+
+       
+
         this.OV = new OpenVidu();
 
         this.setState(
@@ -124,9 +145,9 @@ class Live extends Component {
                     console.warn(exception);
                 });
 
-                const token = await this.getToken();
-
-                mySession.connect(token, { clientData: this.state.myUserName })
+                // const token = await this.getToken();
+                
+                mySession.connect(this.state.token, { clientData: this.state.myUserName })
                     .then(async () => {
                         let publisher = await this.OV.initPublisherAsync(undefined, {
                             audioSource: undefined,
@@ -175,7 +196,8 @@ class Live extends Component {
             mainStreamManager: undefined,
             publisher: undefined,
             isPublic: undefined,
-            
+            deleted: undefined,
+            liveName : undefined,
         });
     }
 
@@ -249,17 +271,19 @@ class Live extends Component {
                                     />
                                 </p>
 
+                                
                                 <p>
-                                    <label> isPublic: </label>
-                                    <input
-                                        className="form-control"
-                                        type="checkbox"
+                                    <label> isPublic : </label>
+                                    <label class="switch">
+                                        <input 
+                                        type="checkbox" 
                                         id="isPublic"
-                                        value={isPublic}
-                                        onChange={this.handleChangeIspublic}                                 
-                                    />
+                                        checked={this.state.isPublic}
+                                        onChange={this.handleChangeIspublic}
+                                        />
+                                        <span class="slider"></span>
+                                    </label>
                                 </p>
-
                                 <p>
                                     <label> liveName: </label>
                                     <input
@@ -272,16 +296,20 @@ class Live extends Component {
                                     />
                                 </p>
 
+                            
                                 <p>
-                                    <label> 세션 비우기: </label>
-                                    <input
-                                        className="form-control"
-                                        type="checkbox"
+                                    <label> 세션 비우기 : </label>
+                                    <label class="switch">
+                                        <input 
+                                        type="checkbox" 
                                         id="deleted"
-                                        value={deleted}
-                                        onChange={this.handleChangeDeleted}                                       
-                                    />
+                                        checked={this.state.deleted}
+                                        onChange={this.handleChangeDeleted}
+                                        />
+                                        <span class="slider"></span>
+                                    </label>
                                 </p>
+  
 
                                 <p className="text-center">
                                     <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
@@ -336,28 +364,34 @@ class Live extends Component {
     }
 
     async getToken() {
+        console.log("getToken");
         const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
-        return await this.createToken(sessionId);
+        return await this.createToken(this.state.mySessionId);
     }
 
     async createSession(sessionId, liveName, isPublic , deleted) {
-        const data = {
-            'customSessionId' : sessionId,
-            'liveName' : liveName,
-            'isPublic':isPublic,
-            'deleted': deleted,
-        };
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions', data, {
-            headers: { 'Content-Type': 'application/json', Authorization: cookies.get("sessionId") },
-            withCredentials:true
+        console.log("createSession");
+        console.log(sessionId);
+        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions',  {
+            customSessionId : sessionId,
+            liveName : liveName,
+            isPublic : isPublic,
+            deleted: deleted,
+        }, {
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials : true,
         });
         return response.data;
     }
 
-    async createToken(sessionId) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
-            headers: { 'Content-Type': 'application/json', Authorization: cookies.get("sessionId")  },
-            withCredentials:true
+   
+
+    async createToken(liveRoomId) {
+        console.log("createToken");
+        console.log(liveRoomId);
+        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + liveRoomId + '/connections', {customSessionId : liveRoomId }, {
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials: true 
         });
         return response.data;
     }
