@@ -27,6 +27,7 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 					// TODO: API 연동 시 주소 수정
 					const response = await getClothesInfo(clothesId);
 					const data = response.data;
+					console.log("옷정보:",data)
 					setClothes(data);
 				}
 				catch(error) {

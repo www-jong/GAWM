@@ -274,37 +274,30 @@ export default function ImageEdit() {
         if (tool === 'masking') {
             const canvas = canvasRef.current;
             const context = canvas.getContext('2d');
-
-            const applyMasking = async () => {
-                canvas.toBlob(async (blob) => {
-                    const formData = new FormData();
-                    formData.append('image_file', blob, 'image.png');
-
-                    try {
-                        // maskingImage 함수 호출
-                        const response = await maskingImage(formData);
-
-                        // Blob으로부터 이미지 객체를 생성
-                        const imageBlob = await response.data; // response가 axios response 객체라고 가정
-                        const objectURL = URL.createObjectURL(imageBlob);
-
-                        const image = new Image();
-                        image.onload = () => {
-                            // 캔버스 크기 재조정 및 이미지 그리기
-                            canvas.width = image.width;
-                            canvas.height = image.height;
-                            context.drawImage(image, 0, 0);
-                            saveCanvasState(); // 상태 저장
-                            URL.revokeObjectURL(objectURL); // 사용이 끝난 URL 해제
-                        };
-                        image.src = objectURL;
-                    } catch (error) {
-                        console.error('Masking process failed', error);
-                    }
-                }, 'image/png');
-            };
-
-            applyMasking();
+    
+            // 현재 캔버스 상태(이미지 데이터)를 Blob으로 변환하여 서버에 마스킹 처리 요청
+            canvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                formData.append('image_file', blob, 'image.png');
+    
+                try {
+                    const response = await maskingImage(formData);
+                    const objectURL = URL.createObjectURL(response.data);
+    
+                    const newMaskedImage = new Image();
+                    newMaskedImage.onload = () => {
+                        // 캔버스 크기를 재조정하고, 새로운 마스킹 이미지를 캔버스에 적용
+                        canvas.width = newMaskedImage.width;
+                        canvas.height = newMaskedImage.height;
+                        context.drawImage(newMaskedImage, 0, 0);
+                        saveCanvasState(); // 상태 저장
+                        URL.revokeObjectURL(objectURL); // 사용이 끝난 URL 해제
+                    };
+                    newMaskedImage.src = objectURL;
+                } catch (error) {
+                    console.error('Masking process failed', error);
+                }
+            }, 'image/png');
             return;
         }
         setSelectedTool(tool);
