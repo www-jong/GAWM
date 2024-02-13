@@ -1,13 +1,11 @@
 import DetailContainer from "./DetailContainer";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getClothesInfo } from "../../../apis/clothes";
 import Overlay from "./Overlay";
 import CenteredTopBar from "../../MyPage/CenteredTopBar";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
-import ListGroup from "../../../components/ListGroup";
-import ListItem from "../../../components/ListGroup/ListItem";
-import axios from "axios";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { fetchUserInfo, useUserStore } from "../../../stores/user";
 /**
  * 옷의 상세정보를 표시하는 component를 생성합니다
  * 
@@ -18,7 +16,23 @@ import { TrashIcon } from "@heroicons/react/24/outline";
  * @returns 생성된 JSX component
  */
 export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) {
+	// 옷 정보
 	const [clothes, setClothes] = useState(undefined);
+
+	// 로그인한 사용자 ID
+	const { userId } = useUserStore(
+		(state) => ({ "userId": state.user?.userId })
+	);
+
+	// 옷 정보 <form>
+	const form = useRef(null);
+
+	// 편집 상태
+	const [isEditing, setIsEditing] = useState(false);
+	const isEditingSetter = async () => {
+		setIsEditing(!isEditing);
+	};
+
 	// 옷 정보 불러오기
 	useEffect(
 		() => {
@@ -36,8 +50,9 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 			};
 
 			fetchClothes();
+			if(!userId) fetchUserInfo();
 		},
-		[clothesId]
+		[clothesId, userId]
 	);
 
 	// 페이지 container
@@ -79,22 +94,46 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 					<img src={clothes.clothesImg} />
 				</div>
 
-				<DetailContainer data={clothes} />
+				<form ref={form}>
+					<DetailContainer
+						data={clothes}
+						isEditing={isEditing}
+					/>
 
-				<div className="flex flex-row justify-start mt-4 px-4">
-					<button
-						className="hover:bg-red/20 flex flex-row items-center gap-2 px-4 py-2 bg-[#efefef] rounded-lg"
-						onClick={
-							() => {
-								onDelete();
-								clothesIdSetter(undefined);
+					<div className="flex flex-row justify-start gap-4 mt-4 px-4">
+						<button
+							className="flex flex-row items-center gap-2 px-4 py-2 bg-[#efefef] rounded-lg"
+							onClick={isEditingSetter}
+						>
+							{
+								isEditing ? (
+									<>
+										<CheckIcon className="size-4" />
+										<span>완료</span>
+									</>
+								) : (
+									<>
+										<PencilIcon className="size-4" />
+										<span>편집</span>
+									</>
+								)
 							}
-						}
-					>
-						<TrashIcon className="size-4" />
-						<span>삭제</span>
-					</button>
-				</div>
+						</button>
+
+						<button
+							className="hover:bg-red/20 flex flex-row items-center gap-2 px-4 py-2 bg-[#efefef] rounded-lg"
+							onClick={
+								() => {
+									onDelete();
+									clothesIdSetter(undefined);
+								}
+							}
+						>
+							<TrashIcon className="size-4" />
+							<span>삭제</span>
+						</button>
+					</div>
+				</form>
 			</div>
 		</Container>
 	);
