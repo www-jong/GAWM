@@ -163,3 +163,14 @@ export const updateCommentInLookbook = (lookbookId, commentId, content) => {
 export const deleteCommentFromLookbook = (lookbookId, commentId) => {
     return axios.delete(`${prefix}/${lookbookId}/${commentId}`);
 };
+
+
+/**
+ * 오늘의감각
+ *
+
+ * @returns {Promise} 댓글 삭제 결과를 반환하는 Promise 객체
+ */
+export const get_top_list = () => {
+    return axios.get(`${prefix}/top_list`);
+};
