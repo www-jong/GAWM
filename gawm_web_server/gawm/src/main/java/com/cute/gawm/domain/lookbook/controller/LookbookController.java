@@ -32,33 +32,34 @@ public class LookbookController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getLookbooks(
-            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt") final Pageable pageable
-    ){
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
+    ) {
         return ResponseEntity.ok(
-                    lookbookService.getLookbooks(pageable)
-            );
+                lookbookService.getLookbooks(pageable)
+        );
     }
 
     @GetMapping("/top_list")
-    public ResponseEntity<?> getTopLookbookList(){
+    public ResponseEntity<?> getTopLookbookList() {
         List<LookbookThumbnailResponse> topLookbooks = lookbookService.getTopLookbooks();
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK,topLookbooks);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, topLookbooks);
     }
 
 
     @GetMapping("/{lookbookId}")
-    public ResponseEntity<?> getLookbook(@PathVariable final int lookbookId){
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(lookbookId));
+    public ResponseEntity<?> getLookbook(@LoginUser SessionUser sessionUser, @PathVariable final int lookbookId) {
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookService.getLookbook(sessionUser.getId(), lookbookId));
     }
 
     @PostMapping()
     public ResponseEntity<?> createLookbook(@LoginUser SessionUser sessionUser,
                                             @RequestPart("image") List<MultipartFile> images,
-                                            @RequestPart("data") LookbookCreateRequest lookbookCreateRequest){
+                                            @RequestPart("data") LookbookCreateRequest lookbookCreateRequest) {
         final int userId = sessionUser.getId();
         lookbookService.createLookbook(userId, images, lookbookCreateRequest);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 생성 완료");
     }
+
 
     @PutMapping("/{lookbookId}")
     public ResponseEntity<?> updateLookbook(
@@ -68,7 +69,7 @@ public class LookbookController {
             @RequestPart("data") LookbookUpdateRequest lookbookUpdateRequest
     ) {
         final int userId = sessionUser.getId();
-        lookbookService.updateLookbook(userId ,lookbookId, images, lookbookUpdateRequest);
+        lookbookService.updateLookbook(userId, lookbookId, images, lookbookUpdateRequest);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 수정 완료");
     }
 
@@ -76,9 +77,9 @@ public class LookbookController {
     public ResponseEntity<?> deleteLookbook(
             @LoginUser SessionUser sessionUser,
             @PathVariable Integer lookbookId
-    ){
-         final int userId = sessionUser.getId();
-         lookbookService.deleteLookbook(userId, lookbookId);
+    ) {
+        final int userId = sessionUser.getId();
+        lookbookService.deleteLookbook(userId, lookbookId);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 삭제 완료");
     }
 
@@ -86,8 +87,9 @@ public class LookbookController {
     public ResponseEntity<PagingResponse> getFollowingLookbooks(
             @LoginUser SessionUser sessionUser,
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
-    ){
-        PageImpl<LookbookMiniResponse> followingLookbooks = lookbookService.getFollowingLookbooks(sessionUser.getId(), pageable);
+    ) {
+        PageImpl<LookbookThumbnailResponse> followingLookbooks = lookbookService.getFollowingLookbooks(sessionUser.getId(), pageable);
+
         return ResponseUtil.buildPagingResponse(
                 HttpStatus.OK,
                 followingLookbooks.getContent(),
@@ -97,7 +99,7 @@ public class LookbookController {
                 followingLookbooks.getTotalPages(),
                 followingLookbooks.getSize(),
                 true,
-                false,
+                pageable.getSort().isSorted() && pageable.getSort().getOrderFor("createdAt").getDirection().equals(Sort.Direction.ASC),
                 false
         );
     }
@@ -107,8 +109,8 @@ public class LookbookController {
 
             @RequestParam("search") String keyword,
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
-    ){
-        PageImpl<LookbookMiniResponse> lookbooks = lookbookService.getSearchLookbook(keyword, pageable);
+    ) {
+        PageImpl<LookbookThumbnailResponse> lookbooks = lookbookService.getSearchLookbook(keyword, pageable);
 
         return ResponseUtil.buildPagingResponse(
                 HttpStatus.OK,
@@ -121,7 +123,6 @@ public class LookbookController {
                 true,
                 false,
                 false
-
         );
     }
 
@@ -129,7 +130,7 @@ public class LookbookController {
     public ResponseEntity<?> bookmark(
             @LoginUser SessionUser seesionUser,
             @PathVariable("lookbookId") Integer lookbookId
-    ){
+    ) {
         final int userId = seesionUser.getId();
         lookbookService.bookmark(userId, lookbookId);
 
@@ -143,7 +144,7 @@ public class LookbookController {
     public ResponseEntity<?> unbookmark(
             @LoginUser SessionUser seesionUser,
             @PathVariable("lookbookId") Integer lookbookId
-    ){
+    ) {
         final int userId = seesionUser.getId();
         lookbookService.unbookmark(userId, lookbookId);
         return ResponseUtil.buildBasicResponse(
@@ -156,7 +157,7 @@ public class LookbookController {
     public ResponseEntity<?> likes(
             @LoginUser SessionUser seesionUser,
             @PathVariable("lookbookId") Integer lookbookId
-    ){
+    ) {
         final int userId = seesionUser.getId();
         lookbookService.likes(userId, lookbookId);
         return ResponseUtil.buildBasicResponse(
@@ -169,7 +170,7 @@ public class LookbookController {
     public ResponseEntity<?> unlikes(
             @LoginUser SessionUser seesionUser,
             @PathVariable("lookbookId") Integer lookbookId
-    ){
+    ) {
         final int userId = seesionUser.getId();
         lookbookService.unlikes(userId, lookbookId);
         return ResponseUtil.buildBasicResponse(

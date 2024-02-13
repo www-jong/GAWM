@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.time.LocalDate;
@@ -40,15 +41,15 @@ public class OAuthAttributes {
 
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
-
         return OAuthAttributes.builder()
                 .email((String) kakaoAccount.get("email"))
                 .gender(kakaoAccount.get("gender").equals("female")? User.Gender.FEMALE: User.Gender.MALE)
-                .age(LocalDate.now().getYear()-Integer.parseInt(kakaoAccount.get("birthyear").toString())+1)
+                .age(calculateAge(Integer.parseInt(kakaoAccount.get("birthyear").toString())))
                 .provider(User.Provider.KAKAO)
                 .nameAttributeKey(userNameAttributeName)
                 .attributes(attributes)
                 .build();
+
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
@@ -74,5 +75,11 @@ public class OAuthAttributes {
                 .role(Role.GUEST)
                 .provider(provider)
                 .build();
+    }
+
+    public static int calculateAge(int birthYear) {
+        LocalDate currentDate = LocalDate.now(); // 현재 날짜
+        int currentYear = currentDate.getYear(); // 현재 년도
+        return currentYear - birthYear; //만 나이
     }
 }

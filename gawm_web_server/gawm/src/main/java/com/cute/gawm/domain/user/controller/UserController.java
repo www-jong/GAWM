@@ -85,4 +85,12 @@ public class UserController {
             String profileImg = userService.updateProfileImg(sessionUser.getId(), multipartFile);
             return ResponseUtil.buildBasicResponse(HttpStatus.OK, profileImg);
     }
+
+    @PostMapping("/{userId}/point/{point}")
+    public ResponseEntity<?> addPointToBestUser(@LoginUser SessionUser sessionUser, @PathVariable("userId") Integer userId, @PathVariable("point") Integer point) throws IOException {
+        log.info("userId={}",userId);
+        log.info("point={}",point);
+        userService.givePointToBestUser(sessionUser.getId(),userId,point);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "포인트 추가 성공");
+    }
 }

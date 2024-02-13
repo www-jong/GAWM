@@ -1,6 +1,6 @@
 package com.cute.gawm.domain.tag_lookbook.repository;
 
-import com.cute.gawm.common.QueryDslSupport;
+import com.cute.gawm.common.util.QueryDslSupport;
 import com.cute.gawm.domain.tag.entity.QTag;
 import com.cute.gawm.domain.tag_lookbook.entity.QTagLookbook;
 import com.cute.gawm.domain.tag_lookbook.entity.TagLookbook;

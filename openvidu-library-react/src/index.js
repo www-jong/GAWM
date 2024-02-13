@@ -15,7 +15,7 @@ ReactDOM.render(
             <img src={reactLogo} className="React-logo" alt="logo" />
         </header>
         <div id="title">
-            <a href="http://www.openvidu.io/" target="_blank" rel="noopener noreferrer">
+            <a href="http://i10pe203.p.ssafy.io/" target="_blank" rel="noopener noreferrer">
                 <img src={ovLogo2} className="mainLogo" alt="logo" />
             </a>
         </div>

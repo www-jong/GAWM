@@ -15,59 +15,46 @@ import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.repository.LiveRepository;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
-import io.openvidu.java.client.Session;
-import io.openvidu.java.client.SessionProperties;
+import io.openvidu.java.client.*;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.openvidu.java.client.Connection;
-import io.openvidu.java.client.ConnectionProperties;
-import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
-import io.openvidu.java.client.Session;
-import io.openvidu.java.client.SessionProperties;
+import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LiveService {
     private final LiveRepository liveRepository;
     private final FollowingRepository followingRepository;
     private final UserRepository userRepository;
     private final ClothesRepository clothesRepository;
     private final ClothesDetailRepository clothesDetailRepository;
-//
-//    @Value("${OPENVIDU_URL}")
-//    private String OPENVIDU_URL;
-//
-//    @Value("${OPENVIDU_SECRET}")
-//    private String OPENVIDU_SECRET;
-//
-//    private OpenVidu openvidu;
 
-//    @PostConstruct
-//    public void init() {
-//        this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
-//    }
+    private OpenVidu openvidu;
+
+    @Value("${OPENVIDU_URL}")
+    private String OPENVIDU_URL;
+
+    @Value("${OPENVIDU_SECRET}")
+    private String OPENVIDU_SECRET;
+
+    @PostConstruct
+    public void init() {
+        this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+    }
 
     public PageImpl<Live> getFollowingLive(Integer userId, Pageable pageable){
         Following followings = followingRepository.findByUserId(userId);
@@ -84,18 +71,19 @@ public class LiveService {
     }
 
     @Transactional
-    public void createLive(Integer userId, LiveCreateRequest liveCreateRequest, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void createLive(String session,Integer userId, String name, boolean isPublic , Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
         Live live = liveRepository.findByUserAndIsDeletedFalse(user);
         if(live!=null){
             throw new DataMismatchException("해당 유저에게 아직 종료되지 않은 라이브가 존재합니다.");
         }
         SessionProperties properties = SessionProperties.fromJson(params).build();
-//        Session session = openvidu.createSession(properties);
 
         live = Live.builder()
-                .name(liveCreateRequest.getName())
+                .name(name)
                 .user(user)
+                .session(session)
+                .isPublic(isPublic)
                 .build();
 
         liveRepository.save(live);
@@ -104,8 +92,16 @@ public class LiveService {
     public void deleteLive(Integer userId, Integer liveId){
         Live live=liveRepository.findByLiveId(liveId);
         if(live.getUser().getUserId()!=userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
-//        live.endLive(); //후 처리 전제
         liveRepository.deleteByLiveId(liveId);
+    }
+
+    @Transactional
+    public void deleteLiveByUserId(Integer userId){
+        User user = userRepository.findByUserId(userId);
+        Live live=liveRepository.findLiveByUser(user);
+        if(live.getUser().getUserId()!=userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
+
+        liveRepository.delete(live);
     }
 
     public List<ClothesInfoResponse> getLiveUserAllCloset(Integer liveId) {
@@ -117,5 +113,39 @@ public class LiveService {
         return clothesList.stream()
                 .map(clothes -> new ClothesInfoResponse(clothes, clothesDetailRepository.findByClothesId(clothes.getClothesId())))
                 .collect(Collectors.toList());
+    }
+
+
+    public Connection enterLive(Session session, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
+        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+        Connection connection = session.createConnection(properties);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(connection.getToken());
+        String token = builder.build().getQueryParams().getFirst("token");
+        System.out.println(connection.getConnectionId());
+        return connection;
+    }
+
+    public String initSession(Integer userId, SessionProperties properties,  Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException{
+        String name = null;
+        boolean isPublic = true;
+        if(params.get("deleted").equals("on")) {
+            this.deleteLiveByUserId(userId);
+            return "라이브 생성 완료";
+        }
+        if(params.get("name") instanceof  String) {
+            name = (String) params.get("name");
+        }
+        if(params.get("isPublic").equals("on")) {
+            isPublic = true;
+        }else isPublic = false;
+        Session session = openvidu.createSession(properties);
+
+        this.createLive(session.getSessionId(), 3, name, isPublic, params);
+        return session.getSessionId();
+    }
+
+    public Session getSession(String sessionId){
+        Session session = openvidu.getActiveSession(sessionId);
+        return session;
     }
 }
