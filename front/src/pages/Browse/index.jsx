@@ -4,8 +4,9 @@ import logoImage from '../../assets/images/HomeLogo.svg';
 import LiveImg from './LiveImg.png';
 import TodayLookComponent from './TodayLookComponent.jsx';
 import LiveComponent from './LiveComponent.jsx';
-
-
+import {get_top_list} from '../../apis/lookbook'
+import { gawmApiAxios } from '../../utilities/http-commons';
+const gawmapiAxios = gawmApiAxios()
 export default function Browse() {
     const [todayLooks, setTodayLooks] = useState([]);
     const [liveRooms, setLiveRooms] = useState([]);
@@ -13,7 +14,7 @@ export default function Browse() {
     useEffect(() => {
         const fetchTodayLooks = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/gawm/back/look-book/top_list/');
+                const response = await get_top_list();
                 setTodayLooks(response.data.content);
             } catch (error) {
                 console.error('Today Looks 데이터를 불러오는데 실패했습니다.', error);
@@ -26,8 +27,9 @@ export default function Browse() {
     useEffect(() => {
         const fetchLiveRooms = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/gawm/back/live-room/follow/');
-                setLiveRooms(response.data.data);
+                const response = await gawmapiAxios.get('/live-room/list/');
+                console.log(response)
+                setLiveRooms(response.data.content);
             } catch (error) {
                 console.error('Live Rooms 데이터를 불러오는데 실패했습니다.', error);
             }
@@ -75,10 +77,10 @@ export default function Browse() {
                 <div className="flex gap-2 mt-1 justify-center">
                     {liveRooms.map(room => (
                         <LiveComponent
-                            key={room.user_id}
-                            image={room.profile_img}
+                            key={room.liveId}
+                            image={room.profileImg}
                             title={room.name}
-                            createdDate={new Date(room['시작시간'])}
+                            createdDate={new Date(room.createdAt)}
                             points={room.point}
                         />
                     ))}

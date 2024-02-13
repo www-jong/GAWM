@@ -3,6 +3,7 @@ package com.cute.gawm.domain.live.controller;
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.domain.clothes.dto.response.ClothesInfoResponse;
+import com.cute.gawm.domain.live.dto.response.LiveMiniResponse;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
@@ -28,7 +29,7 @@ public class LiveController {
             @LoginUser SessionUser sessionUser,
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ){
-        PageImpl<Live> followingLive = liveService.getFollowingLive(sessionUser.getId(), pageable);
+        PageImpl<LiveMiniResponse> followingLive = liveService.getFollowingLive(sessionUser.getId(), pageable);
         return ResponseUtil.buildPagingResponse(
                 HttpStatus.OK,
                 followingLive.getContent(),

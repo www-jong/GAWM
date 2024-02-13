@@ -1,5 +1,4 @@
 import React from 'react';
-import { getFollowLivesInfo } from "../../apis/live"
 
 function getRelativeTime(from) {
     if (!(from instanceof Date) || isNaN(from)) {
@@ -24,10 +23,11 @@ function getRelativeTime(from) {
     }
 }
 
-function LiveComponent ({ image, title, createdDate, points }) {
+function LiveComponent ({ image, title, createdDate, points, size, href }) {
+    const appliedImg = "https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/" + image;
     return (
         <div className="w-26 h-26 rounded-lg relative">
-            <img className="w-full h-full object-cover rounded-lg" src={image} alt={title} />
+            <img className="w-full h-full object-cover rounded-lg" src={appliedImg} alt={title} />
             <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
                 <span className="inline-block text-sm text-white">{title}</span>
                 <span className="inline-block text-[0.6rem] text-tertiary">

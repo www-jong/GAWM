@@ -30,7 +30,7 @@ export default function CategoryThumbnail({ category, onClick }) {
 				{thumbnails}
 			</div>
 			<div className="flex flex-col">
-				<span>{category[0].mCategory}</span>
+				<span>{category[0].mcategory}</span>
 				<small className="text-[#767676]">{category.length}</small>
 			</div>
 		</div>

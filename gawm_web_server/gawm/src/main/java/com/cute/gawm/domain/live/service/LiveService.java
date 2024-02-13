@@ -54,35 +54,48 @@ public class LiveService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public PageImpl<Live> getFollowingLive(Integer userId, Pageable pageable){
+    public PageImpl<LiveMiniResponse> getFollowingLive(Integer userId, Pageable pageable) {
         Following followings = followingRepository.findByUserId(userId);
-        List<Live> liveList = new ArrayList<>();
+        List<LiveMiniResponse> liveList = new ArrayList<>();
         followings.getFollowingList().forEach(followingId -> {
             User user = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
             Live live = liveRepository.findByUserAndIsDeletedFalse(user);
-            if(live!=null){
-                liveList.add(live);
+            if (live != null) {
+                LiveMiniResponse build = LiveMiniResponse.builder()
+                        .liveId(live.getLiveId())
+                        .userId(user.getUserId())
+                        .nickname(user.getNickname())
+                        .profileImg(user.getProfileImg())
+                        .name(live.getName())
+                        .session(live.getSession())
+                        .point(live.getPoint())
+                        .createdAt(live.getCreatedAt())
+                        .isPublic(live.getIsPublic())
+                        .build();
+                liveList.add(build);
             }
         });
-        Collections.sort(liveList, Comparator.comparing(Live::getCreatedAt).reversed());
+        Collections.sort(liveList, Comparator.comparing(LiveMiniResponse::getCreatedAt).reversed());
 
         return new PageImpl<>(liveList, pageable, liveList.size());
     }
 
     public PagingResponse<List<LookbookThumbnailResponse>> getLiveList(Pageable pageable) {
         Page<Live> lives = liveRepository.findAll(pageable);
-        List<LiveMiniResponse> liveMiniResponses=new ArrayList<>();
+        List<LiveMiniResponse> liveMiniResponses = new ArrayList<>();
 
-        lives.forEach(live->{
-            User user=live.getUser();
-            LiveMiniResponse build=LiveMiniResponse.builder()
+        lives.forEach(live -> {
+            User user = live.getUser();
+            LiveMiniResponse build = LiveMiniResponse.builder()
                     .liveId(live.getLiveId())
                     .userId(user.getUserId())
                     .nickname(user.getNickname())
                     .profileImg(user.getProfileImg())
                     .name(live.getName())
                     .session(live.getSession())
+                    .point(live.getPoint())
                     .isPublic(live.getIsPublic())
+                    .createdAt(live.getCreatedAt())
                     .build();
             liveMiniResponses.add(build);
         });
@@ -104,10 +117,10 @@ public class LiveService {
     }
 
     @Transactional
-    public void createLive(String session,Integer userId, String name, boolean isPublic , Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void createLive(String session, Integer userId, String name, boolean isPublic, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
         Live live = liveRepository.findByUserAndIsDeletedFalse(user);
-        if(live!=null){
+        if (live != null) {
             throw new DataMismatchException("해당 유저에게 아직 종료되지 않은 라이브가 존재합니다.");
         }
         SessionProperties properties = SessionProperties.fromJson(params).build();
@@ -121,25 +134,26 @@ public class LiveService {
 
         liveRepository.save(live);
     }
+
     @Transactional
-    public void deleteLive(Integer userId, Integer liveId){
-        Live live=liveRepository.findByLiveId(liveId);
-        if(live.getUser().getUserId()!=userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
+    public void deleteLive(Integer userId, Integer liveId) {
+        Live live = liveRepository.findByLiveId(liveId);
+        if (live.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
         liveRepository.deleteByLiveId(liveId);
     }
 
     @Transactional
-    public void deleteLiveByUserId(Integer userId){
+    public void deleteLiveByUserId(Integer userId) {
         User user = userRepository.findByUserId(userId);
-        Live live=liveRepository.findLiveByUser(user);
-        if(live.getUser().getUserId()!=userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
+        Live live = liveRepository.findLiveByUser(user);
+        if (live.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
 
         liveRepository.delete(live);
     }
 
     public List<ClothesInfoResponse> getLiveUserAllCloset(Integer liveId) {
-        Live live=liveRepository.findByLiveId(liveId);
-        if(live==null){
+        Live live = liveRepository.findByLiveId(liveId);
+        if (live == null) {
             throw new DataNotFoundException("해당 라이브가 존재하지 않습니다.");
         }
         List<Clothes> clothesList = clothesRepository.findByUserUserId(live.getUser().getUserId());
@@ -158,26 +172,26 @@ public class LiveService {
         return connection;
     }
 
-    public String initSession(Integer userId, SessionProperties properties,  Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException{
+    public String initSession(Integer userId, SessionProperties properties, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
         String name = null;
         boolean isPublic = true;
-        if(params.get("deleted").equals("on")) {
+        if (params.get("deleted").equals("on")) {
             this.deleteLiveByUserId(userId);
             return "라이브 삭제 완료";
         }
-        if(params.get("name") instanceof  String) {
+        if (params.get("name") instanceof String) {
             name = (String) params.get("name");
         }
-        if(params.get("isPublic").equals("on")) {
+        if (params.get("isPublic").equals("on")) {
             isPublic = true;
-        }else isPublic = false;
+        } else isPublic = false;
         Session session = openvidu.createSession(properties);
 
         this.createLive(session.getSessionId(), userId, name, isPublic, params);
         return session.getSessionId();
     }
 
-    public Session getSession(String sessionId){
+    public Session getSession(String sessionId) {
         Session session = openvidu.getActiveSession(sessionId);
         return session;
     }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @Builder
 @AllArgsConstructor @NoArgsConstructor
@@ -16,5 +18,7 @@ public class LiveMiniResponse {
     private String profileImg;
     private String name;
     private String session;
+    private int point;
+    private Timestamp createdAt;
     private Boolean isPublic;
 }
