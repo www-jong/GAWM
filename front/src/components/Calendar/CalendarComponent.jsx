@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import moment from 'moment';
 import './Calendar.css';
-import StyleLogModal from '../../../components/Modal/StyleLogModal.jsx';
+import StyleLogModal from '../Modal/StyleLogModal.jsx';
 
 function ReactCalendar() {
     const curDate = new Date();
@@ -52,7 +52,7 @@ function ReactCalendar() {
     };
 
     return (
-        <div>
+        <div className="flex justify-center">
             <Calendar
                 locale="ko" // 영어 en 한국 ko
                 onChange={onChange}

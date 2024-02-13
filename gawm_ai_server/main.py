@@ -18,7 +18,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 load_dotenv()
 
-model_directory = "./classifi_model"
+model_directory = "./classifi_model2"
 if not os.path.exists(model_directory):
     os.makedirs(model_directory)  # 디렉토리가 없으면 생성
 model_files = os.listdir(model_directory)
@@ -35,10 +35,10 @@ async def app_lifespan(app: FastAPI):
     dummy_image.save(dummy_bytes, format="PNG")
     app.state.rembg_session = new_session(model_name="u2netp")
     if len(model_files):
-        app.state.classifi_model=pipeline("object-detection", model="./classifi_model")
+        app.state.classifi_model=pipeline("object-detection", model="./classifi_model2")
     else:
         print('model download')
-        model=pipeline("object-detection", model="valentinafeve/yolos-fashionpedia")
+        model=pipeline("image-classification", model="Monasterolo21/clothes-class")
         model.save_pretrained(model_directory)
         app.state.classifi_model=model
     remove(dummy_bytes.getvalue())
@@ -157,18 +157,7 @@ async def test(image_file: UploadFile = File(...)):
     image = Image.open(io.BytesIO(image_bytes))
     image = resize_image(image)
     result=app.state.classifi_model(image)
-    image_center = (image.width/2,image.height/2)
-    objects_with_distance = []
-    for obj in result:
-        box_center = ((obj['box']['xmin'] + obj['box']['xmax']) / 2, (obj['box']['ymin'] + obj['box']['ymax']) / 2)
-        distance = calculate_distance(box_center, image_center)
-        objects_with_distance.append({
-            "label": obj['label'],
-            "score": round(obj['score'] * 100, 2),  # 점수를 백분율로 변환
-            "distance": distance
-        })
-    objects_sorted_by_distance = sorted(objects_with_distance, key=lambda x: x['distance'])
-    return objects_sorted_by_distance
+    return result
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
