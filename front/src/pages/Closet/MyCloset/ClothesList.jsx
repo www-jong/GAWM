@@ -56,7 +56,7 @@ function ClothesThumbnail({ name, image, clothesIdSetter }) {
 export default function ClothesList({ categoryName, clothes, categorySetter, clothesIdSetter }) {
 	// 카테고리 별 분류
 	const [subcategory, setSubcategory] = useState(null);
-	const mappedClothes = Map.groupBy(clothes, (item) => item["sCategory"]);
+	const mappedClothes = Map.groupBy(clothes, (item) => item["scategory"]);
 
 	const list = subcategory ? mappedClothes.get(subcategory) : clothes;
 
