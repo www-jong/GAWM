@@ -6,8 +6,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-classifi_model/
-classifi_model2/
+classifi_model
+classifi_model2
+
 # C extensions
 *.so
 

@@ -1,0 +1,67 @@
+{
+	"ordered": true,
+	"outers": [
+		{
+			"clothe_id": 8,
+			"clothe_img": "img_url",
+			"name": "Outfit 1",
+			"brand": "Brand A",
+			"mcategory": "Outerwear",
+			"scategory": "Jacket",
+			"order": 4,
+			"colors": ["black", "white"],
+			"meterials": ["wool", "cotton"],
+			"patterns": ["striped"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		},
+		{
+			"clothe_id": 15,
+			"clothe_img": "img_url",
+			"name": "Outfit 2",
+			"brand": "Brand B",
+			"mcategory": "Outerwear",
+			"scategory": "Coat",
+			"order": 3,
+			"colors": ["blue"],
+			"meterials": ["polyester"],
+			"patterns": ["solid"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		},
+		{
+			"clothe_id": 22,
+			"clothe_img": "img_url",
+			"name": "Outfit 3",
+			"brand": "Brand C",
+			"mcategory": "Outerwear",
+			"scategory": "Blazer",
+			"order": 2,
+			"colors": ["grey", "black"],
+			"meterials": ["linen", "silk"],
+			"patterns": ["checked"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		},
+		{
+			"clothe_id": 30,
+			"clothe_img": "img_url",
+			"name": "Outfit 4",
+			"brand": "Brand D",
+			"mcategory": "Outerwear",
+			"scategory": "Windbreaker",
+			"order": 1,
+			"colors": ["red"],
+			"meterials": ["nylon"],
+			"patterns": ["camo"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		}
+	],
+	"tops": [],
+	"bottoms": [],
+	"shoes": [],
+	"bags": [],
+	"hats": [],
+	"accessories": []
+}
