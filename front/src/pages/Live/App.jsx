@@ -17,9 +17,9 @@ class Live extends Component {
             session: undefined,
             mainStreamManager: undefined,
             publisher: undefined,
-            subscribers: [],
-            isPublic : undefined,
-            liveName: "26C 라이브 이름",
+            subscribers: [],         
+            liveName: "26C 라이브 이름",  
+            isPublic: true,
             deleted: false,
         };
 
@@ -66,10 +66,9 @@ class Live extends Component {
         });
     }
 
-    handleChangeDeleted(e) {
-        this.setState({
-            deleted: e.target.value,
-        });
+    handleChangeDeleted(event) {
+        const isChecked = event.target.checked;
+        this.setState({ deleted: isChecked });
     }
 
     handleChangeUserName(e) {
@@ -176,7 +175,8 @@ class Live extends Component {
             mainStreamManager: undefined,
             publisher: undefined,
             isPublic: undefined,
-            
+            deleted: undefined,
+            liveName : undefined,
         });
     }
 
@@ -250,17 +250,19 @@ class Live extends Component {
                                     />
                                 </p>
 
+                                
                                 <p>
-                                    <label> isPublic: </label>
-                                    <input
-                                        className="form-control"
-                                        type="checkbox"
+                                    <label> isPublic : </label>
+                                    <label class="switch">
+                                        <input 
+                                        type="checkbox" 
                                         id="isPublic"
-                                        value={isPublic}
-                                        onChange={this.handleChangeIspublic}                                 
-                                    />
+                                        checked={this.state.isPublic}
+                                        onChange={this.handleChangeIspublic}
+                                        />
+                                        <span class="slider"></span>
+                                    </label>
                                 </p>
-
                                 <p>
                                     <label> liveName: </label>
                                     <input
@@ -273,16 +275,20 @@ class Live extends Component {
                                     />
                                 </p>
 
+                            
                                 <p>
-                                    <label> 세션 비우기: </label>
-                                    <input
-                                        className="form-control"
-                                        type="checkbox"
+                                    <label> 세션 비우기 : </label>
+                                    <label class="switch">
+                                        <input 
+                                        type="checkbox" 
                                         id="deleted"
-                                        value={deleted}
-                                        onChange={this.handleChangeDeleted}                                       
-                                    />
+                                        checked={this.state.deleted}
+                                        onChange={this.handleChangeDeleted}
+                                        />
+                                        <span class="slider"></span>
+                                    </label>
                                 </p>
+  
 
                                 <p className="text-center">
                                     <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
@@ -351,6 +357,7 @@ class Live extends Component {
             headers: { 'Content-Type': 'application/json' },
             withCredentials : true,
         });
+        console.log(response.data);
         return response.data;
     }
 
