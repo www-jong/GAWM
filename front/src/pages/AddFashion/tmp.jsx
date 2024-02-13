@@ -7,7 +7,7 @@ import MaskingIcon from '@/assets/images/MaskingIcon.png';
 import DoBackIcon from '@/assets/images/DoBackIcon.png';
 import TestImage from '@/assets/images/test_clothes.png';
 import MaskingEraseIcon from '@/assets/images/MaskingEraseIcon.png';
-import { maskingImage } from '../../apis/clothes'
+import {maskingImage} from '../../apis/clothes'
 export default function ImageEdit() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -18,15 +18,13 @@ export default function ImageEdit() {
 
     const [cropStart, setCropStart] = useState(null);
     const [cropEnd, setCropEnd] = useState(null);
-
     const croppingRef = useRef(false);
 
     const originalImageRef = useRef(new Image());
     const processedImageURL = location.state?.processedImageURL || TestImage;
     const originalImageURL = location.state?.originalImageURL || TestImage;
-    const product_id = location.state?.product_id || 'null';
     //const product_id=location.state?.product_id || '';
-
+    
     const getActualPosition = (canvasDom, touchEvent) => {
         const rect = canvasDom.getBoundingClientRect();
         const scaleX = canvasDom.width / rect.width; // 캔버스 실제 너비 대비 화면상 너비의 비율
@@ -72,28 +70,8 @@ export default function ImageEdit() {
 
         // M지우개 기능
         const restoreAtPosition = (x, y, eraseSize) => {
-            // 현재 캔버스의 크기와 원본 이미지의 실제 크기 사이의 비율을 계산합니다.
-            const scaleX = originalImageRef.current.naturalWidth / canvasRef.current.width;
-            const scaleY = originalImageRef.current.naturalHeight / canvasRef.current.height;
-        
-            // 캔버스 상의 위치를 원본 이미지 상의 실제 위치로 변환합니다.
-            const originalX = x * scaleX;
-            const originalY = y * scaleY;
-        
-            // 캔버스 상의 지우개 크기를 원본 이미지 상의 실제 크기로 변환합니다.
-            const originalEraseSizeX = eraseSize * scaleX;
-            const originalEraseSizeY = eraseSize * scaleY;
-        
-            // 원본 이미지에서 복원해야 할 영역의 위치와 크기를 계산합니다.
-            const sourceX = originalX - originalEraseSizeX / 2;
-            const sourceY = originalY - originalEraseSizeY / 2;
-        
-            // 복원 영역을 캔버스에 그립니다.
-            contextRef.current.drawImage(
-                originalImageRef.current,
-                sourceX, sourceY, originalEraseSizeX, originalEraseSizeY, // 원본 이미지에서의 영역
-                x - eraseSize / 2, y - eraseSize / 2, eraseSize, eraseSize // 캔버스에 그릴 위치와 크기
-            );
+            
+            context.drawImage(originalImageRef.current, x - eraseSize / 2, y - eraseSize / 2, eraseSize, eraseSize, x - eraseSize / 2, y - eraseSize / 2, eraseSize, eraseSize);
         };
 
 
@@ -161,45 +139,40 @@ export default function ImageEdit() {
         const handleTouchStart = (event) => {
             isDrawing = true;
             const pos = getActualPosition(canvas, event);
-            const { left: canvasLeft, top: canvasTop } = canvas.getBoundingClientRect();
-
             setCropStart(pos);
             croppingRef.current = true;
-            const cropLeft = pos.x + canvasLeft;
-            const cropTop = pos.y + canvasTop - headerHeight;
-
-            // 크롭 영역을 표시합니다.
+                // 크롭 영역 요소 표시 및 초기 위치 설정
             const cropArea = document.getElementById('cropArea');
-            cropArea.style.left = `${cropLeft}px`;
-            cropArea.style.top = `${cropTop}px`;
+            cropArea.style.left = `${pos.x}px`;
+            cropArea.style.top = `${pos.y}px`;
             cropArea.style.width = `0px`;
             cropArea.style.height = `0px`;
             cropArea.style.display = 'block';
         };
 
         const handleTouchMove = (event) => {
-            console.log(isDrawing, selectedTool);
+            console.log(isDrawing,selectedTool);
             //if (!isDrawing || selectedTool !== 'crop') return;
             const pos = getActualPosition(canvas, event);
             setCropEnd(pos);
 
-            // 캔버스의 현재 위치와 크기 정보를 가져옵니다.
-            const { left: canvasLeft, top: canvasTop } = canvas.getBoundingClientRect();
+     // 캔버스의 현재 위치와 크기 정보를 가져옵니다.
+     const { left: canvasLeft, top: canvasTop } = canvas.getBoundingClientRect();
 
-            // 크롭 영역의 상대적 위치를 계산합니다.
-            const cropLeft = Math.min(cropStart.x, pos.x) + canvasLeft;
-            const cropTop = Math.min(cropStart.y, pos.y) + canvasTop - headerHeight;
-            const cropWidth = Math.abs(pos.x - cropStart.x);
-            const cropHeight = Math.abs(pos.y - cropStart.y);
-
-            // 크롭 영역을 표시합니다.
-            const cropArea = document.getElementById('cropArea');
-            cropArea.style.left = `${cropLeft}px`;
-            cropArea.style.top = `${cropTop}px`;
-            cropArea.style.width = `${cropWidth}px`;
-            cropArea.style.height = `${cropHeight}px`;
-            cropArea.style.display = 'block';
-        };
+     // 크롭 영역의 상대적 위치를 계산합니다.
+     const cropLeft = Math.min(cropStart.x, pos.x) + canvasLeft;
+     const cropTop = Math.min(cropStart.y, pos.y) + canvasTop-headerHeight;
+     const cropWidth = Math.abs(pos.x - cropStart.x);
+     const cropHeight = Math.abs(pos.y - cropStart.y);
+ 
+     // 크롭 영역을 표시합니다.
+     const cropArea = document.getElementById('cropArea');
+     cropArea.style.left = `${cropLeft}px`;
+     cropArea.style.top = `${cropTop}px`;
+     cropArea.style.width = `${cropWidth}px`;
+     cropArea.style.height = `${cropHeight}px`;
+     cropArea.style.display = 'block';
+   };
 
         const handleTouchEnd = () => {
             if (selectedTool !== 'crop' || !croppingRef.current) return;
@@ -225,14 +198,8 @@ export default function ImageEdit() {
         const context = canvas.getContext('2d');
         if (!cropStart || !cropEnd) return;
 
-        // cropStart와 cropEnd 좌표 비교하여 크롭 사각형 좌표 설정
-        const x1 = Math.min(cropStart.x, cropEnd.x);
-        const y1 = Math.min(cropStart.y, cropEnd.y);
-        const x2 = Math.max(cropStart.x, cropEnd.x);
-        const y2 = Math.max(cropStart.y, cropEnd.y);
-
-        const width = x2 - x1;
-        const height = y2 - y1;
+        const width = cropEnd.x - cropStart.x;
+        const height = cropEnd.y - cropStart.y;
 
         const croppedCanvas = document.createElement('canvas');
         croppedCanvas.width = width;
@@ -241,31 +208,34 @@ export default function ImageEdit() {
 
         croppedCtx.drawImage(
             canvas,
-            x1, y1,
+            cropStart.x, cropStart.y,
             width, height,
             0, 0,
             width, height
         );
 
-
+        // 크롭된이미지를 캔버스크기에 맞게 조절하기
         const scaleX = canvas.width / width;
         const scaleY = canvas.height / height;
         const scaleToFit = Math.min(scaleX, scaleY);
-
+    
         const newWidth = width * scaleToFit;
         const newHeight = height * scaleToFit;
+    
 
-        const dx = (canvas.width - newWidth) / 2;
-        const dy = (canvas.height - newHeight) / 2;
+    // 조정된 이미지를 캔버스 중앙에 위치시킵니다.
+    const dx = (canvas.width - newWidth) / 2;
+    const dy = (canvas.height - newHeight) / 2;
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(croppedCanvas, 0, 0, width, height, dx, dy, newWidth, newHeight);
+    // 캔버스를 클리어하고 조정된 이미지를 그립니다.
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(croppedCanvas, 0, 0, width, height, dx, dy, newWidth, newHeight);
 
-        // 새로운 이미지 상태를 저장합니다.
-        saveCanvasState();
+    // 새로운 이미지 상태를 저장합니다.
+    saveCanvasState();
     };
 
-
+    
     const handleToolSelect = async (tool) => {
         if (tool === 'doBack') {
             undoLastAction();
@@ -274,20 +244,20 @@ export default function ImageEdit() {
         if (tool === 'masking') {
             const canvas = canvasRef.current;
             const context = canvas.getContext('2d');
-
+        
             const applyMasking = async () => {
                 canvas.toBlob(async (blob) => {
                     const formData = new FormData();
                     formData.append('image_file', blob, 'image.png');
-
+    
                     try {
                         // maskingImage 함수 호출
                         const response = await maskingImage(formData);
-
+    
                         // Blob으로부터 이미지 객체를 생성
                         const imageBlob = await response.data; // response가 axios response 객체라고 가정
                         const objectURL = URL.createObjectURL(imageBlob);
-
+    
                         const image = new Image();
                         image.onload = () => {
                             // 캔버스 크기 재조정 및 이미지 그리기
@@ -303,7 +273,7 @@ export default function ImageEdit() {
                     }
                 }, 'image/png');
             };
-
+    
             applyMasking();
             return;
         }
@@ -324,12 +294,7 @@ export default function ImageEdit() {
 
         // 캔버스의 현재 상태를 이미지 데이터(URL)로 변환
         const imageDataURL = canvas.toDataURL("image/png");
-        navigate('/closet/add', {
-            state: {
-                processedImageURL: imageDataURL,
-                product_id: product_id
-            }
-        });
+        navigate('/closet/add', { state: { processedImageURL: imageDataURL } });
     };
 
     // 마지막 행동 되돌리기
@@ -349,7 +314,7 @@ export default function ImageEdit() {
     };
 
     return (
-
+        
         <div className="flex flex-col min-h-screen">
             <div className="bg-gray-100 p-1 flex justify-between items-center">
                 <button onClick={goBack} className="my-1 flex items-start">
@@ -366,15 +331,15 @@ export default function ImageEdit() {
                     className="max-w-full max-h-400px"
                     style={{ objectFit: 'contain' }}
                 />
-                {/* 크롭 영역을 표시할 div 추가 */}
-                <div
-                    id="cropArea"
-                    style={{
-                        position: 'absolute',
-                        border: '2px dashed red',
-                        display: 'none', // 초기 상태는 숨김
-                    }}
-                ></div>
+                            {/* 크롭 영역을 표시할 div 추가 */}
+            <div
+                id="cropArea"
+                style={{
+                    position: 'absolute',
+                    border: '2px dashed red',
+                    display: 'none', // 초기 상태는 숨김
+                }}
+            ></div>
             </div>
 
             <div className="bg-gray-100 p-2 flex justify-around items-center mt-auto">

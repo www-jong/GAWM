@@ -29,7 +29,8 @@ export default function AddInCloset({ onClose }) {
           try{
             
             const response2 = await uploadImageForTagging(formData);
-
+            console.log(response)
+            console.log(response2)
             //navigate('/image', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
             navigate('/image', { state: {
                processedImageURL:URL.createObjectURL(response.data),
