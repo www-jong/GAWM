@@ -30,7 +30,7 @@ public class OpenviduController {
             @RequestBody(required = false) Map<String, Object> params
     ) throws OpenViduJavaClientException, OpenViduHttpException {
         log.info("params={}",params);
-        log.info("sessionId={}",sessionUser);
+        log.info("sessionId={}",sessionUser.getId());
         SessionProperties properties = SessionProperties.fromJson(params).build();
         String response = liveService.initSession(sessionUser.getId(), properties, params);
 
@@ -44,10 +44,12 @@ public class OpenviduController {
      */
     @PostMapping("/{sessionId}/connections")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
+                                                   @LoginUser SessionUser sessionUser,
                                                    @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
-        log.info("params={}",params);
-        log.info("sessionId={}",sessionId);
+        log.info("createConnection");
+        log.info("!!params={}",params);
+        log.info("!!sessionId={}", sessionId);
         Session session = liveService.getSession(sessionId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

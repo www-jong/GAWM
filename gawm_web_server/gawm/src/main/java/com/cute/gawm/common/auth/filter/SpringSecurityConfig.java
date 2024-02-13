@@ -32,7 +32,7 @@ public class SpringSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile","/back/oauth2/authorization/**","/back/healthcheck/**","/back/api/sessions/*","/back/login/**", "**").permitAll()
+                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/profile","/back/oauth2/authorization/**","/back/healthcheck/**","/back/api/sessions/**","/back/login/**", "**").permitAll()
                 .antMatchers("/api/**").hasRole(Role.USER.name())
                 .anyRequest().authenticated().and()
                 .logout().logoutUrl("/back/user/logout").logoutSuccessUrl("/").and()
@@ -54,7 +54,8 @@ public class SpringSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("*");
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "access_token","SESSION","sessionId","Cache-Control", "Content-Type"));
+//        configuration.setAllowedHeaders(Arrays.asList("Authorization", "access_token","SESSION","sessionId","Cache-Control", "Content-Type"));
+        configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true); // 중요: 쿠키를 포함시키기 위해 true로 설정
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

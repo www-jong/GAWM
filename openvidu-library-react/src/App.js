@@ -8,7 +8,7 @@ import OpenViduSession from 'openvidu-react';
 class App extends Component {
     constructor(props) {
         super(props);
-        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
+        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
         this.state = {
             mySessionId: 'SessionA',
             myUserName: 'OpenVidu_User_' + Math.floor(Math.random() * 100),
@@ -193,6 +193,7 @@ class App extends Component {
      */
     async getToken() {
         const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
+        console.log(sessionId);
         return await this.createToken(sessionId);
     }
 
@@ -211,7 +212,7 @@ class App extends Component {
         const response = await axios.post(this.APPLICATION_SERVER_URL+'gawm/back/api/sessions',  { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
           headers: {
             'Content-Type': 'application/json',
-            Authorization : cookies.get('sessionId'),
+            sessionId : cookies.get('sessionId'),
           },
           withCredentials: true 
         });
@@ -222,9 +223,8 @@ class App extends Component {
      */
 
     async createToken(sessionId) {
-        console.log(cookies.get('sessionId'));
-        const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
-            headers: { 'Content-Type': 'application/json', Authorization : cookies.get('sessionId'),},
+        const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections',  { customSessionId: sessionId }, {
+            headers: { 'Content-Type': 'application/json', sessionId : cookies.get('sessionId'), },
             withCredentials: true 
         });
         return response.data; // The token
