@@ -1,21 +1,22 @@
 {
   "name": "openvidu-library-react",
   "version": "2.29.0",
+  "homepage": "https://i10e203.p.ssafy.io/gawm/live",
   "private": true,
   "dependencies": {
     "axios": "0.19.2",
+    "js-cookie": "^3.0.5",
     "openvidu-react": "2.26.0",
     "react": "16.13.0",
     "react-dom": "16.13.0",
     "react-scripts": "3.4.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "devDependencies": {},
   "browserslist": [
     ">0.2%",
     "not dead",

@@ -4,6 +4,7 @@ package com.cute.gawm.common.auth;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -22,6 +23,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     public boolean supportsParameter(MethodParameter parameter) {
         boolean isLoginUserAnnotation=parameter.getParameterAnnotation(LoginUser.class)!=null;
         boolean isUserClass= SessionUser.class.equals(parameter.getParameterType());
+        System.err.println(parameter.getParameter());
         return isLoginUserAnnotation&&isUserClass;
     }
 
@@ -29,4 +31,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         return httpSession.getAttribute("user");
     }
+
+
 }

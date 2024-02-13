@@ -8,8 +8,6 @@ import java.util.List;
 
 @Getter
 public class LookbookCreateRequest {
-    private List<String> lookbooksImg;
-    private int userId;
     private boolean isPublic;
     private List<Integer> clothes;
     private List<String> tags;

@@ -1,9 +1,6 @@
 import LookThumbnail from "../../components/LookThumbnail";
 import TopBar from "../../components/TopBar";
 import { ArrowPathIcon } from "@heroicons/react/16/solid";
-import ThumbnailUser from "../../components/LookThumbnail/User";
-import ThumbnailBadge from "../../components/LookThumbnail/Badge";
-import Action from "../../components/LookThumbnail/Action";
 
 /**
  * 홈페이지 내 오늘의 감각 component를 생성합니다
