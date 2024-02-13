@@ -4,6 +4,7 @@ import ClothesList from "./ClothesList";
 import ClothesDetail from "./ClothesDetail";
 import { getAllClothesInfo } from "../../../apis/clothes";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
+import testData from "./test.json";
 
 /**
  * 내 옷장 페이지 내 옷장 영역을 표시하는 요소를 반환합니다
@@ -36,8 +37,9 @@ export default function MyCloset() {
 		() => {
 			const fetchCloset = async () => {
 				try {
-					const response = await getAllClothesInfo();
-					const data = response.data;
+					// const response = await getAllClothesInfo();
+					// const data = response.data;
+					const data = testData.data;
 
 					if(data.length) {
 						// "mCategory"로 분류
