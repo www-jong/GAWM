@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { edit, userInfo } from "../apis/user";
+import { edit, getFollowingList, userInfo } from "../apis/user";
 
 /**
  * 로그인한 유저에 대한 store입니다
@@ -7,15 +7,21 @@ import { edit, userInfo } from "../apis/user";
 export const useUserStore = create(
 	(set) => (
 		{
-			// 사용자 정보
-			"nickname": '특별한 일몰',
-			"gender": null,
-			"age": null,
-			"point": null,
-			"level": null,
-			"following_num": null,
-			"follower_num": null,
-			"provider": null
+			/**
+			 * 사용자 정보
+			 * 
+			 * - userId: 사용자 ID
+			 * - profileImg: 프로필 사진
+			 * - nickname: 닉네임
+			 * - gender: 성별
+			 * - age: 나이
+			 * - point: 감 포인트
+			 * - level: 레벨
+			 * - following_num: 팔로잉 수
+			 * - follower_num: 팔로워 수
+			 * - provider: 로그인 서비스 제공자
+			 */
+			"user": null
 		}
 	)
 );
@@ -28,18 +34,7 @@ export async function fetchUserInfo() {
 	const data = response.data.data;
 
 	useUserStore.setState(
-		() => (
-			{
-				"nickname": data.nickname,
-				"gender": data.gender,
-				"age": data.age,
-				"point": data.point,
-				"level": data.level,
-				"following_num": data.following_num,
-				"follower_num": data.follower_num,
-				"provider": data.provider
-			}
-		)
+		() => ({ "user": data })
 	);
 }
 
@@ -55,9 +50,9 @@ async function updateUserInfo(data) {
 	} = useUserStore(
 		(state) => (
 			{
-				"nickname": state.nickname,
-				"gender": state.gender,
-				"age": state.age
+				"nickname": state.user?.nickname,
+				"gender": state.user?.gender,
+				"age": state.user?.age
 			}
 		)
 	);
