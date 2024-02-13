@@ -5,7 +5,7 @@ import './App.css';
 import UserVideoComponent from './UserVideoComponent.jsx';
 import cookies from 'js-cookie';
 
-const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
+const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
 
 class Live extends Component {
     constructor(props) {
