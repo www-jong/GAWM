@@ -2,6 +2,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import TopBar from "../../components/TopBar";
 import ProfileBadge from "./ProfileBadge";
 import AdaptiveContainer from "../../components/AdaptiveContainer";
+import { useEffect } from "react";
+import { fetchUserInfo } from "../../stores/user";
 
 /**
  * 마이페이지 페이지 영역을 생성합니다
@@ -14,6 +16,17 @@ export default function MyPage() {
 	const overlayPage = (
 		!pathname.endsWith("/mypage") &&
 		!pathname.startsWith("/mypage/bookmark")
+	);
+
+	useEffect(
+		() => {
+			const load = async () => {
+				try { await fetchUserInfo(); }
+				catch(error) {}
+			};
+
+			load();
+		}
 	);
 
 	return overlayPage ? (

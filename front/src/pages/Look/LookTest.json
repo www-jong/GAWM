@@ -1,0 +1,52 @@
+{
+    "status": 200,
+    "data": {
+        "lookbookId": 2,
+        "userId": 3,
+        "userNickname": "특별한 일몰",
+        "userProfileImg": null,
+        "createdAt": "2024-02-07T01:24:05.629+00:00",
+        "clothes": [],
+        "lookbookImgs": [
+            "b0352be8-031d-4b7b-be4e-4dcbd06f5fb7.jpg",
+            "3df774d3-a676-4457-8efa-f1a37bc9fe66.jpg"
+        ],
+        "likeCnt": 1,
+        "view": 0,
+        "tag": [
+            {
+                "name": "tag111"
+            },
+            {
+                "name": "tag112"
+            },
+            {
+                "name": "tag111"
+            },
+            {
+                "name": "임의로"
+            },
+            {
+                "name": "태그내가"
+            },
+            {
+                "name": "추가"
+            },
+            {
+                "name": "했습니다"
+            }
+        ],
+        "comment": [
+            {
+                "commentId": 2,
+                "content": "이쁘네요! 팔로우 할게요",
+                "userNickname": "자주 노르딕",
+                "userProfileImg": null,
+                "commentAuthor": true
+            }
+        ],
+        "liked": true,
+        "bookmarked": true,
+        "followed": false
+    }
+}
