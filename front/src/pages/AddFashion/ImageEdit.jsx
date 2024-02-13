@@ -15,6 +15,7 @@ export default function ImageEdit() {
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
     const [history, setHistory] = useState([]);
+    const [eraseSize, setEraseSize] = useState(20);
 
     const [cropStart, setCropStart] = useState(null);
     const [cropEnd, setCropEnd] = useState(null);
@@ -100,12 +101,12 @@ export default function ImageEdit() {
         const handleTouchMove = (event) => {
             //const touchPos = getTouchPos(canvas, event);
             const actualPos = getActualPosition(canvas, event)
-            const eraseSize = calculateActualSize(20);
+            const adjustedEraseSize = calculateActualSize(eraseSize);
             if (selectedTool === 'erase') { // 지우개 작동
-                eraseAtPosition(actualPos.x, actualPos.y, eraseSize);
+                eraseAtPosition(actualPos.x, actualPos.y, adjustedEraseSize);
             }
             if (selectedTool === 'maskingErase') { // M지우개 작동
-                restoreAtPosition(actualPos.x, actualPos.y, eraseSize);
+                restoreAtPosition(actualPos.x, actualPos.y, adjustedEraseSize);
             }
             event.preventDefault(); // 스크롤 등 기본 이벤트 방지
         };
@@ -303,6 +304,11 @@ export default function ImageEdit() {
         setSelectedTool(tool);
     };
 
+        // 지우개 크기 조절용
+        const handleEraseSizeChange = (event) => {
+            setEraseSize(parseInt(event.target.value, 10));
+            console.log(event.target.value)
+        };
     const isToolSelected = (tool) => {
         return selectedTool === tool;
     }
@@ -370,6 +376,18 @@ export default function ImageEdit() {
                 ></div>
             </div>
 
+            {['erase', 'masking', 'maskingErase'].includes(selectedTool) && (
+                <div className="flex justify-center p-4">
+                    <input
+                        type="range"
+                        min="1"
+                        max="100"
+                        value={eraseSize}
+                        onChange={handleEraseSizeChange}
+                        className="w-full"
+                    />
+                </div>
+            )}
             <div className="bg-gray-100 p-2 flex justify-around items-center mt-auto">
                 {/* Tool buttons */}
                 {[
