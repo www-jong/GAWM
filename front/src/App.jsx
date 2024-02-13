@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
-import Live from "./pages/Live";
+import Live from "./pages/Live/App.jsx";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";

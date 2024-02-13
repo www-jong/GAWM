@@ -1,7 +1,8 @@
-function Live() {
-	return (
-		<p className="font-pretendard">26도 라이브</p>
-	);
-}
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import Live from './App';
+import registerServiceWorker from './registerServiceWorker';
 
-export default Live;
+ReactDOM.render(<Live />, document.getElementById('root'));
+registerServiceWorker();
