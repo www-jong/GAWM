@@ -2,6 +2,9 @@ import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import CenteredTopBar from "../CenteredTopBar";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
+import { useUserStore } from "../../../stores/user";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 /**
  * 마이페이지 내 설정 페이지를 생성합니다
@@ -9,6 +12,35 @@ import ListItem from "../../../components/ListGroup/ListItem";
  * @returns 설정 페이지 component
  */
 export default function Settings() {
+	const {
+		nickname, gender, age
+	} = useUserStore(
+		(state) => (
+			{
+				"nickname": state.user?.nickname,
+				"gender": state.user?.gender,
+				"age": state.user?.age
+			}
+		)
+	);
+
+	const navigate = useNavigate();
+	useEffect(
+		() => {
+			// 속성이 준비되지 않았을 시 마이페이지로 되돌리기
+			if(
+				typeof nickname === "undefined" ||
+				typeof gender === "undefined" ||
+				typeof age === "undefined"
+			) navigate("/mypage");
+		}
+	);
+
+	const genderNames = {
+		"FEMALE": "여성",
+		"MALE": "남성"
+	};
+
 	return (
 		<>
 			<CenteredTopBar backtrackTo="/mypage">
@@ -24,15 +56,15 @@ export default function Settings() {
 					{/* 닉네임 변경 */}
 					<ListItem link href="/mypage/settings/nickname" className="flex flex-row gap-4">
 						<span className="grow">닉네임 설정</span>
-						<span className="text-[#767676]">{"감없는 판다"}</span>
+						<span className="text-[#767676]">{nickname}</span>
 					</ListItem>
 					<ListItem link href="/mypage/settings/gender" className="flex flex-row gap-4">
 						<span className="grow">성별 설정</span>
-						<span className="text-[#767676]"></span>
+						<span className="text-[#767676]">{gender in genderNames ? genderNames[gender] : ""}</span>
 					</ListItem>
 					<ListItem link href="/mypage/settings/age" className="flex flex-row gap-4">
 						<span className="grow">나이 설정</span>
-						<span className="text-[#767676]">{5}</span>
+						<span className="text-[#767676]">{age ? age : ""}</span>
 					</ListItem>
 				</ListGroup>
 

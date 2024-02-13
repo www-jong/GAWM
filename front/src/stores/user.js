@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { edit, userInfo } from "../apis/user";
+import { edit, getFollowingList, userInfo } from "../apis/user";
 
 /**
  * 로그인한 유저에 대한 store입니다
@@ -7,15 +7,21 @@ import { edit, userInfo } from "../apis/user";
 export const useUserStore = create(
 	(set) => (
 		{
-			// 사용자 정보
-			"nickname": '특별한 일몰',
-			"gender": null,
-			"age": null,
-			"point": null,
-			"level": null,
-			"following_num": null,
-			"follower_num": null,
-			"provider": null
+			/**
+			 * 사용자 정보
+			 * 
+			 * - userId: 사용자 ID
+			 * - profileImg: 프로필 사진
+			 * - nickname: 닉네임
+			 * - gender: 성별
+			 * - age: 나이
+			 * - point: 감 포인트
+			 * - level: 레벨
+			 * - following_num: 팔로잉 수
+			 * - follower_num: 팔로워 수
+			 * - provider: 로그인 서비스 제공자
+			 */
+			"user": null
 		}
 	)
 );
@@ -28,39 +34,41 @@ export async function fetchUserInfo() {
 	const data = response.data.data;
 
 	useUserStore.setState(
-		() => (
-			{
-				"nickname": data.nickname,
-				"gender": data.gender,
-				"age": data.age,
-				"point": data.point,
-				"level": data.level,
-				"following_num": data.following_num,
-				"follower_num": data.follower_num,
-				"provider": data.provider
-			}
-		)
+		() => ({ "user": data })
 	);
 }
 
 /**
- * 사용자 정보를 수정하기 위해 내부에서 호출되는 함수입니다
+ * 사용자의 정보를 수정합니다
+ * 
+ * - nickname: 속성 존재 시 닉네임 수정
+ * - gender: 속성 존재 시 성별 수정
+ * - age: 속성 존재 시 나이 수정
  * 
  * @param {Object} data 수정할 데이터
  */
-async function updateUserInfo(data) {
+export async function updateUserInfo(data) {
 	// 현재 값 불러오기
 	const {
 		nickname, gender, age
 	} = useUserStore(
 		(state) => (
 			{
-				"nickname": state.nickname,
-				"gender": state.gender,
-				"age": state.age
+				"nickname": state.user?.nickname,
+				"gender": state.user?.gender,
+				"age": state.user?.age
 			}
 		)
 	);
+
+	// data에 필요한 속성이 없으면 중지
+	if(
+		!(
+			"nickname" in data ||
+			"gender" in data ||
+			"age" in data
+		)
+	) return;
 
 	// 새로운 값 존재 시 업데이트
 	const payload = {};
