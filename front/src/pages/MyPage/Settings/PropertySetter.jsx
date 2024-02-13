@@ -60,7 +60,7 @@ export default function PropertySetter() {
 	if(!property) return <></>;
 
 	// user store에서 현재 값 가져오기
-	const initialValue = useUserStore((state) => state[property.name]);
+	const initialValue = useUserStore((state) => state?.user[property.name]);
 	[property.value, property.setValue] = useState(initialValue);
 
 	// 서버 요청 실패 시 표시할 메시지

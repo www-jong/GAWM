@@ -18,12 +18,12 @@ export default function ProfileBadge() {
 	} = useUserStore(
 		(state) => (
 			{
-				"profileImg": state.profileImg,
-				"nickname": state.nickname,
-				"point": state.point,
-				"level": state.level,
-				"following": state.following_num,
-				"follower": state.follower_num
+				"profileImg": state.user?.profileImg,
+				"nickname": state.user?.nickname,
+				"point": state.user?.point,
+				"level": state.user?.level,
+				"following": state.user?.following_num,
+				"follower": state.user?.follower_num
 			}
 		)
 	);

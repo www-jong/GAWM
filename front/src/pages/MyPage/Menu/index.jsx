@@ -11,16 +11,16 @@ export default function Menu() {
 	} = useUserStore(
 		(state) => (
 			{
-				"nickname": state.nickname,
-				"gender": state.gender,
-				"age": state.age
+				"nickname": state.user?.nickname,
+				"gender": state.user?.gender,
+				"age": state.user?.age
 			}
 		)
 	);
 	const disableSettings = (
-		nickname !== null ||
-		gender !== null ||
-		age !== null
+		typeof nickname === "undefined" ||
+		typeof gender === "undefined" ||
+		typeof age === "undefined"
 	);
 
 	return (

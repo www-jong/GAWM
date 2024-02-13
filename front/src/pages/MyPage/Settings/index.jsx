@@ -17,9 +17,9 @@ export default function Settings() {
 	} = useUserStore(
 		(state) => (
 			{
-				"nickname": state.nickname,
-				"gender": state.gender,
-				"age": state.age
+				"nickname": state.user?.nickname,
+				"gender": state.user?.gender,
+				"age": state.user?.age
 			}
 		)
 	);
@@ -29,9 +29,9 @@ export default function Settings() {
 		() => {
 			// 속성이 준비되지 않았을 시 마이페이지로 되돌리기
 			if(
-				nickname !== null ||
-				gender !== null ||
-				age !== null
+				typeof nickname === "undefined" ||
+				typeof gender === "undefined" ||
+				typeof age === "undefined"
 			) navigate("/mypage");
 		}
 	);
