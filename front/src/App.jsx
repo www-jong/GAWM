@@ -8,7 +8,6 @@ import Closet from "./pages/Closet";
 import MyPage from "./pages/MyPage";
 import Landing from "./pages/Landing";
 import Look from './pages/Look';
-import EditLook from './pages/Look/EditLookBook.jsx';
 import Loading from './pages/Loading';
 import AddClothes from "./pages/AddFashion/AddClothes";
 import AddLook from "./pages/AddFashion/AddLookBook";
@@ -17,7 +16,6 @@ import MyPageSettings from "./pages/MyPage/Settings";
 import MyPageBookmark from "./pages/MyPage/Bookmark";
 import MyPageSettingsPropertySetter from "./pages/MyPage/Settings/PropertySetter";
 import MyPageAccountList from "./pages/MyPage/AccountList";
-import Image from "./pages/AddFashion/ImageEdit.jsx";
 
 
 function App() {
@@ -26,7 +24,7 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Layout />}>
 					<Route index element={<Home />} />
-					
+					<Route path="live" element={<Live />} />
 					<Route path="browse" element={<Browse />} />
 					<Route path="closet" element={<Closet />} />
 					<Route path="mypage" element={<MyPage />}>
@@ -42,12 +40,9 @@ function App() {
 						<Route path="followers" element={<MyPageAccountList />} />
 					</Route>
 					<Route path="look" element={<Look />} />
-					<Route path="look/:lookbookId" element={<Look />} />
-                    <Route path="look/edit" element={<EditLook />} />
-					<Route path="look/:lookbookId" element={<EditLook />} />                    
+					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
 				<Route path="closet/add" element={<AddClothes />} />
-				<Route path="image" element={<Image />} />
 				<Route path="look/add" element={<AddLook />} />
 				<Route path="landing" element={<Landing />} />
 				<Route path="loading" element={<Loading />} />
