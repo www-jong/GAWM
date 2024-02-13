@@ -8,7 +8,7 @@ import OpenViduSession from 'openvidu-react';
 class App extends Component {
     constructor(props) {
         super(props);
-        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
+        this.APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
         this.state = {
             mySessionId: 'SessionA',
             myUserName: 'OpenVidu_User_' + Math.floor(Math.random() * 100),
@@ -27,7 +27,6 @@ class App extends Component {
         this.handlerChangeLiveName= this.handlerChangeLiveName.bind(this);
         this.handlerChangeIsPublic = this.handlerChangeIsPublic.bind(this);
         this.handlerChangeDelete = this.handlerChangeDelete.bind(this);
-    
     }
 
     handlerChangeLiveName(e){

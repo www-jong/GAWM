@@ -1,7 +1,7 @@
 {
   "name": "openvidu-library-react",
   "version": "2.29.0",
-  "homepage": "https://i10e203.p.ssafy.io/gawm/live",
+  "homepage": "http://localhost:3000/gawm/live",
   "private": true,
   "dependencies": {
     "axios": "0.19.2",

@@ -4,34 +4,32 @@ import com.cute.gawm.common.exception.DataMismatchException;
 import com.cute.gawm.common.exception.DataNotFoundException;
 import com.cute.gawm.common.exception.UserNotFoundException;
 import com.cute.gawm.common.exception.UserNotMatchException;
+import com.cute.gawm.common.response.PagingResponse;
 import com.cute.gawm.domain.clothes.dto.response.ClothesInfoResponse;
 import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.clothes.repository.ClothesDetailRepository;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
-import com.cute.gawm.domain.live.dto.request.LiveCreateRequest;
+import com.cute.gawm.domain.live.dto.response.LiveMiniResponse;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.repository.LiveRepository;
+import com.cute.gawm.domain.lookbook.dto.response.LookbookThumbnailResponse;
 import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import io.openvidu.java.client.*;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,8 +64,43 @@ public class LiveService {
                 liveList.add(live);
             }
         });
+        Collections.sort(liveList, Comparator.comparing(Live::getCreatedAt).reversed());
 
         return new PageImpl<>(liveList, pageable, liveList.size());
+    }
+
+    public PagingResponse<List<LookbookThumbnailResponse>> getLiveList(Pageable pageable) {
+        Page<Live> lives = liveRepository.findAll(pageable);
+        List<LiveMiniResponse> liveMiniResponses=new ArrayList<>();
+
+        lives.forEach(live->{
+            User user=live.getUser();
+            LiveMiniResponse build=LiveMiniResponse.builder()
+                    .liveId(live.getLiveId())
+                    .userId(user.getUserId())
+                    .nickname(user.getNickname())
+                    .profileImg(user.getProfileImg())
+                    .name(live.getName())
+                    .session(live.getSession())
+                    .isPublic(live.getIsPublic())
+                    .build();
+            liveMiniResponses.add(build);
+        });
+        boolean sorted = !pageable.getSort().isEmpty();
+        boolean asc = pageable.getSort().isSorted() && pageable.getSort().getOrderFor("createdAt").isAscending();
+
+        return new PagingResponse(
+                HttpStatus.OK.value(),
+                liveMiniResponses,
+                lives.isFirst(),
+                lives.isLast(),
+                lives.getPageable().getPageNumber(),
+                lives.getTotalPages(),
+                lives.getSize(),
+                sorted,
+                asc,
+                false
+        );
     }
 
     @Transactional
@@ -130,7 +163,7 @@ public class LiveService {
         boolean isPublic = true;
         if(params.get("deleted").equals("on")) {
             this.deleteLiveByUserId(userId);
-            return "라이브 생성 완료";
+            return "라이브 삭제 완료";
         }
         if(params.get("name") instanceof  String) {
             name = (String) params.get("name");
@@ -140,7 +173,7 @@ public class LiveService {
         }else isPublic = false;
         Session session = openvidu.createSession(properties);
 
-        this.createLive(session.getSessionId(), 3, name, isPublic, params);
+        this.createLive(session.getSessionId(), userId, name, isPublic, params);
         return session.getSessionId();
     }
 
@@ -148,4 +181,6 @@ public class LiveService {
         Session session = openvidu.getActiveSession(sessionId);
         return session;
     }
+
+
 }

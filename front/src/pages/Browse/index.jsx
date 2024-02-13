@@ -13,7 +13,7 @@ export default function Browse() {
     useEffect(() => {
         const fetchTodayLooks = async () => {
             try {
-                const response = await axios.get('https://i10e203.p.ssafy.io/gawm/back/look-book/top_list/');
+                const response = await axios.get('http://localhost:8080/gawm/back/look-book/top_list/');
                 setTodayLooks(response.data.content);
             } catch (error) {
                 console.error('Today Looks 데이터를 불러오는데 실패했습니다.', error);
@@ -26,8 +26,8 @@ export default function Browse() {
     useEffect(() => {
         const fetchLiveRooms = async () => {
             try {
-                const response = await axios.get('https://i10e203.p.ssafy.io/gawm/back/live-room/follow/');
-                setLiveRooms(response.data.content);
+                const response = await axios.get('http://localhost:8080/gawm/back/live-room/follow/');
+                setLiveRooms(response.data.data);
             } catch (error) {
                 console.error('Live Rooms 데이터를 불러오는데 실패했습니다.', error);
             }
@@ -50,7 +50,7 @@ export default function Browse() {
             <div className="today-look-section mt-4">
                 <h2 className="h2-nps">{title}</h2>
                 <div className="grid grid-cols-2 gap-4 px-4">
-                    {todayLooks.slice(0, 2).map((look) => (
+                    {todayLooks?.slice(0, 2).map((look) => (
                         <TodayLookComponent
                             key={look.lookbook_id}
                             lookImage={look.lookbook_img}

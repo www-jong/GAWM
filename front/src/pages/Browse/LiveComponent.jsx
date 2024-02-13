@@ -1,4 +1,5 @@
 import React from 'react';
+import { getFollowLivesInfo } from "../../apis/live"
 
 function getRelativeTime(from) {
     if (!(from instanceof Date) || isNaN(from)) {
