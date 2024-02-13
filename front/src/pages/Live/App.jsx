@@ -4,8 +4,9 @@ import React, { Component } from 'react';
 import './App.css';
 import UserVideoComponent from './UserVideoComponent.jsx';
 import cookies from 'js-cookie';
+import { OpenVidu } from 'openvidu-browser';
 
-const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/';
+const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
 
 class Live extends Component {
     constructor(props) {
@@ -21,6 +22,7 @@ class Live extends Component {
             liveName: "26C 라이브 이름",  
             isPublic: true,
             deleted: false,
+            token: "initial token",
         };
 
         // Bind this to the event handlers
@@ -34,6 +36,7 @@ class Live extends Component {
         this.handleChangeIspublic = this.handleChangeIspublic.bind(this);
         this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
         this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
+        this.handleChangeToken = this.handleChangeToken.bind(this);
     }
 
     componentDidMount() {
@@ -57,6 +60,12 @@ class Live extends Component {
     handleChangeLiveName(e) {
         this.setState({
             liveName: e.target.value,
+        });
+    }
+
+    handleChangeToken(e) {
+        this.setState({
+            token: e.target.value,
         });
     }
 
@@ -100,72 +109,75 @@ class Live extends Component {
         event.preventDefault();
         if (this.state.mySessionId && this.state.myUserName) {
             const token = await this.getToken();
+            console.log(token);
             this.setState({
                 token: token,
                 session: true,
             });
         }
 
-        // this.OV = new OpenVidu();
+       
 
-        // this.setState(
-        //     {
-        //         session: this.OV.initSession(),
-        //     },
-        //     async () => {
-        //         var mySession = this.state.session;
+        this.OV = new OpenVidu();
 
-        //         mySession.on('streamCreated', (event) => {
-        //             var subscriber = mySession.subscribe(event.stream, undefined);
-        //             var subscribers = this.state.subscribers;
-        //             subscribers.push(subscriber);
+        this.setState(
+            {
+                session: this.OV.initSession(),
+            },
+            async () => {
+                var mySession = this.state.session;
 
-        //             this.setState({
-        //                 subscribers: subscribers,
-        //             });
-        //         });
+                mySession.on('streamCreated', (event) => {
+                    var subscriber = mySession.subscribe(event.stream, undefined);
+                    var subscribers = this.state.subscribers;
+                    subscribers.push(subscriber);
 
-        //         mySession.on('streamDestroyed', (event) => {
-        //             this.deleteSubscriber(event.stream.streamManager);
-        //         });
+                    this.setState({
+                        subscribers: subscribers,
+                    });
+                });
 
-        //         mySession.on('exception', (exception) => {
-        //             console.warn(exception);
-        //         });
+                mySession.on('streamDestroyed', (event) => {
+                    this.deleteSubscriber(event.stream.streamManager);
+                });
 
-        //         const token = await this.getToken();
+                mySession.on('exception', (exception) => {
+                    console.warn(exception);
+                });
 
-        //         mySession.connect(token, { clientData: this.state.myUserName })
-        //             .then(async () => {
-        //                 let publisher = await this.OV.initPublisherAsync(undefined, {
-        //                     audioSource: undefined,
-        //                     videoSource: undefined,
-        //                     publishAudio: true,
-        //                     publishVideo: true,
-        //                     resolution: '640x480',
-        //                     frameRate: 30,
-        //                     insertMode: 'APPEND',
-        //                     mirror: false,
-        //                 });
+                // const token = await this.getToken();
+                
+                mySession.connect(this.state.token, { clientData: this.state.myUserName })
+                    .then(async () => {
+                        let publisher = await this.OV.initPublisherAsync(undefined, {
+                            audioSource: undefined,
+                            videoSource: undefined,
+                            publishAudio: true,
+                            publishVideo: true,
+                            resolution: '640x480',
+                            frameRate: 30,
+                            insertMode: 'APPEND',
+                            mirror: false,
+                        });
 
-        //                 mySession.publish(publisher);
+                        mySession.publish(publisher);
 
-        //                 var devices = await this.OV.getDevices();
-        //                 var videoDevices = devices.filter(device => device.kind === 'videoinput');
-        //                 var currentVideoDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
-        //                 var currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
+                        var devices = await this.OV.getDevices();
+                        var videoDevices = devices.filter(device => device.kind === 'videoinput');
+                        var currentVideoDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
+                        var currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
 
-        //                 this.setState({
-        //                     currentVideoDevice: currentVideoDevice,
-        //                     mainStreamManager: publisher,
-        //                     publisher: publisher,
-        //                 });
-        //             })
-        //             .catch((error) => {
-        //                 console.log('There was an error connecting to the session:', error.code, error.message);
-        //             });
-        //     },
-        // );
+                        this.setState({
+                            currentVideoDevice: currentVideoDevice,
+                            mainStreamManager: publisher,
+                            publisher: publisher,
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('There was an error connecting to the session:', error.code, error.message);
+                    });
+            },
+        );
     }
 
     leaveSession() {
@@ -354,7 +366,7 @@ class Live extends Component {
     async getToken() {
         console.log("getToken");
         const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
-        return await this.createToken(sessionId);
+        return await this.createToken(this.state.mySessionId);
     }
 
     async createSession(sessionId, liveName, isPublic , deleted) {
@@ -374,10 +386,10 @@ class Live extends Component {
 
    
 
-    async createToken(sessionId) {
+    async createToken(liveRoomId) {
         console.log("createToken");
-        console.log(sessionId);
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
+        console.log(liveRoomId);
+        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + liveRoomId + '/connections', {customSessionId : liveRoomId }, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true 
         });

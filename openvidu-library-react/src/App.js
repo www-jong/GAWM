@@ -229,8 +229,6 @@ class App extends Component {
         });
         return response.data; // The token
     }
-
-
 }
 
 export default App;

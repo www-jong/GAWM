@@ -41,7 +41,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
             for (Cookie cookie : cookies) {
                 System.out.println(cookie.getName());
                 System.out.println(cookie.getValue());
-                if ("sessionId".equals(cookie.getName())) {
+                if ("userSessionId".equals(cookie.getName())) {
                     cookieValue = cookie.getValue();
                     break;
                 }
@@ -49,8 +49,8 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         }
 
         // 쿠키에서 가져온 값을 사용하여 인증 객체 생성
-        Authentication authentication = new UsernamePasswordAuthenticationToken(cookieValue, null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(cookieValue, null);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
         System.out.println("!!");
         return httpSession.getAttribute("user");
     }
