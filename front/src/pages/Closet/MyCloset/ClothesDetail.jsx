@@ -6,6 +6,7 @@ import CenteredTopBar from "../../MyPage/CenteredTopBar";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import { CheckIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { fetchUserInfo, useUserStore } from "../../../stores/user";
+
 /**
  * 옷의 상세정보를 표시하는 component를 생성합니다
  * 
@@ -30,25 +31,41 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 	// 편집 상태
 	const [isEditing, setIsEditing] = useState(false);
 	const isEditingSetter = async () => {
+		if(isEditing) {
+			// 편집 완료 후 제출
+			const data = new FormData(form);
+			const payload = {};
+
+			payload["name"] = data.get("name");
+			payload["brand"] = data.get("brand");
+			payload["m_category"] = data.get("m_category");
+			payload["s_category"] = data.get("s_category");
+			payload["colors"] = data.getAll("colors");
+			payload["materials"] = data.getAll("materials");
+			payload["patterns"] = data.getAll("patterns");
+
+			console.log(payload);
+		}
+
 		setIsEditing(!isEditing);
+	};
+
+	// 옷 정보 불러오기
+	const fetchClothes = async () => {
+		try {
+			const response = await getClothesInfo(clothesId);
+			const data = response.data;
+			console.log("옷정보:",data)
+			setClothes(data);
+		}
+		catch(error) {
+			setClothes(null);
+		}
 	};
 
 	// 옷 정보 불러오기
 	useEffect(
 		() => {
-			const fetchClothes = async () => {
-				try {
-					// TODO: API 연동 시 주소 수정
-					const response = await getClothesInfo(clothesId);
-					const data = response.data;
-					console.log("옷정보:",data)
-					setClothes(data);
-				}
-				catch(error) {
-					setClothes(null);
-				}
-			};
-
 			fetchClothes();
 			if(!userId) fetchUserInfo();
 		},
