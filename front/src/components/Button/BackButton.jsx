@@ -10,7 +10,7 @@ export default function BackButton() {
     };
 
     return (
-        <button onClick={goBack} className="flex items-start">
+        <button onClick={goBack} className="my-1 flex items-start">
             <img src={BackButtonImg} alt="뒤로 가기" className="size-6 ml-2 mt-1" />
         </button>
     );

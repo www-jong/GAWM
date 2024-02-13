@@ -4,8 +4,9 @@ import logoImage from '../../assets/images/HomeLogo.svg';
 import LiveImg from './LiveImg.png';
 import TodayLookComponent from './TodayLookComponent.jsx';
 import LiveComponent from './LiveComponent.jsx';
-
-
+import {get_top_list} from '../../apis/lookbook'
+import { gawmApiAxios } from '../../utilities/http-commons';
+const gawmapiAxios = gawmApiAxios()
 export default function Browse() {
     const [todayLooks, setTodayLooks] = useState([]);
     const [liveRooms, setLiveRooms] = useState([]);
@@ -13,7 +14,7 @@ export default function Browse() {
     useEffect(() => {
         const fetchTodayLooks = async () => {
             try {
-                const response = await axios.get('https://ssafyfood-www-jong.koyeb.app/webapp/look-book/top_list/');
+                const response = await get_top_list();
                 setTodayLooks(response.data.content);
             } catch (error) {
                 console.error('Today Looks 데이터를 불러오는데 실패했습니다.', error);
@@ -26,7 +27,8 @@ export default function Browse() {
     useEffect(() => {
         const fetchLiveRooms = async () => {
             try {
-                const response = await axios.get('https://ssafyfood-www-jong.koyeb.app/webapp/live-room/follow/');
+                const response = await gawmapiAxios.get('/live-room/follow/');
+                console.log(response)
                 setLiveRooms(response.data.content);
             } catch (error) {
                 console.error('Live Rooms 데이터를 불러오는데 실패했습니다.', error);
@@ -50,7 +52,7 @@ export default function Browse() {
             <div className="today-look-section mt-4">
                 <h2 className="h2-nps">{title}</h2>
                 <div className="grid grid-cols-2 gap-4 px-4">
-                    {todayLooks.slice(0, 2).map((look) => (
+                    {todayLooks?.slice(0, 2).map((look) => (
                         <TodayLookComponent
                             key={look.lookbook_id}
                             lookImage={look.lookbook_img}

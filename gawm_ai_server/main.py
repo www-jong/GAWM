@@ -74,7 +74,7 @@ async def masking_image(image_file: UploadFile = File(...)):
         resized_image.save(buf, format='PNG')
         output_image_bytes = buf.getvalue()
 
-        output_image_bytes = remove(image_bytes,session=app.state.rembg_session)
+        output_image_bytes = remove(output_image_bytes,session=app.state.rembg_session)
         return StreamingResponse(io.BytesIO(output_image_bytes), media_type="image/png")
     except Exception as e:
         return JSONResponse(status_code=500, content={"status":500,"message": "이미지 처리 중 오류가 발생했습니다.", "error": str(e)})
@@ -101,18 +101,28 @@ async def upload_image(image_file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "이미지 저장 중 오류가 발생했습니다. :"+str(e)})
 
 #omnicommers에서 태그가져오기
-@prefix_router.post("/tag/get/{product_id}")
-async def past_tagging(product_id: str):
+@prefix_router.get("/tag/status/{product_id}")
+async def tagging_status(product_id: str):
+    print('태그조회')
     if not product_id:
         raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
     status_response = await check_status_until_done(product_id)# 등록완료되었는지 조회
-    print('옷 처리결과',status_response)
     if status_response.get("status") == "DONE":
-        tagging_info = await get_tagging_info(product_id)# 완료되었을 경우 태그값 조회
-        response=get_tagging_dto(tagging_info)
-        return JSONResponse(status_code=200,content=response)
+        return JSONResponse(status_code=200,content={"status":200,"data":"done"})
     else:
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"})
+
+#omnicommers에서 태그가져오기
+@prefix_router.get("/tag/get/{product_id}")
+async def past_tagging(product_id: str):
+    if not product_id:
+        raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
+    try:
+        tagging_info = await get_tagging_info(product_id)# 완료되었을 경우 태그값 조회
+        result=get_tagging_dto(tagging_info)
+        return JSONResponse(status_code=200,content=result)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"+e})
 
 
 @prefix_router.post("/tagging/")
