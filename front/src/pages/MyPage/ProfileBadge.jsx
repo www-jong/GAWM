@@ -68,7 +68,7 @@ export default function ProfileBadge() {
 					{/* 감 포인트 */}
 					<span className="flex flex-row gap-1.5 items-center text-sm md:text-base">
 						{
-							point ? (
+							typeof point === "number" ? (
 								<>
 									<img className="w-5" src={Gawm} />
 									<span>{point} 감 포인트</span>
@@ -82,7 +82,10 @@ export default function ProfileBadge() {
 				{/* 팔로잉 / 팔로워 정보 */}
 				<div className="flex flex-row gap-4 text-base">
 					{
-						(following && follower) ? (
+						(
+							typeof following === "number" &&
+							typeof follower === "number"
+						) ? (
 							<>
 								<Link to="/mypage/following">{following} 팔로잉</Link>
 								<Link to="/mypage/followers">{follower} 팔로워</Link>
@@ -95,7 +98,7 @@ export default function ProfileBadge() {
 				{/* 레벨 정보 */}
 				<div className="flex flex-col gap-1 text-sm md:text-base">
 					{
-						level ? (
+						typeof level === "number" ? (
 							<>
 								<span>레벨 {level}</span>
 								<div className="self-stretch h-2 flex flex-row justify-start content-stretch rounded-full bg-white">
