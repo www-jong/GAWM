@@ -27,7 +27,7 @@ export default function Browse() {
     useEffect(() => {
         const fetchLiveRooms = async () => {
             try {
-                const response = await gawmapiAxios.get('/live-room/follow/');
+                const response = await gawmapiAxios.get('/live-room/list/');
                 console.log(response)
                 setLiveRooms(response.data.content);
             } catch (error) {
@@ -77,10 +77,10 @@ export default function Browse() {
                 <div className="flex gap-2 mt-1 justify-center">
                     {liveRooms.map(room => (
                         <LiveComponent
-                            key={room.user_id}
-                            image={room.profile_img}
+                            key={room.liveId}
+                            image={room.profileImg}
                             title={room.name}
-                            createdDate={new Date(room['시작시간'])}
+                            createdDate={new Date(room.createdAt)}
                             points={room.point}
                         />
                     ))}

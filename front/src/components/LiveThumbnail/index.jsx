@@ -44,23 +44,19 @@ function getRelativeTime(from) {
  * 
  * @returns 생성된 JSX component
  */
-function LiveThumbnail({ className = "", image, title, createdDate, points, size, href }) {
-    const appliedStyle = {"--image-url": `url(${image})`};
-    const appliedClassName = `aspect-square flex flex-col-reverse rounded-lg ${className} ${size ? `size-${size}` : ""} bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat`;
-
-    const element = (
-        <div className="flex flex-col gap-1 h-9 bg-black/70 rounded-b-lg leading-[0.5rem] px-1">
-            <span className="text-sm text-white truncate">{title}</span>
-            <span className="text-[0.6rem] text-tertiary truncate">
-                {getRelativeTime(createdDate)} · {points} 감 포인트
-            </span>
+function LiveThumbnail({ image, title, createdDate, points, size, href }) {
+    const appliedStyle = "https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/" + image;
+    return (
+        <div className="w-26 h-26 rounded-lg relative">
+            <img className="w-full h-full object-cover rounded-lg" src={appliedStyle} alt={title} />
+            <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
+                <span className="inline-block text-sm text-white">{title}</span>
+                <span className="inline-block text-[0.6rem] text-tertiary">
+                    {getRelativeTime(createdDate)} · {points} 포인트
+                </span>
+            </div>
         </div>
     );
-
-    if("div" in arguments[0])
-        return <div style={appliedStyle} className={appliedClassName}>{element}</div>
-    else
-        return <Link to={href} style={appliedStyle} className={appliedClassName}>{element}</Link>
 }
 
 export default LiveThumbnail;
