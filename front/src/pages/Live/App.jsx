@@ -20,6 +20,7 @@ class Live extends Component {
             subscribers: [],
             isPublic : undefined,
             liveName: "26C 라이브 이름",
+            deleted: false,
         };
 
         // Bind this to the event handlers
@@ -341,23 +342,24 @@ class Live extends Component {
     }
 
     async createSession(sessionId, liveName, isPublic , deleted) {
-        const data = {
-            'customSessionId' : sessionId,
-            'liveName' : liveName,
-            'isPublic':isPublic,
-            'deleted': deleted,
-        };
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions', data, {
-            headers: { 'Content-Type': 'application/json', Authorization: cookies.get("sessionId") },
-            withCredentials:true
+        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions',  {
+            customSessionId : sessionId,
+            liveName : liveName,
+            isPublic : isPublic,
+            deleted: deleted,
+        }, {
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials : true,
         });
         return response.data;
     }
 
+   
+
     async createToken(sessionId) {
         const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
-            headers: { 'Content-Type': 'application/json', Authorization: cookies.get("sessionId")  },
-            withCredentials:true
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials: true 
         });
         return response.data;
     }
