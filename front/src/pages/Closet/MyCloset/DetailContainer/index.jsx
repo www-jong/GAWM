@@ -14,7 +14,7 @@ export default function DetailContainer({ data }) {
 		<ListGroup div>
 			<Detail label="브랜드" value={data.brand} />
 			<Detail label="이름" value={data.name} />
-			<Detail label="카테고리" value={`${data.mCategory} > ${data.sCategory}`} />
+			<Detail label="카테고리" value={`${data.mcategory} > ${data.scategory}`} />
 			<Detail label="색상" value={data.colors} />
 			<Detail label="소재" value={data.materials} />
 			<Detail label="패턴" value={data.patterns} />

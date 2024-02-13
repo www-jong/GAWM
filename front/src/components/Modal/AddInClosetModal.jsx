@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
+import { maskingImage,uploadImageForTagging } from '../../apis/clothes'; // apiService에서 함수 가져오기
+import {resizeImage} from '../../apis/image_controll'
 
 export default function AddInCloset({ onClose }) {
   const navigate = useNavigate();
@@ -15,27 +17,37 @@ export default function AddInCloset({ onClose }) {
     if(image){
       setSelectedImage(image);
       navigate('/loading');
+      
 
-      const formData= new FormData();
-      formData.append('image_file',image);
 
       try{
-        const response = await fetch('http://localhost:8000/masking/',{
-          method: 'POST',
-          body: formData  
-        });
-        console.log(response)
-        if(response.ok){
-          const precessedImage = await response.blob();
-          console.log(URL.createObjectURL(precessedImage))
-          navigate('/closet/add', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
-          onClose();
+        const resizedImage = await resizeImage(image,512,512);
+        const formData= new FormData();
+        formData.append('image_file',resizedImage);
+        const response = await maskingImage(formData);
+        if(response.status==200){
+          try{
+            
+            const response2 = await uploadImageForTagging(formData);
+            console.log(response)
+            console.log(response2)
+            //navigate('/image', { state: { processedImageURL: URL.createObjectURL(processedImage) } });
+            navigate('/image', { state: {
+               processedImageURL:URL.createObjectURL(response.data),
+               originalImageURL:URL.createObjectURL(resizedImage),
+              product_id:response2.data.data.uuid } });
+            onClose();
+          }catch(errer){
+            console.errer('옴니커머스 업로드 실패',error)
+            navigate('/closet/add')
+          }
+
         }else{
           console.error('Server error');
         }
       }catch(error){
         console.error('사진업로드 실패',error)
-        navigate('/closet/add')  // 테스트 용도
+        navigate('/image');  // 테스트 용도
       }
     
     }
@@ -46,7 +58,6 @@ export default function AddInCloset({ onClose }) {
     navigate('/look/add');
     onClose();
   };
-
 
 
   return (
