@@ -1,8 +1,8 @@
 import axios from "axios";
 import cookies from "js-cookie";
 
-const GAWM_API_URL = import.meta.env.MODE === "production" ? import.meta.env.VITE_GAWM_API_URL : "http://localhost:8080/gawm/back";
-const AI_API_URL = import.meta.env.MODE === "production" ? import.meta.env.VITE_GAWM_AI_API_URL : "http://localhost:8000/gawm/ai";
+const GAWM_API_URL = import.meta.env.VITE_MODE === "production" ? import.meta.env.VITE_GAWM_API_URL : "http://localhost:8080/gawm/back";
+const AI_API_URL = import.meta.env.VITE_MODE === "production" ? import.meta.env.VITE_GAWM_AI_API_URL : "http://localhost:8000/gawm/ai";
 /**
  * GAWM API 서버에 연결하는 axios 객체를 생성합니다
  * 
