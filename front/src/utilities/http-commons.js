@@ -13,10 +13,7 @@ export function gawmApiAxios() {
 			"params": {
 				"language": "ko-KR"
 			},
-			"withCredentials": true,
-			"headers": {
-				"access_token": cookies.get("SESSION")
-			}
+			"withCredentials": true
 		}
 	);
 }

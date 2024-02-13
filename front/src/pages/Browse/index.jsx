@@ -13,7 +13,7 @@ export default function Browse() {
     useEffect(() => {
         const fetchTodayLooks = async () => {
             try {
-                const response = await axios.get('https://ssafyfood-www-jong.koyeb.app/webapp/look-book/top_list/');
+                const response = await axios.get('https://i10e203.p.ssafy.io/gawm/back/look-book/top_list/');
                 setTodayLooks(response.data.content);
             } catch (error) {
                 console.error('Today Looks 데이터를 불러오는데 실패했습니다.', error);
@@ -26,7 +26,7 @@ export default function Browse() {
     useEffect(() => {
         const fetchLiveRooms = async () => {
             try {
-                const response = await axios.get('https://ssafyfood-www-jong.koyeb.app/webapp/live-room/follow/');
+                const response = await axios.get('https://i10e203.p.ssafy.io/gawm/back/live-room/follow/');
                 setLiveRooms(response.data.content);
             } catch (error) {
                 console.error('Live Rooms 데이터를 불러오는데 실패했습니다.', error);
