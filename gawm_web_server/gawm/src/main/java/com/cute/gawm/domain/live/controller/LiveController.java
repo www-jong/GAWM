@@ -3,7 +3,7 @@ package com.cute.gawm.domain.live.controller;
 import com.cute.gawm.common.auth.LoginUser;
 import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.domain.clothes.dto.response.ClothesInfoResponse;
-import com.cute.gawm.domain.live.dto.request.LiveCreateRequest;
+import com.cute.gawm.domain.live.dto.response.LiveMiniResponse;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/back/live-room")
@@ -30,7 +29,7 @@ public class LiveController {
             @LoginUser SessionUser sessionUser,
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ){
-        PageImpl<Live> followingLive = liveService.getFollowingLive(sessionUser.getId(), pageable);
+        PageImpl<LiveMiniResponse> followingLive = liveService.getFollowingLive(sessionUser.getId(), pageable);
         return ResponseUtil.buildPagingResponse(
                 HttpStatus.OK,
                 followingLive.getContent(),
@@ -42,6 +41,15 @@ public class LiveController {
                 true,
                 true,
                 false
+        );
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> getLivelist(
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
+    ){
+        return ResponseEntity.ok(
+                liveService.getLiveList(pageable)
         );
     }
 

@@ -4,7 +4,9 @@ import HomeLogo from "../../assets/images/HomeLogo.svg";
 import LiveThumbnail from "../../components/LiveThumbnail";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import LiveComponent from '../Browse/LiveComponent.jsx'
+import { gawmApiAxios } from '../../utilities/http-commons';
+const gawmapiAxios = gawmApiAxios()
 /**
  * 홈페이지 component를 생성합니다
  * 
@@ -17,7 +19,7 @@ function Home() {
 		() => {
 			const fetchLiveRooms = async () => {
 				try {
-					const response = await axios.get('https://ssafyfood-www-jong.koyeb.app/webapp/live-room/follow/');
+					const response = await gawmapiAxios.get('/live-room/follow/');
 					setLiveRooms(response.data.content);
 				} catch (error) {
 					setLiveRooms(null);
@@ -47,19 +49,15 @@ function Home() {
 				<div className="flex gap-4 items-center scroll-pl-4 pr-4 snap-x overflow-x-auto">
 					{
 						liveRooms ? (
-							liveRooms.map(
-								(item) => (
-									<LiveThumbnail
-										key={item.user_id}
-										className="size-32"
-										image={item.profile_img}
-										title={item.name}
-										createdDate={new Date(item["시작시간"])}
-										points={item.point}
-										div
-									/>
-								)
-							)
+							liveRooms.map(room => (
+								<LiveComponent
+									key={room.liveId}
+									image={room.profileImg}
+									title={room.name}
+									createdDate={new Date(room.createdAt)}
+									points={room.point}
+								/>
+							))
 						) : ""
 					}
 				</div>
