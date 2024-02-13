@@ -6,8 +6,8 @@ import CenteredTopBar from "../../MyPage/CenteredTopBar";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
+import axios from "axios";
 import { TrashIcon } from "@heroicons/react/24/outline";
-
 /**
  * 옷의 상세정보를 표시하는 component를 생성합니다
  * 
@@ -19,7 +19,6 @@ import { TrashIcon } from "@heroicons/react/24/outline";
  */
 export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) {
 	const [clothes, setClothes] = useState(undefined);
-
 	// 옷 정보 불러오기
 	useEffect(
 		() => {
@@ -27,8 +26,8 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 				try {
 					// TODO: API 연동 시 주소 수정
 					const response = await getClothesInfo(clothesId);
-					const data = response.data.data;
-		
+					const data = response.data;
+					console.log("옷정보:",data)
 					setClothes(data);
 				}
 				catch(error) {

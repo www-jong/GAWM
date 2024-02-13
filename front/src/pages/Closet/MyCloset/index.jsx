@@ -37,12 +37,12 @@ export default function MyCloset() {
 			const fetchCloset = async () => {
 				try {
 					const response = await getAllClothesInfo();
-					const data = response.data.data;
+					const data = response.data;
 
 					if(data.length) {
 						// "mCategory"로 분류
 						setCloset(
-							Map.groupBy(data, (item) => item["mCategory"])
+							Map.groupBy(data, (item) => item["mcategory"])
 						);
 					}
 					else setCloset(new Map());

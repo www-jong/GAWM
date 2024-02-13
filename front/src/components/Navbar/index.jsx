@@ -47,7 +47,7 @@ function Navbar() {
 			<NavItem
 				icon={GawmIcon}
 				name="26°C 라이브"
-				href="/live"
+				href="https://i10e203.p.ssafy.io/gawm/live"
 				isSelected={matches.live}
 			/>
 			<NavItem

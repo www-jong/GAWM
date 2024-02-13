@@ -43,7 +43,7 @@ async def submit_product_info(product_id,image_url):
         return response
     
     #옴니커머스 대기코드
-async def check_status_until_done(product_id, attempts=15, delay=1):
+async def check_status_until_done(product_id, attempts=20, delay=2):
     OMNICOMMERS_URL=os.getenv("OMNICOMMERS_URL")
     url = f"{OMNICOMMERS_URL}management/status/{product_id}"
     headers = {"X-Api-Key": os.getenv("OMNICOMMERS_MANAGEMENT_KEY")}
@@ -56,6 +56,7 @@ async def check_status_until_done(product_id, attempts=15, delay=1):
                 print(status_data)
                 if status_data.get("status") == "DONE":
                     return status_data  
+            print('조회실패, 재시도',response)
             await asyncio.sleep(delay)  
     return {"error": "Status check attempts exceeded or failed."}
 
