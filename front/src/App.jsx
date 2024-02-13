@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Live from "./pages/Live";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
+import StyleLogSelect from "./pages/Closet/History/styleLogSelect.jsx";
 import MyPage from "./pages/MyPage";
 import Landing from "./pages/Landing";
 import Look from './pages/Look';
@@ -47,6 +48,7 @@ function App() {
 					<Route path="look/:lookbookId" element={<EditLook />} />                    
 				</Route>
 				<Route path="closet/add" element={<AddClothes />} />
+				<Route path="closet/stylelog-select" element={<StyleLogSelect />} />
 				<Route path="image" element={<Image />} />
 				<Route path="look/add" element={<AddLook />} />
 				<Route path="landing" element={<Landing />} />

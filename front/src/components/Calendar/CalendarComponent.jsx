@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import moment from 'moment';
 import './Calendar.css';
-import StyleLogModal from '../../../components/Modal/StyleLogModal.jsx';
+import StyleLogModal from '../Modal/StyleLogModal.jsx';
 
 function ReactCalendar() {
     const curDate = new Date();
