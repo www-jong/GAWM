@@ -20,7 +20,7 @@ export default function StyleLog({ date, onClose }) {
   }, []);
 
   const handleAddLook = () => {
-    navigate('/look/add');
+    navigate('/closet/stylelog-select', { state: { date } });
     onClose();
   };
 
