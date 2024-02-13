@@ -364,14 +364,11 @@ class Live extends Component {
     }
 
     async getToken() {
-        console.log("getToken");
         const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
         return await this.createToken(this.state.mySessionId);
     }
 
     async createSession(sessionId, liveName, isPublic , deleted) {
-        console.log("createSession");
-        console.log(sessionId);
         const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions',  {
             customSessionId : sessionId,
             liveName : liveName,
@@ -387,12 +384,11 @@ class Live extends Component {
    
 
     async createToken(liveRoomId) {
-        console.log("createToken");
-        console.log(liveRoomId);
         const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + liveRoomId + '/connections', {customSessionId : liveRoomId }, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true 
         });
+        console.log(response);
         return response.data;
     }
 }
