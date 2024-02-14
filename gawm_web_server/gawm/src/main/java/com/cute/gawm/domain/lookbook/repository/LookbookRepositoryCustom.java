@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface LookbookRepositoryCustom {
        PageImpl<Lookbook> findAllLookbook(Pageable pageable);
+       PageImpl<Lookbook> findAllLookbookByUserId(int userId, Pageable pageable);
        PageImpl<Lookbook> searchLookbook(String keyword, Pageable pageable);
        List<Lookbook> findTopLookbook(Timestamp startDate, Timestamp endDate);
 }
