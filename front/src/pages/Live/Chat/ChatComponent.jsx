@@ -17,6 +17,8 @@ export default class ChatComponent extends Component {
   }
 
   componentDidMount() {
+    const data = { name: "myStream", data: this.props.myStream };
+    console.log(data);
     const session = this.props.user.getStreamManager().stream.session;
     session.off("signal:chat"); // 이전에 등록된 이벤트 리스너 제거
 
