@@ -49,7 +49,11 @@ function App() {
           <Route path="look" element={<Look />} />
           <Route path="look/:lookbookId" element={<Look />} />
           <Route path="look/edit" element={<EditLook />} />
+<<<<<<< HEAD
           <Route path="look/:lookbookId" element={<EditLook />} />
+=======
+          <Route path="look/edit/:lookbookId" element={<EditLook />} />
+>>>>>>> c61e238cdae4cf2bd208e2c1550dd4c16a2a489e
 
           {/* <Route path="/look/:id" element={<Look />} /> */}
         </Route>
