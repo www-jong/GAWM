@@ -2,7 +2,7 @@ import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import CenteredTopBar from "../CenteredTopBar";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
-import { fetchUserInfo, useUserStore } from "../../../stores/user";
+import { deleteAccount, fetchUserInfo, useUserStore } from "../../../stores/user";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { updateProfileImge } from "../../../apis/user";
@@ -14,14 +14,15 @@ import { updateProfileImge } from "../../../apis/user";
  */
 export default function Settings() {
 	const {
-		profileImg, nickname, gender, age
+		profileImg, nickname, gender, age, provider
 	} = useUserStore(
 		(state) => (
 			{
 				"profileImg": state.user?.profileImg,
 				"nickname": state.user?.nickname,
 				"gender": state.user?.gender,
-				"age": state.user?.age
+				"age": state.user?.age,
+				"provider": state.user?.provider
 			}
 		)
 	);
@@ -34,15 +35,28 @@ export default function Settings() {
 				typeof profileImg === "undefined" ||
 				typeof nickname === "undefined" ||
 				typeof gender === "undefined" ||
-				typeof age === "undefined"
+				typeof age === "undefined" ||
+				typeof provider === "undefined"
 			) navigate("/mypage");
 		},
-		[profileImg, nickname, gender, age]
+		[profileImg, nickname, gender, age, provider]
 	);
 
 	const genderNames = {
 		"FEMALE": "여성",
 		"MALE": "남성"
+	};
+
+	// 회원 탈퇴 시도 시 처리
+	const onAccountDeletion = async () => {
+		if(!window.confirm("정말 탈퇴하시겠습니까?"))
+			return;
+		
+		try {
+			deleteAccount(provider);
+			navigate("/landing");
+		}
+		catch(error) {}
 	};
 
 	// 프로필 사진 업데이트를 위한 사진 <input>
@@ -108,7 +122,7 @@ export default function Settings() {
 					<ListItem link href={`${import.meta.env.VITE_GAWM_API_URL}/user/logout`}>
 						로그아웃
 					</ListItem>
-					<ListItem link>
+					<ListItem div className="cursor-pointer" onClick={onAccountDeletion}>
 						회원탈퇴
 					</ListItem>
 				</ListGroup>

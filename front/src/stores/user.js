@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { edit, editNickname, getFollowingList, userInfo } from "../apis/user";
+import { edit, editNickname, getFollowingList, revokeGoogleAccount, revokeKakaoAccount, userInfo } from "../apis/user";
 
 /**
  * 로그인한 유저에 대한 store입니다
@@ -79,3 +79,21 @@ export async function fetchFollowingNicknames() {
 	  console.error('팔로잉 목록을 불러오는데 실패했습니다:', error);
 	}
   }
+
+/**
+ * 로그인한 사용자의 계정을 삭제합니다
+ * 
+ * @param {string} provider social login provider
+ */
+export async function deleteAccount(provider) {
+	if(provider === "KAKAO")
+		await revokeKakaoAccount();
+	else if(provider === "GOOGLE")
+		await revokeGoogleAccount();
+	else
+		throw new Error("올바르지 않은 provider입니다");
+
+	useUserStore.setState(
+		() => ({ "user": null })
+	);
+}

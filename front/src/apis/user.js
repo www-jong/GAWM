@@ -119,6 +119,20 @@ export function toggleFollow(data) {
     return axios.post(`${prefix}/follow`, data);
 }
 
+/**
+ * Google로 로그인한 계정의 삭제를 요청합니다
+ * 
+ * @returns Promise 객체
+ */
+export function revokeGoogleAccount() {
+	return axios.delete(`${prefix}/google`);
+}
 
-
-  
+/**
+ * Kakao로 로그인한 계정의 삭제를 요청합니다
+ * 
+ * @returns Promise 객체
+ */
+export function revokeKakaoAccount() {
+	return axios.delete(`${prefix}/kakao`);
+}
