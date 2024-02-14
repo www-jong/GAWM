@@ -13,7 +13,7 @@ import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
 import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
 import Loading from "@/pages/Loading";
-import { fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, addCommentToLookbook} from '@/apis/lookbook.js'
+import { fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, addCommentToLookbook, updateCommentInLookbook, deleteCommentFromLookbook } from '@/apis/lookbook.js'
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -37,22 +37,67 @@ export default function Look() {
 
         fetchData();
     }, [lookbookId]);
-    
+
     const { userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = lookData;
 
     const [commentText, setCommentText] = useState("");
     const [likes, setLikes] = useState(likeCnt);
     const [commentModalVisible, setCommentModalVisible] = useState(false);
-    const [comments, setComments] = useState(LookTest.data.comment); // 코멘트 데이터들을 상태로 관리
+    const [comments, setComments] = useState(comment); // 코멘트 데이터들을 상태로 관리
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLiked, setIsLiked] = useState(liked);
     const [isBookmarked, setIsBookmarked] = useState(bookmarked);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(commentText); // 입력된 댓글 로그
-        setCommentText(""); // 입력 필드 초기화
+        if (!commentText.trim()) return; // 빈 댓글은 제출하지 않음
+
+        try {
+            const response = await addCommentToLookbook(lookbookId, commentText);
+            if (response.status === 200) {
+                alert('댓글이 등록되었습니다.');
+                setComments([...comments, response.data]); // 새 댓글을 댓글 목록에 추가
+                setCommentText(""); // 입력 필드 초기화
+            } else {
+                console.error('댓글 등록 실패:', response);
+            }
+        } catch (error) {
+            console.error('댓글 등록 중 오류 발생:', error);
+            alert('댓글 등록에 실패했습니다.');
+        }
+    };
+
+    const handleUpdateComment = async (commentId, updatedContent) => {
+        try {
+            const response = await updateCommentInLookbook(lookbookId, commentId, updatedContent);
+            if (response.status === 200) {
+                alert('댓글이 수정되었습니다.');
+                // 댓글 목록을 업데이트하는 로직 구현 필요
+            } else {
+                console.error('댓글 수정 실패:', response);
+            }
+        } catch (error) {
+            console.error('댓글 수정 중 오류 발생:', error);
+            alert('댓글 수정에 실패했습니다.');
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        if (window.confirm('댓글을 삭제하시겠습니까?')) {
+            try {
+                const response = await deleteCommentFromLookbook(lookbookId, commentId);
+                if (response.status === 200) {
+                    alert('댓글이 삭제되었습니다.');
+                    // 댓글 목록에서 해당 댓글을 제거하는 로직 구현 필요
+                } else {
+                    console.error('댓글 삭제 실패:', response);
+                }
+            } catch (error) {
+                console.error('댓글 삭제 중 오류 발생:', error);
+                alert('댓글 삭제에 실패했습니다.');
+            }
+        }
     };
 
     const toggleCommentModal = () => {
@@ -233,21 +278,24 @@ export default function Look() {
                                 </button>
                             </div>
                             <div className="p-2 mb-10">
-
                                 {/* 코멘트 내용 */}
                                 {comments.map((comment) => (
-                                    <div key={comment.commentId} className="flex justify-start flex-col space-y-3 items-start px-2 border-b border-gray-100">
-                                        <div className="relative mt-1 mb-3 pt-2 flex">
-                                            <div className="mr-2">
-                                                <img src={comment.userProfileImg ? comment.userProfileImg : Mascot} alt={comment.userNickname} className="w-8 h-8 rounded-full object-cover bg-quaternary max-w-none" />
-                                            </div>
-                                            <div className="ml-2 w-full">
-                                                <p className="text-gray-600 md:text-sm text-xs w-full">
-                                                    <span className="text-gray-900 font-semibold">{comment.userNickname}</span> {comment.content}
-                                                </p>
-                                                <div className="time mt-1 text-gray-400 text-xs">
-                                                    <p>2d</p>
+                                    <div key={comment.commentId} className="flex flex-col space-y-3 px-2 border-b border-gray-100">
+                                        <div className="relative mt-1 mb-3 pt-2">
+                                            <div className="flex flex-row">
+                                                <img src={comment.userProfileImg ? comment.userProfileImg : Mascot} alt={comment.userNickname} className="w-8 h-8 rounded-full object-cover" />
+                                                <div className="ml-2">
+                                                    <p className="text-gray-600 md:text-sm text-xs">
+                                                        <span className="font-semibold text-gray-900">{comment.userNickname}</span> {comment.content}
+                                                    </p>
+                                                    <div className="mt-1 text-xs text-gray-400">
+                                                        <p>2d</p>
+                                                    </div>
                                                 </div>
+                                            </div>
+                                            <div className="absolute top-0 right-0 flex space-x-2">
+                                                <button className="text-xs text-main hover:text-main-dark" onClick={handleUpdateComment} >수정</button>
+                                                <button className="text-xs text-red-600 hover:text-red-700" onClick={handleDeleteComment}>삭제</button>
                                             </div>
                                         </div>
                                     </div>
