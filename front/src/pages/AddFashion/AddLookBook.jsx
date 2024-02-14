@@ -68,7 +68,7 @@ export default function AddLookBook() {
 
       if (response.status === 200) {
         alert('룩북 생성 완료');
-        // navigate(`/look/${}`); // 성공 시 등록된 룩북 페이지로
+        navigate(`/closet`); // 성공 시 등록된 룩북 페이지로
       } else {
         console.error('Server error:', response);
       }
@@ -84,8 +84,7 @@ export default function AddLookBook() {
       <form onSubmit={handleSubmit} className="space-y-4 mb-16">
         {imagePreviewUrl ? (
           <div onClick={triggerFileSelectPopup} style={{ cursor: 'pointer' }}>
-            <img src={imagePreviewUrl} alt="미리보기" style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }} />
-            <p>이미지 변경</p>
+            <img src={imagePreviewUrl} alt="미리보기" className="w-full h-80 object-cover" />
           </div>
         ) : (
           <div onClick={triggerFileSelectPopup} className="w-full h-80 bg-gray-200 flex justify-center items-center cursor-pointer">
