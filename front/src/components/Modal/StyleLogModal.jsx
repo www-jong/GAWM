@@ -25,17 +25,26 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
       // 모든 stylelogIds에 대해 getStyleLogDetails 호출
       Promise.all(stylelogIds.map(stylelogId => getStyleLogDetails(stylelogId)))
         .then(responses => {
+          // 응답에서 URL과 ID를 추출하여 저장
           const urls = responses
             .filter(response => response.status === 200 && response.data)
-            .map(response => response.data.data.stylelogImg);
-          console.log(urls)
-          setStylelogImgUrls(urls); // 이미지 URL 배열을 업데이트
+            .map(response => ({
+              url: response.data.data.stylelogImg,
+              id: response.data.data.stylelogId // ID를 저장
+            }));
+          setStylelogImgUrls(urls); // 이미지 URL 및 ID 배열을 업데이트
         })
         .catch(error => {
           console.error('Error fetching style log details:', error);
         });
     }
   }, [stylelogIds]);
+
+  const handleImageClick = (stylelogId) => {
+    // 이미지 클릭 시 해당 스타일로그 ID를 사용하여 네비게이트
+    navigate(`/closet/stylelog/${stylelogId}`);
+    onClose();
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -66,9 +75,9 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
                 modules={[EffectCards]}
                 className="mySwiper"
               >
-                {stylelogImgUrls.map((url, index) => (
+                {stylelogImgUrls.map((item, index) => (
                   <SwiperSlide key={index}>
-                    <img key={index} src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+url} alt={`스타일로그 이미지 ${index}`} />
+                    <img key={index} src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+item.url} alt={`스타일로그 이미지 ${index}`} onClick={() => handleImageClick(item.id)} />
                   </SwiperSlide>
                 ))}
               </Swiper>

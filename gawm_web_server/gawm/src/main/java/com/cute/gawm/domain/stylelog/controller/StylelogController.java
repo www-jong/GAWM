@@ -77,8 +77,8 @@ public class StylelogController {
     }
 
     // id로 스타일로그 수정
-    @PatchMapping("/{stylelog-id}")
-    public ResponseEntity<?> updateStylelog(@PathVariable("stylelog-id") int stylelogId,
+    @PatchMapping("/{stylelogId}")
+    public ResponseEntity<?> updateStylelog(@PathVariable("stylelogId") int stylelogId,
                                             @RequestBody StylelogUpdateRequest request,
                                             @LoginUser SessionUser sessionUser) {
         stylelogService.updateStylelog(stylelogId, request, sessionUser.getId());

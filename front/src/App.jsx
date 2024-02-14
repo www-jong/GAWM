@@ -7,6 +7,8 @@ import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
 import StyleLogSelect from "./pages/Closet/History/styleLogSelect.jsx";
 import StyleLogAdd from "./pages/Closet/History/styleLogAdd.jsx";
+import StyleLogDetail from './pages/Closet/History/stylelogDetail.jsx';
+import StyleLogEdit from './pages/Closet/History/styleLogEdit.jsx';
 import MyPage from "./pages/MyPage";
 import Landing from "./pages/Landing";
 import Look from './pages/Look';
@@ -53,6 +55,8 @@ function App() {
 				<Route path="closet/add" element={<AddClothes />} />
 				<Route path="closet/stylelog-select" element={<StyleLogSelect />} />
 				<Route path="closet/stylelog-add" element={<StyleLogAdd />} />
+				<Route path="closet/stylelog/:stylelogId" element={<StyleLogDetail />} />
+				<Route path="closet/stylelog-edit" element={<StyleLogEdit />} />
 				<Route path="image" element={<Image />} />
 
 				<Route path="look/add" element={<AddLook />} />

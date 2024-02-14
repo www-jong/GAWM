@@ -37,11 +37,11 @@ export function getStyleLogsByYearAndMonth(year, month) {
 /**
  * 특정 스타일로그의 세부 정보 조회
  * 
- * @param {number|string} calendarId 조회할 스타일로그 ID
+ * @param {number|string} stylelogId 조회할 스타일로그 ID
  * @returns Promise 객체
  */
-export function getStyleLogDetails(calendarId) {
-    return axios.get(`${prefix}/${calendarId}`);
+export function getStyleLogDetails(stylelogId) {
+    return axios.get(`${prefix}/${stylelogId}`);
 }
 
 
@@ -82,10 +82,10 @@ export const createStyleLog = async (formData)=> {
 /**
  * 기존 스타일로그 데이터 수정
  * 
- * @param {number|string} calendarId 수정할 스타일로그 ID
+ * @param {number|string} stylelogId 수정할 스타일로그 ID
  * @param {Object} data 수정할 스타일로그 데이터
  * @returns Promise 객체
  */
-export function updateStyleLog(calendarId, data) {
-    return axios.put(`${prefix}/${calendarId}`, data);
+export function updateStyleLog(stylelogId, data) {
+    return axios.patch(`${prefix}/${stylelogId}`, data);
 }

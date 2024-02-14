@@ -99,6 +99,86 @@ export default function styleLogSelect() {
     fetchClothesData();
   }, []);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    console.log('탑재')
+    // 이벤트 핸들러 정의
+    const handleTouchStart = (e) => {
+      const touch = e.touches[0];
+      const rect = canvasRef.current.getBoundingClientRect();
+      const offsetX = touch.clientX - rect.left;
+      const offsetY = touch.clientY - rect.top;
+  
+      let foundIndex = -1;
+      selectedClothes.forEach((clothe, index) => {
+        const { width, height } = clothe.image;
+        const drawWidth = width * clothe.scale;
+        const drawHeight = height * clothe.scale;
+        if (
+          offsetX >= clothe.position.x && offsetX <= clothe.position.x + drawWidth &&
+          offsetY >= clothe.position.y && offsetY <= clothe.position.y + drawHeight
+        ) {
+          foundIndex = index;
+        }
+      });
+  
+      if (foundIndex !== -1) {
+        e.preventDefault(); // ★★★드래깅 대상이 있을 경우 페이지 스크롤 방지
+        // 터치된 옷을 배열의 맨 뒤로 이동
+        const updatedClothes = [...selectedClothes];
+        const [selectedClothe] = updatedClothes.splice(foundIndex, 1); // 선택된 옷 제거
+        updatedClothes.push({ ...selectedClothe, isSelected: true }); // 맨 뒤로 추가
+        setSelectedClothes(updatedClothes.map((clothe, index) => ({ ...clothe, isSelected: index === updatedClothes.length - 1 }))); // 마지막 옷만 isSelected를 true로 설정
+        setCurrentDraggingIndex(updatedClothes.length - 1); // 맨 뒤로 이동된 옷의 새 인덱스 설정
+        setIsDragging(true);
+      }
+    };
+  
+    const handleTouchMove = (e) => {
+      if (isDragging && currentDraggingIndex !== null) {
+        e.preventDefault(); // ★★★드래깅 대상이 있을 경우 페이지 스크롤 방지
+        const touch = e.touches[0];
+        const rect = canvasRef.current.getBoundingClientRect();
+        const scaleX = canvasRef.current.width / rect.width; // 캔버스 너비 대비 터치 영역의 스케일 비율
+        const scaleY = canvasRef.current.height / rect.height; // 캔버스 높이 대비 터치 영역의 스케일 비율
+  
+        // 현재 선택된 옷의 크기와 배율을 고려하여 중앙 위치 조정
+        const currentClothe = selectedClothes[currentDraggingIndex];
+        const { width, height } = currentClothe.image; // 원본 이미지 크기
+        const scaledWidth = width * currentClothe.scale;
+        const scaledHeight = height * currentClothe.scale;
+  
+        // 터치 위치에서 이미지의 중앙을 기준으로 한 위치 조정
+        const x = (touch.clientX - rect.left) * scaleX - scaledWidth / 2;
+        const y = (touch.clientY - rect.top) * scaleY - scaledHeight / 2;
+  
+        setSelectedClothes(prevSelectedClothes =>
+          prevSelectedClothes.map((clothe, index) =>
+            index === currentDraggingIndex ? { ...clothe, position: { x, y } } : clothe
+          )
+        );
+      }
+    };
+  
+
+    // 이벤트 리스너 등록
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    return () => {
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [selectedClothes]); // 의존성 배열에 다른 의존성이 필요하면 추가
+
+  const handleTouchEnd = () => {
+  
+    setIsDragging(false);
+    setCurrentDraggingIndex(null); // 드래그 종료 후 인덱스 초기화
+  };
+
 
   // 옷 선택로직(옷장에서 옷 누르면 선택)
   const handleClothingSelect = async (item) => {
@@ -155,7 +235,7 @@ export default function styleLogSelect() {
         x: clothe.position.x,
         y: clothe.position.y,
         rotate: 0,
-        size: 100
+        size: clothe.scale
       }));
       console.log('dd')
       const data = {
@@ -166,14 +246,20 @@ export default function styleLogSelect() {
         clotheset: clotheset
       };
 
-      const formData = new FormData();
-      formData.append('image', blob, 'image.png'); // Blob 형태의 이미지 데이터
-      formData.append('data', JSON.stringify(data)); // 나머지 데이터를 문자열로 변환하여 추가
+      //const formData = new FormData();
+      //formData.append('image', blob, 'image.png'); // Blob 형태의 이미지 데이터
+      //formData.append('data', JSON.stringify(data)); // 나머지 데이터를 문자열로 변환하여 추가
 
       try {
         // const create = await createStyleLog(formData); // 수정: formData를 전송 ★★★★
-        console.log('Style log created:', create);
-        navigate('/closet/stylelog-add', { state: { date: date } });
+        console.log('Style log created:');
+        navigate('/closet/stylelog-add', { 
+          state: { 
+            imageBlob:blob,
+            clotheset:clotheset,
+            date: saveTimestamp
+
+          } });
       } catch (error) {
         console.error('Failed to create style log:', error);
       }
@@ -182,68 +268,9 @@ export default function styleLogSelect() {
 
 
 
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    const rect = canvasRef.current.getBoundingClientRect();
-    const offsetX = touch.clientX - rect.left;
-    const offsetY = touch.clientY - rect.top;
+ 
 
-    let foundIndex = -1;
-    selectedClothes.forEach((clothe, index) => {
-      const { width, height } = clothe.image;
-      const drawWidth = width * clothe.scale;
-      const drawHeight = height * clothe.scale;
-      if (
-        offsetX >= clothe.position.x && offsetX <= clothe.position.x + drawWidth &&
-        offsetY >= clothe.position.y && offsetY <= clothe.position.y + drawHeight
-      ) {
-        foundIndex = index;
-      }
-    });
 
-    if (foundIndex !== -1) {
-      e.preventDefault(); // ★★★드래깅 대상이 있을 경우 페이지 스크롤 방지
-      // 터치된 옷을 배열의 맨 뒤로 이동
-      const updatedClothes = [...selectedClothes];
-      const [selectedClothe] = updatedClothes.splice(foundIndex, 1); // 선택된 옷 제거
-      updatedClothes.push({ ...selectedClothe, isSelected: true }); // 맨 뒤로 추가
-      setSelectedClothes(updatedClothes.map((clothe, index) => ({ ...clothe, isSelected: index === updatedClothes.length - 1 }))); // 마지막 옷만 isSelected를 true로 설정
-      setCurrentDraggingIndex(updatedClothes.length - 1); // 맨 뒤로 이동된 옷의 새 인덱스 설정
-      setIsDragging(true);
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (isDragging && currentDraggingIndex !== null) {
-      e.preventDefault(); // ★★★드래깅 대상이 있을 경우 페이지 스크롤 방지
-      const touch = e.touches[0];
-      const rect = canvasRef.current.getBoundingClientRect();
-      const scaleX = canvasRef.current.width / rect.width; // 캔버스 너비 대비 터치 영역의 스케일 비율
-      const scaleY = canvasRef.current.height / rect.height; // 캔버스 높이 대비 터치 영역의 스케일 비율
-
-      // 현재 선택된 옷의 크기와 배율을 고려하여 중앙 위치 조정
-      const currentClothe = selectedClothes[currentDraggingIndex];
-      const { width, height } = currentClothe.image; // 원본 이미지 크기
-      const scaledWidth = width * currentClothe.scale;
-      const scaledHeight = height * currentClothe.scale;
-
-      // 터치 위치에서 이미지의 중앙을 기준으로 한 위치 조정
-      const x = (touch.clientX - rect.left) * scaleX - scaledWidth / 2;
-      const y = (touch.clientY - rect.top) * scaleY - scaledHeight / 2;
-
-      setSelectedClothes(prevSelectedClothes =>
-        prevSelectedClothes.map((clothe, index) =>
-          index === currentDraggingIndex ? { ...clothe, position: { x, y } } : clothe
-        )
-      );
-    }
-  };
-
-  const handleTouchEnd = () => {
-
-    setIsDragging(false);
-    setCurrentDraggingIndex(null); // 드래그 종료 후 인덱스 초기화
-  };
   // 카테고리용
   const categories = clothesData ? Object.keys(clothesData).filter(key => key !== 'ordered') : [];
 
@@ -297,13 +324,11 @@ export default function styleLogSelect() {
         <input type="color" id="background-color-picker" value={backgroundColor} onChange={handleBackgroundColorChange} />
       </div>
       {/* canvas영역 */}
-      <div className="bg-gray-200 h-96 flex justify-center items-center">
+      <div className="bg-gray-200 h-96 flex justify-center items-center" >
         <canvas
           ref={canvasRef}
-          width={400}
-          height={400}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
+          width={384}
+          height={384}
           onTouchEnd={handleTouchEnd}
         />
         {borderBox.visible && (

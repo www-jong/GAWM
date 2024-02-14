@@ -3,89 +3,84 @@ import Calendar from 'react-calendar';
 import moment from 'moment';
 import './Calendar.css';
 import StyleLogModal from '../Modal/StyleLogModal.jsx';
-import {getStyleLogsByYear} from '../../apis/stylelog'
+import {getStyleLogsByYear,getStyleLogsByYearAndMonth} from '../../apis/stylelog'
 function ReactCalendar() {
-    const curDate = new Date();
-    const [value, onChange] = useState(curDate); // 클릭한 날짜, 초기값: 현재 날짜
-
-    const [selectedDate, setSelectedDate] = useState(moment(curDate).format('YYYY-MM-DD'));
-    const activeDate = moment(value).format('YYYY-MM-DD'); // 클릭한 날짜 (년-월-일)
-
-    const [isModalOpen, setIsModalOpen] = useState(false); // StyleLogModal 상태 관리
-    // 스타일로그 데이터 상태 및 상태 업데이트 함수 선언 수정
-    const [stylelogData, setStylelogData] = useState({});
+    const [value, setValue] = useState(new Date());
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [styleLogData, setStyleLogData] = useState({});
     const [selectedStyleLogIds, setSelectedStyleLogIds] = useState([]);
 
-
     useEffect(() => {
-        const year = moment().format('YYYY'); // 현재 년도
-        getStylelogsByYearData(year);
+        loadInitialData();
     }, []);
 
-    const getStylelogsByYearData = async (year) => {
-        const response = await getStyleLogsByYear(year);
-        if (response.data.status === 200) {
-            console.log(response)
-            setStylelogData(response.data.data); // API 호출 결과 중 data.data 부분을 상태에 저장
+    const loadInitialData = async () => {
+        const year = moment().format('YYYY');
+        const month = moment().format('MM');
+        await loadStyleLogData(year, month);
+        await loadStyleLogData(year, Number(month) - 1); // 이전 달
+        await loadStyleLogData(year, Number(month) + 1); // 다음 달
+        //console.log(styleLogData)
+    };
+
+    const loadStyleLogData = async (year, month) => {
+        const formattedMonth = month.toString().padStart(2, '0');
+        const key = `${year}-${formattedMonth}`;
+        if (styleLogData[key]) return;
+
+        try {
+            const response = await getStyleLogsByYearAndMonth(year, formattedMonth);
+            if (response.status === 200) {
+                setStyleLogData(prev => ({ ...prev, [key]: response.data.data }));
+            }
+        } catch (error) {
+            console.error('Error fetching style log data:', error);
         }
+    };
+
+    const handleActiveStartDateChange = ({ activeStartDate }) => {
+        const year = moment(activeStartDate).format('YYYY');
+        const month = moment(activeStartDate).format('MM');
+        loadStyleLogData(year, month);
     };
 
     const handleDayClick = (value, event) => {
         setIsModalOpen(true);
-        const newActiveDate = moment(value).format('YYYY년 M월 D일');
-        setSelectedDate(newActiveDate);
-        
-        // 선택된 날짜에 해당하는 stylelogId들 찾기
         const dateString = moment(value).format('YYYYMMDD');
-        const monthString = moment(value).format('YYYYMM');
-        const dayData = stylelogData[monthString] || [];
-        const styleLogIds = dayData
-            .filter(entry => moment(entry.date).format('YYYYMMDD') === dateString)
-            .map(entry => entry.stylelogId); // 이 날짜에 해당하는 모든 stylelogId 추출
-    
+        const monthString = moment(value).format('YYYY-MM');
+        const dayData = styleLogData[monthString] || [];
+        const styleLogIds = dayData.filter(entry => moment(entry.date).format('YYYYMMDD') === dateString).map(entry => entry.stylelogId);
         setSelectedStyleLogIds(styleLogIds);
-    };
-    
-
-    // 클릭한 날짜의 월을 추출하여 상태 관리
-    const monthOfActiveDate = moment(value).format('YYYY-MM');
-    const [activeMonth, setActiveMonth] = useState(monthOfActiveDate);
-
-    // 활성화된 시작 날짜를 기반으로 활성 월을 설정하는 함수
-    const getActiveMonth = (activeStartDate) => {
-        const newActiveMonth = moment(activeStartDate).format('YYYY-MM');
-        setActiveMonth(newActiveMonth);
     };
 
     const addContent = ({ date }) => {
         const dateString = moment(date).format('YYYYMMDD');
-        const monthString = moment(date).format('YYYYMM');
-        const dayData = stylelogData[monthString] || [];
-        
-        // 해당 날짜에 스타일로그 데이터가 있는지 확인
+        const monthString = moment(date).format('YYYY-MM');
+        // 여기서 dayData를 가져오기 전에, 해당 monthString이 styleLogData에 존재하는지 확인
+        const dayData = styleLogData[monthString];
+        //console.log(dayData)
+        if (!dayData) {
+            // 해당 월에 대한 데이터가 없으면 null을 반환
+            return null;
+        }
         const filteredEntries = dayData.filter(entry => moment(entry.date).format('YYYYMMDD') === dateString);
-    
         if (filteredEntries.length > 0) {
-            // 첫 번째 스타일로그의 이미지 URL을 사용
-            const firstStyleLogImgUrl = filteredEntries[0].stylelogImg; // 여기서는 예시로 첫 번째 스타일로그의 이미지를 사용합니다.
+            const firstStyleLogImgUrl = filteredEntries[0].stylelogImg;
             return (
                 <div className="diaryImgContainer">
-                    <img
-                        src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+firstStyleLogImgUrl} // 스타일로그 이미지 URL 사용
-                        className="diaryImg"
-                        alt="Style Log"
-                    />
+                    <img src={`${import.meta.env.VITE_CLOTHES_BASE_URL}/${firstStyleLogImgUrl}`} className="diaryImg" alt="Style Log" />
                 </div>
             );
         }
-        return null; // 날짜에 해당하는 데이터가 없는 경우, 아무것도 추가하지 않음
+        return null;
     };
+
 
     return (
         <div>
             <Calendar
                 locale="ko"
-                onChange={onChange}
+                onChange={setValue}
                 onClickDay={handleDayClick}
                 value={value}
                 next2Label={null}
@@ -93,12 +88,15 @@ function ReactCalendar() {
                 formatDay={(locale, date) => moment(date).format('D')}
                 tileContent={addContent}
                 showNeighboringMonth={false}
-                onActiveStartDateChange={({ activeStartDate }) => {
-                    const newActiveMonth = moment(activeStartDate).format('YYYY-MM');
-                    getStylelogsByYearData(newActiveMonth.substring(0, 4)); // 활성 월이 변경될 때마다 해당 년도의 데이터를 다시 불러옴
-                }}
+                onActiveStartDateChange={handleActiveStartDateChange}
             />
-            {isModalOpen && <StyleLogModal date={selectedDate} stylelogIds={selectedStyleLogIds} onClose={() => setIsModalOpen(false)} />}
+                        {isModalOpen && (
+                <StyleLogModal
+                    date={moment(value).format('YYYY-MM-DD')}
+                    stylelogIds={selectedStyleLogIds}
+                    onClose={() => setIsModalOpen(false)}
+                />
+            )}
         </div>
     );
 }
