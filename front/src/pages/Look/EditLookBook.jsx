@@ -10,11 +10,13 @@ import lookTestData from './LookTest.json';
 
 
 export default function EditLookBook() {
+    const { lookbookId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const fileInput = useRef(null);
     const tagsInput = useRef(null);
     const clothesInput = useRef(null);
+    
 
     const [selectedFile, setSelectedFile] = useState(null);
     const [isPublic, setIsPublic] = useState(false);
@@ -55,7 +57,7 @@ export default function EditLookBook() {
     useEffect(() => {
         const fetchLookData = async () => {
             try {
-                const response = await fetchLookbookById(2); // API 호출
+                const response = await fetchLookbookById(lookbookId); // API 호출
                 if (response.status === 200) {
                     setLookData(response.data); // 상태 업데이트
                     // API 호출 성공 시, 태그 상태 업데이트
@@ -73,11 +75,11 @@ export default function EditLookBook() {
         };
 
         fetchLookData();
-    }, [2]); // id가 변경될 때마다 API 호출
+    }, [lookbookId]); // id가 변경될 때마다 API 호출
 
     // if (!lookData) return <div><Loading /></div>;
 
-    const { lookbookId, userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = lookData;
+    const { userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = lookData;
     const handleSubmit = async (e) => {
         e.preventDefault();
 
