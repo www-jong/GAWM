@@ -142,24 +142,11 @@ public class LookbookController {
             @PathVariable("lookbookId") Integer lookbookId
     ) {
         final int userId = seesionUser.getId();
-        lookbookService.bookmark(userId, lookbookId);
+        String bookmarkStatus = lookbookService.manageBookmark(userId, lookbookId);
 
         return ResponseUtil.buildBasicResponse(
                 HttpStatus.OK,
-                "북마크 완료"
-        );
-    }
-
-    @PostMapping("/{lookbookId}/unbookmark")
-    public ResponseEntity<?> unbookmark(
-            @LoginUser SessionUser seesionUser,
-            @PathVariable("lookbookId") Integer lookbookId
-    ) {
-        final int userId = seesionUser.getId();
-        lookbookService.unbookmark(userId, lookbookId);
-        return ResponseUtil.buildBasicResponse(
-                HttpStatus.OK,
-                "북마크 완료"
+                bookmarkStatus
         );
     }
 

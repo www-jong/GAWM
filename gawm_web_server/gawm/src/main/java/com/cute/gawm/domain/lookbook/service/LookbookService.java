@@ -392,30 +392,26 @@ public class LookbookService {
     }
 
     @Transactional
-    public void bookmark(Integer userId, Integer lookbookId) {
+    public String manageBookmark(Integer userId, Integer lookbookId) {
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
         boolean isBookmarked = bookmarkRepository.existsByLookbookAndUserUserId(lookbook, userId);
-        if(isBookmarked) throw new DataMismatchException("해당 유저는 이미 북마크를 한 상태입니다.");
+        if(isBookmarked) {
+            bookmarkRepository.deleteByLookbookLookbookId(lookbookId);
+            return "북마크 취소 완료";
+        }else{
+            User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
+            Bookmark bookmark = Bookmark.builder()
+                    .lookbook(lookbook)
+                    .user(user)
+                    .build();
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
-        Bookmark bookmark = Bookmark.builder()
-                .lookbook(lookbook)
-                .user(user)
-                .build();
-
-        bookmarkRepository.save(bookmark);
+            bookmarkRepository.save(bookmark);
+            return "북마크 반영 완료";
+        }
     }
 
-    @Transactional
-    public void unbookmark(Integer userId, Integer lookbookId) {
-        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
-        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
-        boolean isBookmarked = bookmarkRepository.existsByLookbookAndUserUserId(lookbook, userId);
-        if(!isBookmarked) throw new DataMismatchException("해당 유저는 북마크를 하지 않은 상태입니다.");
 
-        bookmarkRepository.deleteByLookbookLookbookId(lookbookId);
-    }
 
     @Transactional
     public String manageLikes(Integer userId, Integer lookbookId) {
