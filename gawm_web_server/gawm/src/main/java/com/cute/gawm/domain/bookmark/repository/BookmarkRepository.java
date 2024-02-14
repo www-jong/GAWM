@@ -11,7 +11,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark,Integer> {
 
     boolean existsByLookbookAndUserUserId(Lookbook lookbook,Integer userId);
 
-    List<Bookmark> findByUserId(Integer userId);
+    List<Bookmark> findByUserUserId(Integer userId);
 
     void deleteByUserUserId(Integer userId);
 }

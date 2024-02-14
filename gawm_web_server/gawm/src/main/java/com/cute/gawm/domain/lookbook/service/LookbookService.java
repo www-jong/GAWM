@@ -21,7 +21,6 @@ import com.cute.gawm.domain.like.repository.LikesRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookCardResponse;
-import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookResponse;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookThumbnailResponse;
 import com.cute.gawm.domain.lookbook.entity.Lookbook;
@@ -141,7 +140,7 @@ public class LookbookService {
     public List<LookbookCardResponse> getUserBookmarkedLookbooks(int sessionUserId) {
         userRepository.findById(sessionUserId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
 
-        var lookbooks = bookmarkRepository.findByUserId(sessionUserId);
+        var lookbooks = bookmarkRepository.findByUserUserId(sessionUserId);
         List<LookbookCardResponse> response = new ArrayList<>(lookbooks.size());
 
         for(Bookmark lookbook : lookbooks) {
