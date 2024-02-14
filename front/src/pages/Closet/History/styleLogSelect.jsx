@@ -135,7 +135,7 @@ export default function styleLogSelect() {
   const handleBackgroundColorChange = (e) => {
     setBackgroundColor(e.target.value); // 사용자가 선택한 배경색으로 상태 업데이트
   };
-  // 저장버튼
+  // 다음버튼
   const handleSave = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -173,9 +173,10 @@ export default function styleLogSelect() {
       try {
         const create = await createStyleLog(formData); // 수정: formData를 전송
         console.log('Style log created:', create);
-        navigate('/closet');
+        navigate('/closet/stylelog-add');
       } catch (error) {
         console.error('Failed to create style log:', error);
+        navigate('/closet/stylelog-add'); // 이건 테스트용
       }
     }, 'image/png');
   };
@@ -274,7 +275,7 @@ export default function styleLogSelect() {
             className="text-main font-semibold"
             onClick={handleSave}
           >
-            저장
+            다음
           </button>
         </div>
       </div>
