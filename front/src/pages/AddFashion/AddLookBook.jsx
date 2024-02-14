@@ -68,7 +68,7 @@ export default function AddLookBook() {
 
       if (response.status === 200) {
         alert('룩북 생성 완료');
-        navigate(`/closet`); // 성공 시 등록된 룩북 페이지로
+        navigate(`/closet`); // 성공 시 등록된 룩북 페이지로 navigate(`/lookbook/${response.data.lookbookId}`)
       } else {
         console.error('Server error:', response);
       }
@@ -118,7 +118,6 @@ export default function AddLookBook() {
         <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
           <TagsInput onTagsChange={handleTagsChange} />
-          <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="(개발용)태그를 입력하세요, 쉼표로 구분" />
         </div>
 
         <hr className="my-4 border-gray-200" />
