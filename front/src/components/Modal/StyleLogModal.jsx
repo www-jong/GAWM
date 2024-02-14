@@ -2,12 +2,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StyleLogPlus from '../../assets/images/StyleLogPlus.svg';
 import { getStyleLogDetails } from '../../apis/stylelog';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCards } from 'swiper/modules';
+
+import LookTestImg1 from '@/pages/Look/LookTestImg1.png';
+import LookTestImg2 from '@/pages/Look/LookTestImg2.png';
+
+import 'swiper/css';
+import 'swiper/css/effect-cards';
+
+import './styles.css';
 
 export default function StyleLog({ date, onClose, stylelogIds }) {
   const navigate = useNavigate();
   const modalRef = useRef();
   const [stylelogImgUrl, setStylelogImgUrl] = useState('');
   const [stylelogImgUrls, setStylelogImgUrls] = useState([]); // 여러 이미지 URL을 저장할 배열 상태
+
+  const stylelogImgT = [LookTestImg1, LookTestImg2, LookTestImg1, LookTestImg2, LookTestImg1];
 
   const handleModalContentClick = (e) => {
     e.stopPropagation();
@@ -50,17 +62,34 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
         <div className="w-8 h-1 rounded-xl mb-3 bg-main"></div>
         <div className="flex justify-start w-full mt-2">
           <p className="text-xl font-bold text-main">{date}의 감각</p>
-          {stylelogIds.length > 0 && (
+          {/* {stylelogIds.length > 0 && ( */}
+          {11 > 0 && (
             <button onClick={handleAddLook} className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition duration-300 ease-in-out">
               추가하기
             </button>
           )}
         </div>
         {/* 스타일로그 이미지를 표시하고, 없으면 기본 이미지를 표시 */}
-        {stylelogImgUrls.length > 0 ? (
+        {/* {stylelogImgUrls.length > 0 ? (
           stylelogImgUrls.map((url, index) => (
             <img key={index} className="mt-4 mb-2 w-24 h-24 object-cover" src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+url} alt={`스타일로그 이미지 ${index}`} />
           ))
+        ) : (
+          <img className="mt-4 mb-2 w-full" src={StyleLogPlus} onClick={handleAddLook} alt="스타일로그 추가 이미지" />
+        )} */}
+        {stylelogImgT.length > 0 ? (
+          <Swiper
+            effect={'cards'}
+            grabCursor={true}
+            modules={[EffectCards]}
+            className="mySwiper"
+          >
+            {stylelogImgT.map((url, index) => (
+              <SwiperSlide key={index}>
+                <img key={index} src={stylelogImgT[index]} alt={`스타일로그 이미지 ${index}`} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         ) : (
           <img className="mt-4 mb-2 w-full" src={StyleLogPlus} onClick={handleAddLook} alt="스타일로그 추가 이미지" />
         )}
