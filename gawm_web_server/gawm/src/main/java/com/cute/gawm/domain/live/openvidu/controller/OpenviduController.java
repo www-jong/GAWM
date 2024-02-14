@@ -1,6 +1,8 @@
 package com.cute.gawm.domain.live.openvidu.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
+import com.cute.gawm.common.util.ResponseUtil;
+import com.cute.gawm.domain.live.dto.request.LiveDeleteRequest;
 import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import io.openvidu.java.client.*;
@@ -69,9 +71,9 @@ public class OpenviduController {
 //        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
 //    }
 
-    @DeleteMapping("/{liveId}")
+    @DeleteMapping
     public ResponseEntity<?> deleteLive(
-            @PathVariable("liveRoomId") String liveRoomId,
+//            @PathVariable("liveRoomId") String liveRoomId,
             @LoginUser SessionUser sessionUser,
             @RequestBody(required = false) LiveDeleteRequest request
     ) throws OpenViduJavaClientException, OpenViduHttpException {

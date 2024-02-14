@@ -11,6 +11,7 @@ import com.cute.gawm.domain.clothes.repository.ClothesDetailRepository;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
+import com.cute.gawm.domain.live.dto.request.LiveDeleteRequest;
 import com.cute.gawm.domain.live.dto.response.LiveMiniResponse;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.repository.LiveRepository;
@@ -36,7 +37,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Slf4j
 public class LiveService {
     private final LiveRepository liveRepository;
     private final FollowingRepository followingRepository;
@@ -139,12 +139,12 @@ public class LiveService {
         liveRepository.save(live);
     }
 
-    @Transactional
-    public void deleteLive(Integer userId, Integer liveId) {
-        Live live = liveRepository.findByLiveId(liveId);
-        if (live.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
-        liveRepository.deleteByLiveId(liveId);
-    }
+//    @Transactional
+//    public void deleteLive(Integer userId, LiveDeleteRequest request) { // 유저아이디랑 라이브세션이나 라이브이름으로 삭제하도록
+//        Live live = liveRepository.findByLiveId(liveId);
+//        if (live.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
+//        liveRepository.deleteByLiveId(liveId);
+//    }
 
     @Transactional
     public void deleteLiveByUserId(Integer userId) {
@@ -173,15 +173,12 @@ public class LiveService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(connection.getToken());
 
         String token = builder.build().getQueryParams().getFirst("token");
-<<<<<<< HEAD
         System.out.println(connection.getConnectionId());
         System.out.println(connection.getIp());
 
         System.out.println(token);
-=======
 
 
->>>>>>> a87abce038160df46e8e930004f1826bc4e06456
         return connection;
     }
 
