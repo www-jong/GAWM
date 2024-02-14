@@ -41,6 +41,7 @@ class Live extends Component {
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
+    this.handleLoadSessionId = this.handleLoadSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -64,7 +65,7 @@ class Live extends Component {
     this.leaveSession();
   }
 
-  handleChangeSessionId(currentUserId, currentUserNickname) {
+  handleLoadSessionId(currentUserId, currentUserNickname) {
     console.log(currentUserId, currentUserNickname);
     const liveRoomSession = this.createBase64LiveSessionId(currentUserId, currentUserNickname); //1
     console.log("liveRoomID: ", liveRoomSession );
@@ -73,6 +74,12 @@ class Live extends Component {
     });
   }
 
+  handleChangeSessionId(e) {
+    this.setState({
+      mySessionId: e.target.value,
+    });
+  }
+  
   handleChangeLiveName(e) {
     this.setState({
       liveName: e.target.value,
@@ -202,7 +209,7 @@ class Live extends Component {
             localUser.setNickname(this.state.myUserName);
             localUser.setConnectionId(this.state.session.connection.connectionId);
             localUser.setScreenShareActive(true);
-            localUser.setStreamManager(publisher);
+            // localUser.setStreamManager(publisher);
             localUser.setType("remote");
             localUser.setAudioActive(true);
             localUser.setVideoActive(true);
@@ -335,7 +342,7 @@ class Live extends Component {
                     id="sessionId"
                     value={mySessionId}
                     onChange={this.handleChangeSessionId}
-                    disabled
+                    required
                   />
                 </p>
                 <p>
