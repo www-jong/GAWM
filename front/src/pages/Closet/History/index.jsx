@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Calendar from "./CalendarComponent.jsx";
+import Calendar from "../../../components/Calendar/CalendarComponent.jsx";
 import MyLook from "./MyLookComponent.jsx";
 
 export default function History() {

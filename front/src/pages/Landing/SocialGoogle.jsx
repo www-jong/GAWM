@@ -2,10 +2,12 @@ import React from 'react';
 import google_login from '../../assets/images/google_login.svg';
 
 const SocialGoogle = () => {
-    const redirect_uri = 'https://i10e203.p.ssafy.io/gawm/'; // Redirect URI
+    const redirect_uri = import.meta.env.VITE_MODE === "production" ? "https://i10e203.p.ssafy.io/gawm/" : "http://localhost:4000/gawm/";
+    const BACK_URL = import.meta.env.VITE_MODE === "production" ? "https://i10e203.p.ssafy.io/gawm/back" : "http://localhost:8080/gawm/back";
+    
     // oauth 요청 URL
-    const googleURL = `https://i10e203.p.ssafy.io/gawm/back/oauth2/authorization/google?redirect_uri=${redirect_uri}`;
-
+    const googleURL = `${BACK_URL}/oauth2/authorization/google?redirect_uri=${redirect_uri}`;
+    console.log(googleURL);
     const handleLogin = () => {
         window.location.href = googleURL;
     };

@@ -5,6 +5,7 @@ import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/back/api/sessions")
 @RequiredArgsConstructor
+@Slf4j
 public class OpenviduController {
     private final LiveService liveService;
 
@@ -27,6 +29,8 @@ public class OpenviduController {
             @LoginUser SessionUser sessionUser,
             @RequestBody(required = false) Map<String, Object> params
     ) throws OpenViduJavaClientException, OpenViduHttpException {
+        log.info("params={}",params);
+        log.info("sessionId={}",sessionUser.getId());
         SessionProperties properties = SessionProperties.fromJson(params).build();
         String response = liveService.initSession(sessionUser.getId(), properties, params);
 
@@ -34,15 +38,19 @@ public class OpenviduController {
     }
 
     /**
-     * @param sessionId The Session in which to create the Connection
+     * @param liveRoomId The Session in which to create the Connection
      * @param params    The Connection properties
      * @return The Token associated to the Connection
      */
-    @PostMapping("/{sessionId}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
+    @PostMapping("/{liveRoomId}/connections")
+    public ResponseEntity<String> createConnection(@PathVariable("liveRoomId") String liveRoomId,
+                                                   @LoginUser SessionUser sessionUser,
                                                    @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
-        Session session = liveService.getSession(sessionId);
+        log.info("createConnection");
+        log.info("!!params={}",params);
+        log.info("!!liveRoomId={}", liveRoomId);
+        Session session = liveService.getSession(liveRoomId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

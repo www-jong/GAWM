@@ -115,7 +115,7 @@ export default function AddClothes() {
     formData.append('data', JSON.stringify(jsonData));
     console.log(formData);
     try {
-      const response = await fetch('http://localhost:8080/gawm/back/clothes', {
+      const response = await fetch('https://i10e203.p.ssafy.io/gawm/back/clothes', {
         method: 'POST',
         body: formData,
         credentials: 'include',

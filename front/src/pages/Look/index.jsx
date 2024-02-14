@@ -128,10 +128,8 @@ export default function Look() {
 
     return (
         <div className="mx-auto">
-
             <div className="h-full relative ">
                 <Backbutton />
-
                 <div className="flex justify-between items-center px-3 py-4 mt-2">
                     <div className="relative mt-1 flex">
                         <div className="mr-2">
