@@ -47,27 +47,34 @@ export default function Look() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLiked, setIsLiked] = useState(liked);
     const [isBookmarked, setIsBookmarked] = useState(bookmarked);
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editingCommentText, setEditingCommentText] = useState("");
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!commentText.trim()) return; // 빈 댓글은 제출하지 않음
-
-        try {
-            const response = await addCommentToLookbook(lookbookId, commentText);
+        if(editingCommentId) {
+          // 수정 모드일 때의 처리 로직
+          try {
+            const response = await updateCommentInLookbook(lookbookId, editingCommentId, commentText);
             if (response.status === 200) {
-                alert('댓글이 등록되었습니다.');
-                setComments([...comments, response.data]); // 새 댓글을 댓글 목록에 추가
-                setCommentText(""); // 입력 필드 초기화
+              alert('댓글이 수정되었습니다.');
+              // 코멘트 목록 업데이트 로직 필요...
+              cancelEdit(); // 수정 모드 종료
             } else {
-                console.error('댓글 등록 실패:', response);
+              console.error('댓글 수정 실패:', response);
             }
-        } catch (error) {
-            console.error('댓글 등록 중 오류 발생:', error);
-            alert('댓글 등록에 실패했습니다.');
+          } catch (error) {
+            console.error('댓글 수정 중 오류 발생:', error);
+            alert('댓글 수정에 실패했습니다.');
+          }
+        } else {
+          // 새 댓글 추가 모드일 때의 처리 로직...
         }
-    };
+      };
+    
 
+    // 수정 관련
     const handleUpdateComment = async (commentId, updatedContent) => {
         try {
             const response = await updateCommentInLookbook(lookbookId, commentId, updatedContent);
@@ -81,6 +88,20 @@ export default function Look() {
             console.error('댓글 수정 중 오류 발생:', error);
             alert('댓글 수정에 실패했습니다.');
         }
+    };
+
+    // 댓글 수정 모드로 전환하는 함수
+    const handleEditCommentClick = (commentId, currentContent) => {
+        setEditingCommentId(commentId);
+        setEditingCommentText(currentContent);
+        setCommentText(currentContent); // 댓글 입력 필드에 현재 내용을 미리 채워 넣음
+    };
+
+    // 댓글 수정 취소
+    const cancelEdit = () => {
+        setEditingCommentId(null);
+        setEditingCommentText("");
+        setCommentText(""); // 댓글 입력 필드를 비움
     };
 
     const handleDeleteComment = async (commentId) => {
