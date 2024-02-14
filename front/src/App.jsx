@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
@@ -18,37 +18,39 @@ import MyPageBookmark from "./pages/MyPage/Bookmark";
 import MyPageSettingsPropertySetter from "./pages/MyPage/Settings/PropertySetter";
 import MyPageAccountList from "./pages/MyPage/AccountList";
 import Image from "./pages/AddFashion/ImageEdit.jsx";
-import AuthRedirect from "./components/AuthRedirect.jsx";
 
 function App() {
 	return (
 		<BrowserRouter basename="/gawm">
 			<Routes>
-				<Route path="/" element={<AuthRedirect />} />
-				<Route path="/home" element={<Layout />}>
+				<Route path="/" element={<Layout />}>
 					<Route index element={<Home />} />
-				</Route>
-				<Route path="live" element={<Live />} />
-				<Route path="browse" element={<Browse />} />
-				<Route path="closet" element={<Closet />} />
-				<Route path="mypage" element={<MyPage />}>
-					<Route index element={<MyPageMenu />} />
-					<Route path="settings">
-						<Route index element={<MyPageSettings />} />
-						<Route path="nickname" element={<MyPageSettingsPropertySetter />} />
-						<Route path="gender" element={<MyPageSettingsPropertySetter />} />
-						<Route path="age" element={<MyPageSettingsPropertySetter />} />
+
+					<Route path="live" element={<Live />} />
+					<Route path="browse" element={<Browse />} />
+					<Route path="closet" element={<Closet />} />
+					<Route path="mypage" element={<MyPage />}>
+						<Route index element={<MyPageMenu />} />
+						<Route path="settings">
+							<Route index element={<MyPageSettings />} />
+							<Route path="nickname" element={<MyPageSettingsPropertySetter />} />
+							<Route path="gender" element={<MyPageSettingsPropertySetter />} />
+							<Route path="age" element={<MyPageSettingsPropertySetter />} />
+						</Route>
+						<Route path="bookmark" element={<MyPageBookmark />} />
+						<Route path="following" element={<MyPageAccountList />} />
+						<Route path="followers" element={<MyPageAccountList />} />
 					</Route>
-					<Route path="bookmark" element={<MyPageBookmark />} />
-					<Route path="following" element={<MyPageAccountList />} />
-					<Route path="followers" element={<MyPageAccountList />} />
+					<Route path="look" element={<Look />} />
+					<Route path="look/:lookbookId" element={<Look />} />
+                    <Route path="look/edit" element={<EditLook />} />
+					<Route path="look/:lookbookId" element={<EditLook />} />                    
+
+					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
-				<Route path="look" element={<Look />} />
-				<Route path="look/:lookbookId" element={<Look />} />
-				<Route path="look/edit" element={<EditLook />} />
-				<Route path="look/edit/:lookbookId" element={<EditLook />} />
 				<Route path="closet/add" element={<AddClothes />} />
 				<Route path="image" element={<Image />} />
+
 				<Route path="look/add" element={<AddLook />} />
 				<Route path="landing" element={<Landing />} />
 				<Route path="loading" element={<Loading />} />
