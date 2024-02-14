@@ -52,7 +52,7 @@ function ReactCalendar() {
     };
 
     return (
-        <div className="flex justify-center">
+        <div class="calendar-container" className="flex justify-center">
             <Calendar
                 locale="ko" // 영어 en 한국 ko
                 onChange={onChange}
