@@ -1,10 +1,9 @@
-// import { OpenVidu } from 'openvidu-browser';
+import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import React, { Component } from 'react';
 import './App.css';
 import UserVideoComponent from './UserVideoComponent.jsx';
 import cookies from 'js-cookie';
-import { OpenVidu } from 'openvidu-browser';
 
 const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
 
@@ -22,7 +21,6 @@ class Live extends Component {
             liveName: "26C 라이브 이름",  
             isPublic: true,
             deleted: false,
-            token: "initial token",
         };
 
         // Bind this to the event handlers
@@ -36,7 +34,6 @@ class Live extends Component {
         this.handleChangeIspublic = this.handleChangeIspublic.bind(this);
         this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
         this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
-        this.handleChangeToken = this.handleChangeToken.bind(this);
     }
 
     componentDidMount() {
@@ -60,12 +57,6 @@ class Live extends Component {
     handleChangeLiveName(e) {
         this.setState({
             liveName: e.target.value,
-        });
-    }
-
-    handleChangeToken(e) {
-        this.setState({
-            token: e.target.value,
         });
     }
 
@@ -106,18 +97,6 @@ class Live extends Component {
     }
 
     async joinSession() {
-        event.preventDefault();
-        if (this.state.mySessionId && this.state.myUserName) {
-            const token = await this.getToken();
-            console.log(token);
-            this.setState({
-                token: token,
-                session: true,
-            });
-        }
-
-       
-
         this.OV = new OpenVidu();
 
         this.setState(
@@ -145,9 +124,9 @@ class Live extends Component {
                     console.warn(exception);
                 });
 
-                // const token = await this.getToken();
-                
-                mySession.connect(this.state.token, { clientData: this.state.myUserName })
+                const token = await this.getToken();
+
+                mySession.connect(token, { clientData: this.state.myUserName })
                     .then(async () => {
                         let publisher = await this.OV.initPublisherAsync(undefined, {
                             audioSource: undefined,
@@ -363,10 +342,11 @@ class Live extends Component {
 
     async getToken() {
         const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
-        return await this.createToken(this.state.mySessionId);
+        return await this.createToken(sessionId);
     }
 
     async createSession(sessionId, liveName, isPublic , deleted) {
+        console.log(cookies.get("sessionId"));
         const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions',  {
             customSessionId : sessionId,
             liveName : liveName,
@@ -376,17 +356,17 @@ class Live extends Component {
             headers: { 'Content-Type': 'application/json' , 'sessionId': cookies.get("sessionId") }
             // withCredentials : true,
         });
+        console.log(response.data);
         return response.data;
     }
 
    
 
-    async createToken(liveRoomId) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + liveRoomId + '/connections', {customSessionId : liveRoomId }, {
+    async createToken(sessionId) {
+        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', { ip: APPLICATION_SERVER_URL}, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true 
         });
-        console.log(response);
         return response.data;
     }
 }

@@ -175,23 +175,17 @@ public class LiveService {
     public String initSession(Integer userId, SessionProperties properties, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
         String name = null;
         boolean isPublic = true;
-<<<<<<< HEAD
         System.out.println(params.toString());
         if(params.get("deleted").equals(true)) {
-=======
-        if (params.get("deleted").equals(true)) {
->>>>>>> 070eaa8f0a95b5b44daf8c8cd1bfec3cefb306ec
+
             this.deleteLiveByUserId(userId);
             return "라이브 삭제 완료";
         }
         if (params.get("name") instanceof String) {
             name = (String) params.get("name");
         }
-<<<<<<< HEAD
         if(params.get("isPublic").equals(true)) {
-=======
-        if (params.get("isPublic").equals(true)) {
->>>>>>> 070eaa8f0a95b5b44daf8c8cd1bfec3cefb306ec
+
             isPublic = true;
         } else isPublic = false;
         Session session = openvidu.createSession(properties);
