@@ -1,11 +1,10 @@
 import axios from 'axios';
 import React, { Component } from 'react';
-import React, { Component } from "react";
 import "./App.css";
 import UserVideoComponent from "./UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
 import UserModel from "./models/user-model.jsx";
-import ChatComponent from "./chat/ChatComponent.jsx";
+import ChatComponent from "./Chat/ChatComponent.jsx";
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
@@ -33,7 +32,7 @@ class Live extends Component {
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
+    // this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -127,7 +126,8 @@ class Live extends Component {
         session: this.OV.initSession(),
       },
       async () => {
-        var mySession = this.state.session;
+        // var mySession = this.state.session; 
+        var mySession = createRandomLiveSessionId();
 
         mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
@@ -290,26 +290,6 @@ class Live extends Component {
                     required
                   />
                 </p>
-
-<<<<<<< HEAD
-    async getToken() {
-        const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
-        return await this.createToken(this.state.mySessionId);
-    }
-
-    async createSession(sessionId, liveName, isPublic , deleted) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'back/api/sessions',  {
-            customSessionId : sessionId,
-            liveName : liveName,
-            isPublic : isPublic,
-            deleted: deleted,
-        }, {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials : true,
-        });
-        return response.data;
-    }
-=======
                 <p>
                   <label> isPublic : </label>
                   <label class="switch">
@@ -346,7 +326,6 @@ class Live extends Component {
                     <span class="slider"></span>
                   </label>
                 </p>
->>>>>>> 2cc2c539509bd6ff6e4ebd28b53bf472ec9c8e7b
 
                 <p className="text-center">
                   <input
@@ -361,16 +340,6 @@ class Live extends Component {
           </div>
         ) : null}
 
-<<<<<<< HEAD
-    async createToken(liveRoomId) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'back/api/sessions/' + liveRoomId + '/connections', {customSessionId : liveRoomId }, {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials: true 
-        });
-        console.log(response);
-        return response.data;
-    }
-=======
         {this.state.session !== undefined ? (
           <div id="session">
             <div id="session-header">
@@ -442,6 +411,12 @@ class Live extends Component {
     return await this.createToken(this.state.mySessionId);
   }
 
+  async createRandomLiveSessionId(userId, userName) {
+      var userIdBase64 = btoa(userId);
+      var userNameBase64 = btoa(userName);
+      return await userIdBase64 + "_" + userNameBase64;
+  }
+
   async createSession(sessionId, liveName, isPublic, deleted) {
     const response = await axios.post(
       APPLICATION_SERVER_URL + "gawm/back/api/sessions",
@@ -471,7 +446,20 @@ class Live extends Component {
     console.log(response);
     return response.data;
   }
->>>>>>> 2cc2c539509bd6ff6e4ebd28b53bf472ec9c8e7b
+
+  async getUserInfo(liveRoomId) {
+    // const response = await axios.post(
+    //   APPLICATION_SERVER_URL + "gawm/back/api/sessions/" + liveRoomId + "/connections",
+    //   { customSessionId: liveRoomId },
+    //   {
+    //     headers: { "Content-Type": "application/json" },
+    //     withCredentials: true,
+    //   }
+    // );
+    // userAxios.userInfo();
+
+    return response.data;
+  }
 }
 
 export default Live;

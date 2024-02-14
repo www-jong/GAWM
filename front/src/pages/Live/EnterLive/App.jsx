@@ -4,7 +4,7 @@ import "./App.css";
 import UserVideoComponent from "../UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
 import UserModel from "../models/user-model.jsx";
-import ChatComponent from "../chat/ChatComponent.jsx";
+import ChatComponent from "../Chat/ChatComponent.jsx";
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
