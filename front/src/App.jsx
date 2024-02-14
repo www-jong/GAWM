@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import Live from "./pages/Live/App.jsx";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
-import StyleLogSelect from "./pages/Closet/History/styleLogSelect.jsx";
 import MyPage from "./pages/MyPage";
 import Landing from "./pages/Landing";
 import Look from './pages/Look';
@@ -26,7 +25,6 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Layout />}>
 					<Route index element={<Home />} />
-
 					<Route path="live" element={<Live />} />
 					<Route path="browse" element={<Browse />} />
 					<Route path="closet" element={<Closet />} />
@@ -45,14 +43,12 @@ function App() {
 					<Route path="look" element={<Look />} />
 					<Route path="look/:lookbookId" element={<Look />} />
                     <Route path="look/edit" element={<EditLook />} />
-					<Route path="look/edit/:lookbookId" element={<EditLook />} />                    
+					<Route path="look/:lookbookId" element={<EditLook />} />                    
 
 					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
 				<Route path="closet/add" element={<AddClothes />} />
-				<Route path="closet/stylelog-select" element={<StyleLogSelect />} />
 				<Route path="image" element={<Image />} />
-
 				<Route path="look/add" element={<AddLook />} />
 				<Route path="landing" element={<Landing />} />
 				<Route path="loading" element={<Loading />} />

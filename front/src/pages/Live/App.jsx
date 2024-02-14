@@ -368,7 +368,7 @@ class Live extends Component {
     }
 
     async createSession(sessionId, liveName, isPublic , deleted) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions',  {
+        const response = await axios.post(APPLICATION_SERVER_URL + 'back/api/sessions',  {
             customSessionId : sessionId,
             liveName : liveName,
             isPublic : isPublic,
@@ -383,7 +383,7 @@ class Live extends Component {
    
 
     async createToken(liveRoomId) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + liveRoomId + '/connections', {customSessionId : liveRoomId }, {
+        const response = await axios.post(APPLICATION_SERVER_URL + 'back/api/sessions/' + liveRoomId + '/connections', {customSessionId : liveRoomId }, {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true 
         });
