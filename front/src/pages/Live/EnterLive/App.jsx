@@ -1,16 +1,16 @@
-import axios from 'axios';
-import React, { Component } from 'react';
+import axios from "axios";
+import React, { Component } from "react";
 import "./App.css";
-import UserVideoComponent from "./UserVideoComponent.jsx";
+import UserVideoComponent from "../UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
-import UserModel from "./models/user-model.jsx";
-import ChatComponent from "./Chat/ChatComponent.jsx";
+import UserModel from "../models/user-model.jsx";
+import ChatComponent from "../Chat/ChatComponent.jsx";
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
 
-class Live extends Component {
+class EnterLive extends Component {
   constructor(props) {
     super(props);
 
@@ -32,7 +32,7 @@ class Live extends Component {
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    // this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
+    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -126,8 +126,7 @@ class Live extends Component {
         session: this.OV.initSession(),
       },
       async () => {
-        // var mySession = this.state.session; 
-        var mySession = createRandomLiveSessionId();
+        var mySession = this.state.session;
 
         mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
@@ -155,8 +154,8 @@ class Live extends Component {
             let publisher = await this.OV.initPublisherAsync(undefined, {
               audioSource: undefined,
               videoSource: undefined,
-              publishAudio: true,
-              publishVideo: true,
+              publishAudio: false,
+              publishVideo: false,
               resolution: "640x480",
               frameRate: 30,
               insertMode: "APPEND",
@@ -167,11 +166,11 @@ class Live extends Component {
 
             localUser.setNickname(this.state.myUserName);
             localUser.setConnectionId(this.state.session.connection.connectionId);
-            localUser.setScreenShareActive(true);
+            localUser.setScreenShareActive(false);
             localUser.setStreamManager(publisher);
-            localUser.setType("remote");
-            localUser.setAudioActive(true);
-            localUser.setVideoActive(true);
+            localUser.setType("local");
+            localUser.setAudioActive(false);
+            localUser.setVideoActive(false);
 
             var devices = await this.OV.getDevices();
             var videoDevices = devices.filter((device) => device.kind === "videoinput");
@@ -231,8 +230,8 @@ class Live extends Component {
         if (newVideoDevice.length > 0) {
           var newPublisher = this.OV.initPublisher(undefined, {
             videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
+            publishAudio: false,
+            publishVideo: false,
             mirror: true,
           });
 
@@ -290,6 +289,7 @@ class Live extends Component {
                     required
                   />
                 </p>
+
                 <p>
                   <label> isPublic : </label>
                   <label class="switch">
@@ -360,11 +360,6 @@ class Live extends Component {
               />
             </div>
 
-            {this.state.mainStreamManager !== undefined ? (
-              <div id="main-video" className="col-md-6">
-                <UserVideoComponent streamManager={this.state.mainStreamManager} />
-              </div>
-            ) : null}
             <div id="video-container" className="col-md-6">
               {this.state.publisher !== undefined ? (
                 <div
@@ -374,16 +369,23 @@ class Live extends Component {
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null}
-              {this.state.subscribers.map((sub, i) => (
-                <div
-                  key={sub.id}
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(sub)}
-                >
-                  <span>{sub.id}</span>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
+              {this.state.subscribers.map((sub, i) => {
+                console.log("sub:", sub);
+                console.log("index:", i);
+
+                return (
+                  sub.stream.audioActive && ( // sub 값의 조건을 여기에 작성
+                    <div
+                      key={sub.id}
+                      className="stream-container col-md-6 col-xs-6"
+                      onClick={() => this.handleMainVideoStream(sub)}
+                    >
+                      <span>{sub.id}</span>
+                      <UserVideoComponent streamManager={sub} />
+                    </div>
+                  )
+                );
+              })}
               {this.state.mainStreamManager !== undefined && (
                 <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                   <ChatComponent
@@ -409,12 +411,6 @@ class Live extends Component {
       this.state.deleted
     );
     return await this.createToken(this.state.mySessionId);
-  }
-
-  async createRandomLiveSessionId(userId, userName) {
-      var userIdBase64 = btoa(userId);
-      var userNameBase64 = btoa(userName);
-      return await userIdBase64 + "_" + userNameBase64;
   }
 
   async createSession(sessionId, liveName, isPublic, deleted) {
@@ -446,20 +442,6 @@ class Live extends Component {
     console.log(response);
     return response.data;
   }
-
-  async getUserInfo(liveRoomId) {
-    // const response = await axios.post(
-    //   APPLICATION_SERVER_URL + "gawm/back/api/sessions/" + liveRoomId + "/connections",
-    //   { customSessionId: liveRoomId },
-    //   {
-    //     headers: { "Content-Type": "application/json" },
-    //     withCredentials: true,
-    //   }
-    // );
-    // userAxios.userInfo();
-
-    return response.data;
-  }
 }
 
-export default Live;
+export default EnterLive;

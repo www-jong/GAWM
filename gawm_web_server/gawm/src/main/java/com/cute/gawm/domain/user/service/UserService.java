@@ -90,12 +90,18 @@ public class UserService {
 
     @Transactional
     public void updateMember(Integer userId, UserEditForm form) throws IOException {
-        if (!validateNickname(form.getNickname())) {
-            throw new IllegalArgumentException("올바르지 않은 닉네임입니다.");
-        }
         User user = userRepository.findById(userId).get();
         user.update(form);
 
+    }
+
+    @Transactional
+    public void updateNickname(Integer userId, String nickname) throws IOException {
+        if (!validateNickname(nickname)) {
+            throw new IllegalArgumentException("올바르지 않은 닉네임입니다.");
+        }
+        User user = userRepository.findById(userId).get();
+        user.updateNickname(nickname);
     }
 
     @Transactional

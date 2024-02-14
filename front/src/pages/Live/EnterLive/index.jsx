@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import Live from "./App";
+import EnterLive from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 
-ReactDOM.render(<Live />, document.getElementById("root"));
+ReactDOM.render(<EnterLive />, document.getElementById("root"));
 registerServiceWorker();
