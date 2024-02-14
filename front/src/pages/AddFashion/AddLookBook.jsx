@@ -4,6 +4,8 @@ import Backbutton from '@/components/Button/BackButton.jsx';
 import TagsInput from "@/components/TagsInput.jsx"
 import AddClothing from '@/assets/images/AddClothing.svg';
 import AddClothingModal from '@/components/Modal/AddClothingModal.jsx';
+import { createLookbook } from '@/apis/lookbook.js'
+
 
 export default function AddLookBook() {
   const navigate = useNavigate();
@@ -62,22 +64,17 @@ export default function AddLookBook() {
 
 
     try {
-      const response = await fetch('/look-book', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include', // 쿠키 포함
-      });
+      const response = await createLookbook(formData);
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
+      if (response.status === 200) {
         alert('룩북 생성 완료');
-        // navigate('/somewhere'); // 성공 시 해당 룩북으로 리다이렉트(나중에 룩북 상세페이지별 라우팅 하고나서)
+        // navigate(`/look/${}`); // 성공 시 등록된 룩북 페이지로
       } else {
-        console.error('Server error');
+        console.error('Server error:', response);
       }
     } catch (error) {
       console.error('Error:', error);
+      alert('룩북 생성에 실패했습니다.');
     }
   };
 

@@ -13,7 +13,7 @@ import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
 import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
 import Loading from "@/pages/Loading";
-import { fetchLookbookById, updateLookbook, deleteLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, addCommentToLookbook} from '@/apis/lookbook.js'
+import { fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, addCommentToLookbook} from '@/apis/lookbook.js'
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -22,31 +22,24 @@ import './index.css';
 
 
 export default function Look() {
-    // useEffect(() => {
-    //     const fetchLookData = async () => {
-    //         try {
-    //             const response = await fetchLookbookById(id); // API 호출
-    //             if (response.status === 200) {
-    //                 setLookData(response.data); // 상태 업데이트
-    //             } else {
-    //                 console.error('룩북을 불러오는 데 실패했습니다.');
-    //             }
-    //         } catch (error) {
-    //             console.error('Error:', error);
-    //         }
-    //     };
+    const { lookbookId } = useParams(); // URL에서 룩북 ID 가져옴
+    const [lookData, setLookData] = useState(LookTest.data); // API 호출 결과 저장
 
-    //     fetchLookData();
-    // }, [id]); // id가 변경될 때마다 API 호출
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetchLookbookById(lookbookId);
+                setLookData(response.data);
+            } catch (error) {
+                console.error('룩북 데이터를 불러오는데 실패했습니다.', error);
+            }
+        };
 
-    // if (!lookData) return <div><Loading /></div>;
-    const { lookbookId, userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = LookTest.data;
-    // (lookData? lookData : LookTest.data)로 나중에 수정
+        fetchData();
+    }, [lookbookId]);
+    
+    const { userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = lookData;
 
-
-
-    const [commentVisible, setCommentVisible] = useState(false);
-    const [repliesVisible, setRepliesVisible] = useState(false);
     const [commentText, setCommentText] = useState("");
     const [likes, setLikes] = useState(likeCnt);
     const [commentModalVisible, setCommentModalVisible] = useState(false);
@@ -54,9 +47,6 @@ export default function Look() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLiked, setIsLiked] = useState(liked);
     const [isBookmarked, setIsBookmarked] = useState(bookmarked);
-
-    const { id } = useParams(); // URL에서 룩북 ID 가져옴
-    const [lookData, setLookData] = useState(null); // API 호출 결과 저장
 
 
     const handleSubmit = (e) => {
@@ -67,6 +57,7 @@ export default function Look() {
 
     const toggleCommentModal = () => {
         setCommentModalVisible(!commentModalVisible); // 댓글 입력 창 토글
+        console.log(lookbookId)
     };
 
     // createdAt 값 예쁘게 포맷
@@ -82,7 +73,8 @@ export default function Look() {
 
     // 로그인한 사용자가 작성한 글인지 확인하는 함수
     const isMyLookbook = () => {
-        return userNickname === currentUserNickname;
+        // return userNickname === currentUserNickname;
+        return true; //테스트용
     };
 
 
@@ -209,7 +201,7 @@ export default function Look() {
                                 </svg>
                             </button>
                             <button onClick={handleBookmark} className="focus:outline-none save">
-                                <svg className={`w-7 h-7 text-gray-600 z-10`} fill={`${isBookmarked ? '#757575' : 'none'}`} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <svg className={`w-7 h-7 text-gray-600 z-10`} fill={`${isBookmarked ? '#616161' : 'none'}`} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
                                 </svg>
                             </button>
