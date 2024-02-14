@@ -1,12 +1,15 @@
 import axios from 'axios';
-import React, { Component } from 'react';
+import React, { useEffect, Component } from 'react';
 import "./App.css";
 import UserVideoComponent from "./UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
 import UserModel from "./models/user-model.jsx";
 import ChatComponent from "./Chat/ChatComponent.jsx";
+import { userInfo } from "../../apis/user"
+import { fetchUserInfo, useUserStore } from '../../stores/user.js';
 
 var localUser = new UserModel();
+
 const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
 
@@ -15,7 +18,7 @@ class Live extends Component {
     super(props);
 
     this.state = {
-      mySessionId: "SessionA",
+      mySessionId: "세션이 자동 생성 됩니다!",
       myUserName: "Participant" + Math.floor(Math.random() * 100),
       session: undefined,
       mainStreamManager: undefined,
@@ -26,13 +29,16 @@ class Live extends Component {
       deleted: false,
       token: "initial token",
       localUser: undefined,
+      userId : undefined,
+      userNickname : undefined,
     };
+    this.handleLoadUserData();
 
     // Bind this to the event handlers
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    // this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
+    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -40,6 +46,7 @@ class Live extends Component {
     this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
     this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
     this.handleChangeToken = this.handleChangeToken.bind(this);
+    this.handleLoadUserData = this.handleLoadUserData.bind(this);
   }
 
   componentDidMount() {
@@ -54,9 +61,12 @@ class Live extends Component {
     this.leaveSession();
   }
 
-  handleChangeSessionId(e) {
+  handleChangeSessionId(currentUserId, currentUserNickname) {
+    console.log(currentUserId, currentUserNickname);
+    const liveRoomSession = this.createBase64LiveSessionId(currentUserId, currentUserNickname); //1
+    console.log("liveRoomID: ", liveRoomSession );
     this.setState({
-      mySessionId: e.target.value,
+      mySessionId: liveRoomSession
     });
   }
 
@@ -89,6 +99,30 @@ class Live extends Component {
     });
   }
 
+  handleLoadUserData(e) {
+    let currentUserId;
+    let currentUserNickname;
+
+    const fetchUserInfoPromise = fetchUserInfo();
+
+    fetchUserInfoPromise.then(userData => {
+        // 사용자 정보가 가져와진 후에 필요한 작업을 수행합니다.
+        currentUserNickname = useUserStore.getState().user.nickname;
+        currentUserId = useUserStore.getState().user.userId; 
+        this.handleChangeSessionId(currentUserId, currentUserNickname);
+        // 데이터가 제대로 할당되었는지 확인하기 위해 콘솔에 출력합니다.
+        console.log("1",currentUserNickname, currentUserId);
+    }).catch(error => {
+        console.error('Error fetching user info:', error);
+    });
+    
+
+    this.setState({
+      userId: currentUserId,
+      userNickname: currentUserNickname,
+    });
+  }
+
   handleMainVideoStream(stream) {
     if (this.state.mainStreamManager !== stream) {
       this.setState({
@@ -112,7 +146,6 @@ class Live extends Component {
     event.preventDefault();
     if (this.state.mySessionId && this.state.myUserName) {
       const token = await this.getToken();
-      console.log(token);
       this.setState({
         token: token,
         session: true,
@@ -126,9 +159,7 @@ class Live extends Component {
         session: this.OV.initSession(),
       },
       async () => {
-        // var mySession = this.state.session; 
-        var mySession = createRandomLiveSessionId();
-
+        var mySession = this.state.session; 
         mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
           var subscribers = this.state.subscribers;
@@ -287,7 +318,7 @@ class Live extends Component {
                     id="sessionId"
                     value={mySessionId}
                     onChange={this.handleChangeSessionId}
-                    required
+                    disabled
                   />
                 </p>
                 <p>
@@ -343,7 +374,7 @@ class Live extends Component {
         {this.state.session !== undefined ? (
           <div id="session">
             <div id="session-header">
-              <h1 id="session-title">{mySessionId}</h1>
+              <h1 id="session-title">{liveName}</h1>
               <input
                 className="btn btn-large btn-danger"
                 type="button"
@@ -411,10 +442,12 @@ class Live extends Component {
     return await this.createToken(this.state.mySessionId);
   }
 
-  async createRandomLiveSessionId(userId, userName) {
-      var userIdBase64 = btoa(userId);
-      var userNameBase64 = btoa(userName);
-      return await userIdBase64 + "_" + userNameBase64;
+   createBase64LiveSessionId(userId, nickname) {
+      var userIdBase64 = window.btoa(unescape(encodeURIComponent( userId )));
+      var nickNameBase64 = window.btoa(unescape(encodeURIComponent( nickname )));
+      var liveSessionId = (userIdBase64 + nickNameBase64);
+      liveSessionId=liveSessionId.replaceAll('=','_').replaceAll('\\','_').replaceAll('+','_');
+      return liveSessionId;
   }
 
   async createSession(sessionId, liveName, isPublic, deleted) {
@@ -443,23 +476,9 @@ class Live extends Component {
         withCredentials: true,
       }
     );
-    console.log(response);
-    return response.data;
-  }
-
-  async getUserInfo(liveRoomId) {
-    // const response = await axios.post(
-    //   APPLICATION_SERVER_URL + "gawm/back/api/sessions/" + liveRoomId + "/connections",
-    //   { customSessionId: liveRoomId },
-    //   {
-    //     headers: { "Content-Type": "application/json" },
-    //     withCredentials: true,
-    //   }
-    // );
-    // userAxios.userInfo();
-
     return response.data;
   }
 }
+
 
 export default Live;
