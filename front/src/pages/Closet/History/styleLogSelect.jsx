@@ -202,6 +202,7 @@ export default function styleLogSelect() {
     });
 
     if (foundIndex !== -1) {
+      e.preventDefault(); // ★★★드래깅 대상이 있을 경우 페이지 스크롤 방지
       // 터치된 옷을 배열의 맨 뒤로 이동
       const updatedClothes = [...selectedClothes];
       const [selectedClothe] = updatedClothes.splice(foundIndex, 1); // 선택된 옷 제거
@@ -214,6 +215,7 @@ export default function styleLogSelect() {
 
   const handleTouchMove = (e) => {
     if (isDragging && currentDraggingIndex !== null) {
+      e.preventDefault(); // ★★★드래깅 대상이 있을 경우 페이지 스크롤 방지
       const touch = e.touches[0];
       const rect = canvasRef.current.getBoundingClientRect();
       const scaleX = canvasRef.current.width / rect.width; // 캔버스 너비 대비 터치 영역의 스케일 비율
@@ -253,9 +255,9 @@ export default function styleLogSelect() {
 
 
   // 데이터가 로딩 중일 때 처리
-  if (!clothesData) {
-    return <div>Loading...</div>;
-  }
+  // if (!clothesData) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div>
