@@ -26,6 +26,8 @@ class Live extends Component {
       deleted: false,
       token: "initial token",
       localUser: undefined,
+      chatDisplay: "block",
+      accessAllowed: false,
     };
 
     // Bind this to the event handlers
@@ -40,6 +42,7 @@ class Live extends Component {
     this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
     this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
     this.handleChangeToken = this.handleChangeToken.bind(this);
+    this.toggleChat = this.toggleChat.bind(this);
   }
 
   componentDidMount() {
@@ -249,6 +252,20 @@ class Live extends Component {
     }
   }
 
+  toggleChat(property) {
+    let display = property;
+
+    if (display === undefined) {
+      display = this.state.chatDisplay === "none" ? "block" : "none";
+    }
+    if (display === "block") {
+      this.setState({ chatDisplay: display, messageReceived: false });
+    } else {
+      console.log("chat", display);
+      this.setState({ chatDisplay: display });
+    }
+  }
+
   render() {
     const mySessionId = this.state.mySessionId;
     const myUserName = this.state.myUserName;
@@ -360,11 +377,6 @@ class Live extends Component {
               />
             </div>
 
-            {this.state.mainStreamManager !== undefined ? (
-              <div id="main-video" className="col-md-6">
-                <UserVideoComponent streamManager={this.state.mainStreamManager} />
-              </div>
-            ) : null}
             <div id="video-container" className="col-md-6">
               {this.state.publisher !== undefined ? (
                 <div
@@ -374,16 +386,6 @@ class Live extends Component {
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null}
-              {this.state.subscribers.map((sub, i) => (
-                <div
-                  key={sub.id}
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(sub)}
-                >
-                  <span>{sub.id}</span>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
               {this.state.mainStreamManager !== undefined && (
                 <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                   <ChatComponent

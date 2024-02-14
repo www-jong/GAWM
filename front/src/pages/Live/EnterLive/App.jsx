@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { Component } from "react";
 import "./App.css";
-import UserVideoComponent from "../UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
+import UserVideoComponent from "../UserVideoComponent.jsx";
 import UserModel from "../models/user-model.jsx";
 import ChatComponent from "../chat/ChatComponent.jsx";
 
@@ -26,6 +26,8 @@ class EnterLive extends Component {
       deleted: false,
       token: "initial token",
       localUser: undefined,
+      chatDisplay: "block",
+      accessAllowed: false,
     };
 
     // Bind this to the event handlers
@@ -40,6 +42,8 @@ class EnterLive extends Component {
     this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
     this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
     this.handleChangeToken = this.handleChangeToken.bind(this);
+    this.toggleChat = this.toggleChat.bind(this);
+    this.onChat = this.onChat.bind(this);
   }
 
   componentDidMount() {
@@ -151,42 +155,42 @@ class EnterLive extends Component {
         mySession
           .connect(this.state.token, { clientData: this.state.myUserName })
           .then(async () => {
-            let publisher = await this.OV.initPublisherAsync(undefined, {
-              audioSource: undefined,
-              videoSource: undefined,
-              publishAudio: false,
-              publishVideo: false,
-              resolution: "640x480",
-              frameRate: 30,
-              insertMode: "APPEND",
-              mirror: false,
-            });
+            // let publisher = await this.OV.initPublisherAsync(undefined, {
+            //   audioSource: undefined,
+            //   videoSource: undefined,
+            //   publishAudio: true,
+            //   publishVideo: true,
+            //   resolution: "640x480",
+            //   frameRate: 30,
+            //   insertMode: "APPEND",
+            //   mirror: false,
+            // });
 
-            mySession.publish(publisher);
+            // mySession.publish(publisher);
 
             localUser.setNickname(this.state.myUserName);
             localUser.setConnectionId(this.state.session.connection.connectionId);
-            localUser.setScreenShareActive(false);
-            localUser.setStreamManager(publisher);
-            localUser.setType("local");
-            localUser.setAudioActive(false);
-            localUser.setVideoActive(false);
+            localUser.setScreenShareActive(true);
+            // localUser.setStreamManager(publisher);
+            localUser.setType("remote");
+            localUser.setAudioActive(true);
+            localUser.setVideoActive(true);
 
-            var devices = await this.OV.getDevices();
-            var videoDevices = devices.filter((device) => device.kind === "videoinput");
-            var currentVideoDeviceId = publisher.stream
-              .getMediaStream()
-              .getVideoTracks()[0]
-              .getSettings().deviceId;
-            var currentVideoDevice = videoDevices.find(
-              (device) => device.deviceId === currentVideoDeviceId
-            );
+            // var devices = await this.OV.getDevices();
+            // var videoDevices = devices.filter((device) => device.kind === "videoinput");
+            // var currentVideoDeviceId = publisher.stream
+            //   .getMediaStream()
+            //   .getVideoTracks()[0]
+            //   .getSettings().deviceId;
+            // var currentVideoDevice = videoDevices.find(
+            //   (device) => device.deviceId === currentVideoDeviceId
+            // );
 
-            this.setState({
-              currentVideoDevice: currentVideoDevice,
-              mainStreamManager: publisher,
-              publisher: publisher,
-            });
+            // this.setState({
+            //   currentVideoDevice: currentVideoDevice,
+            //   mainStreamManager: publisher,
+            //   publisher: publisher,
+            // });
           })
           .catch((error) => {
             console.log("There was an error connecting to the session:", error.code, error.message);
@@ -213,7 +217,8 @@ class EnterLive extends Component {
       isPublic: undefined,
       deleted: undefined,
       liveName: undefined,
-      chatDisplay: display,
+      chatDisplay: "block",
+      accessAllowed: false,
     });
   }
 
@@ -230,8 +235,8 @@ class EnterLive extends Component {
         if (newVideoDevice.length > 0) {
           var newPublisher = this.OV.initPublisher(undefined, {
             videoSource: newVideoDevice[0].deviceId,
-            publishAudio: false,
-            publishVideo: false,
+            publishAudio: true,
+            publishVideo: true,
             mirror: true,
           });
 
@@ -247,6 +252,19 @@ class EnterLive extends Component {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  toggleChat(property) {
+    let display = "block"; // 항상 채팅 창을 보이도록 설정
+
+    console.log("chat", display);
+    this.setState({ chatDisplay: display });
+  }
+
+  onChat(property) {
+    let display = property;
+    console.log("chat", display);
+    this.setState({ chatDisplay: display });
   }
 
   render() {
@@ -358,8 +376,20 @@ class EnterLive extends Component {
                 onClick={this.switchCamera}
                 value="Switch Camera"
               />
+              {/* <input
+                className="btn btn-large btn-success"
+                type="button"
+                id="buttonSwitchChat"
+                onClick={this.onChat}
+                value="ON/OFF Chat"
+              /> */}
             </div>
 
+            {this.state.mainStreamManager !== undefined ? (
+              <div id="main-video" className="col-md-6">
+                <UserVideoComponent streamManager={this.state.mainStreamManager} />
+              </div>
+            ) : null}
             <div id="video-container" className="col-md-6">
               {this.state.publisher !== undefined ? (
                 <div
@@ -369,33 +399,25 @@ class EnterLive extends Component {
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null}
-              {this.state.subscribers.map((sub, i) => {
-                console.log("sub:", sub);
-                console.log("index:", i);
-
-                return (
-                  sub.stream.audioActive && ( // sub 값의 조건을 여기에 작성
-                    <div
-                      key={sub.id}
-                      className="stream-container col-md-6 col-xs-6"
-                      onClick={() => this.handleMainVideoStream(sub)}
-                    >
-                      <span>{sub.id}</span>
-                      <UserVideoComponent streamManager={sub} />
-                    </div>
-                  )
-                );
-              })}
-              {this.state.mainStreamManager !== undefined && (
-                <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
-                  <ChatComponent
-                    user={localUser}
-                    chatDisplay={this.state.chatDisplay}
-                    close={this.toggleChat}
-                    messageReceived={this.checkNotification}
-                  />
+              {this.state.subscribers.map((sub, i) => (
+                <div
+                  key={sub.id}
+                  className="stream-container col-md-6 col-xs-6"
+                  onClick={() => this.handleMainVideoStream(sub)}
+                >
+                  <span>{sub.id}</span>
+                  <UserVideoComponent streamManager={sub} />
                 </div>
-              )}
+              ))}
+
+              <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
+                <ChatComponent
+                  user={localUser}
+                  chatDisplay={this.state.chatDisplay}
+                  close={this.toggleChat}
+                  messageReceived={this.checkNotification}
+                />
+              </div>
             </div>
           </div>
         ) : null}
