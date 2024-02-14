@@ -5,9 +5,6 @@ import { getStyleLogDetails } from '../../apis/stylelog';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 
-import LookTestImg1 from '@/pages/Look/LookTestImg1.png';
-import LookTestImg2 from '@/pages/Look/LookTestImg2.png';
-
 import 'swiper/css';
 import 'swiper/css/effect-cards';
 
@@ -18,8 +15,6 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
   const modalRef = useRef();
   const [stylelogImgUrl, setStylelogImgUrl] = useState('');
   const [stylelogImgUrls, setStylelogImgUrls] = useState([]); // 여러 이미지 URL을 저장할 배열 상태
-
-  const stylelogImgT = [LookTestImg1, LookTestImg2, LookTestImg1, LookTestImg2, LookTestImg1];
 
   const handleModalContentClick = (e) => {
     e.stopPropagation();
@@ -64,24 +59,16 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
             <p className="text-xl sm:text-xl md:text-2xl font-bold text-main">{date}의 감각</p>
           </div>
           <div className="my-2">
-            {/* 스타일로그 이미지를 표시하고, 없으면 기본 이미지를 표시 */}
-            {/* {stylelogImgUrls.length > 0 ? (
-          stylelogImgUrls.map((url, index) => (
-            <img key={index} className="mt-4 mb-2 w-24 h-24 object-cover" src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+url} alt={`스타일로그 이미지 ${index}`} />
-          ))
-        ) : (
-          <img className="mt-4 mb-2 w-full" src={StyleLogPlus} onClick={handleAddLook} alt="스타일로그 추가 이미지" />
-        )} */}
-            {stylelogImgT.length > 0 ? (
+            {stylelogImgUrls.length > 0 ? (
               <Swiper
                 effect={'cards'}
                 grabCursor={true}
                 modules={[EffectCards]}
                 className="mySwiper"
               >
-                {stylelogImgT.map((url, index) => (
+                {stylelogImgUrls.map((url, index) => (
                   <SwiperSlide key={index}>
-                    <img key={index} src={stylelogImgT[index]} alt={`스타일로그 이미지 ${index}`} />
+                    <img key={index} src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+url} alt={`스타일로그 이미지 ${index}`} />
                   </SwiperSlide>
                 ))}
               </Swiper>
@@ -92,8 +79,7 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
 
         </div>
       </div>
-      {/* {stylelogIds.length > 0 && ( */}
-      {11 > 0 && (
+      {stylelogIds.length > 0 && (
         <div className="fixed inset-x-0 bottom-0 bg-white shadow-lg">
           <button onClick={handleAddLook} className="w-full text-lg bg-main text-white py-3 transition duration-300 ease-in-out flex-grow">
             추가하기
