@@ -255,9 +255,9 @@ export default function styleLogSelect() {
 
 
   // 데이터가 로딩 중일 때 처리
-  // if (!clothesData) {
-  //   return <div>Loading...</div>;
-  // }
+  if (!clothesData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
