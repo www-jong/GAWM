@@ -45,7 +45,7 @@ public class LiveService {
 
     private OpenVidu openvidu;
 
-    @Value("${OPENVIDU_URL}")
+   @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
 
     @Value("${OPENVIDU_SECRET}")
@@ -121,13 +121,13 @@ public class LiveService {
     @Transactional
     public void createLive(String session, Integer userId, String name, boolean isPublic, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
-//        Live live = liveRepository.findByUserAndIsDeletedFalse(user);
-//        if (live != null) {
-//            throw new DataMismatchException("해당 유저에게 아직 종료되지 않은 라이브가 존재합니다.");
-//        }
+        Live live = liveRepository.findByUserAndIsDeletedFalse(user);
+        if (live != null) {
+            throw new DataMismatchException("해당 유저에게 아직 종료되지 않은 라이브가 존재합니다.");
+        }
         SessionProperties properties = SessionProperties.fromJson(params).build();
 
-        Live live = Live.builder()
+        live = Live.builder()
                 .name(name)
                 .user(user)
                 .session(session)
@@ -170,7 +170,8 @@ public class LiveService {
         Connection connection = session.createConnection(properties);
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(connection.getToken());
         String token = builder.build().getQueryParams().getFirst("token");
-        System.out.println(connection.getConnectionId());
+
+
         return connection;
     }
 
@@ -188,8 +189,8 @@ public class LiveService {
             isPublic = true;
         } else isPublic = false;
         Session session = openvidu.createSession(properties);
-        log.info(session.getSessionId());
-//        this.createLive(session.getSessionId(), userId, name, isPublic, params);
+
+
         return session.getSessionId();
     }
 
