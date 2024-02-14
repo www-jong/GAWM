@@ -19,6 +19,7 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class LiveService {
     private final LiveRepository liveRepository;
@@ -51,6 +53,7 @@ public class LiveService {
 
     @PostConstruct
     public void init() {
+        log.info(OPENVIDU_URL);
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
@@ -167,8 +170,12 @@ public class LiveService {
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(connection.getToken());
+
         String token = builder.build().getQueryParams().getFirst("token");
         System.out.println(connection.getConnectionId());
+        System.out.println(connection.getIp());
+
+        System.out.println(token);
         return connection;
     }
 

@@ -109,7 +109,7 @@ class Live extends Component {
         event.preventDefault();
         if (this.state.mySessionId && this.state.myUserName) {
             const token = await this.getToken();
-            console.log(token);
+            console.log(token); // 값이 ws://localhost:4443?~~~;
             this.setState({
                 token: token,
                 session: true,
@@ -146,7 +146,8 @@ class Live extends Component {
                 });
 
                 // const token = await this.getToken();
-                
+                console.log(this.state.token);
+
                 mySession.connect(this.state.token, { clientData: this.state.myUserName })
                     .then(async () => {
                         let publisher = await this.OV.initPublisherAsync(undefined, {
@@ -159,7 +160,7 @@ class Live extends Component {
                             insertMode: 'APPEND',
                             mirror: false,
                         });
-
+                        console.log(clientData);
                         mySession.publish(publisher);
 
                         var devices = await this.OV.getDevices();
@@ -343,7 +344,7 @@ class Live extends Component {
                             <div id="main-video" className="col-md-6">
                                 <UserVideoComponent streamManager={this.state.mainStreamManager} />
                             </div>
-                        ) : null}
+                        ) : console.log(this.state.mainStreamManager)}
                         <div id="video-container" className="col-md-6">
                             {this.state.publisher !== undefined ? (
                                 <div className="stream-container col-md-6 col-xs-6" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
@@ -388,8 +389,8 @@ class Live extends Component {
             headers: { 'Content-Type': 'application/json' },
             withCredentials: true 
         });
-        console.log(response);
-        return response.data;
+        console.log("get token : " + response.data);
+        return response.data; //ws://localhost:4443~~~
     }
 }
 

@@ -50,6 +50,7 @@ public class OpenviduController {
         log.info("createConnection");
         log.info("!!params={}",params);
         log.info("!!liveRoomId={}", liveRoomId);
+
         Session session = liveService.getSession(liveRoomId);
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
