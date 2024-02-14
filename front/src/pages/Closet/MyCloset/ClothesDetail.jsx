@@ -1,6 +1,6 @@
 import DetailContainer from "./DetailContainer";
 import { useEffect, useRef, useState } from "react";
-import { getClothesInfo } from "../../../apis/clothes";
+import { getClothesInfo, updateClothes } from "../../../apis/clothes";
 import Overlay from "./Overlay";
 import CenteredTopBar from "../../MyPage/CenteredTopBar";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
@@ -25,31 +25,6 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 		(state) => ({ "userId": state.user?.userId })
 	);
 
-	// 옷 정보 <form>
-	const form = useRef(null);
-
-	// 편집 상태
-	const [isEditing, setIsEditing] = useState(false);
-	const isEditingSetter = async () => {
-		if(isEditing) {
-			// 편집 완료 후 제출
-			const data = new FormData(form);
-			const payload = {};
-
-			payload["name"] = data.get("name");
-			payload["brand"] = data.get("brand");
-			payload["m_category"] = data.get("m_category");
-			payload["s_category"] = data.get("s_category");
-			payload["colors"] = data.getAll("colors");
-			payload["materials"] = data.getAll("materials");
-			payload["patterns"] = data.getAll("patterns");
-
-			console.log(payload);
-		}
-
-		setIsEditing(!isEditing);
-	};
-
 	// 옷 정보 불러오기
 	const fetchClothes = async () => {
 		try {
@@ -61,6 +36,41 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 		catch(error) {
 			setClothes(null);
 		}
+	};
+
+	// 옷 정보 <form>
+	const form = useRef(null);
+
+	// 편집 상태
+	const [isEditing, setIsEditing] = useState(false);
+	const isEditingSetter = async () => {
+		if(isEditing) {
+			// 편집 완료 후 제출
+			const formData = new FormData(form.current);
+			const data = {};
+
+			data["name"] = formData.get("name");
+			data["brand"] = formData.get("brand");
+			data["m_category"] = formData.get("m_category");
+			data["s_category"] = formData.get("s_category");
+			data["colors"] = formData.getAll("colors");
+			data["materials"] = formData.getAll("materials");
+			data["patterns"] = formData.getAll("patterns");
+
+			const payload = new FormData();
+			payload.append("data", data);
+			console.log(payload);
+
+			try {
+				await updateClothes(clothesId, formData);
+				fetchClothes();
+			}
+			catch(error) {
+				console.error(error);
+			}
+		}
+
+		setIsEditing(!isEditing);
 	};
 
 	// 옷 정보 불러오기
@@ -111,7 +121,7 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 					<img src={clothes.clothesImg} />
 				</div>
 
-				<form ref={form}>
+				<form ref={form} onSubmit={(event) => event.preventDefault()}>
 					<DetailContainer
 						data={clothes}
 						isEditing={isEditing}
