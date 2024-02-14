@@ -15,6 +15,26 @@ const aiAxios = aiApiAxios();
  */
 const prefix = "clothes";
 
+
+/**
+ * 옷 이미지 데이터를 서버에 업로드하는 함수
+ * 
+ * @param {FormData} formData - 옷 이미지 데이터가 포함된 FormData 객체
+ * @returns Promise 객체
+ */
+export const uploadClothesImage = async (formData) => {
+    try {
+        const response = await gawmApiAxios().post('/clothes', formData, {
+            withCredentials: true,
+        });
+        console.log("업로드 결과:", response);
+        return response.data; // 응답 데이터 반환
+    } catch (error) {
+        console.error("옷 이미지 업로드 중 오류 발생:", error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
+
 /**
  * 로그인한 유저의 옷을 조회
  * 

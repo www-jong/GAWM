@@ -19,4 +19,9 @@ public class BaseEntity {
     private Timestamp updatedAt;
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
+
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 }

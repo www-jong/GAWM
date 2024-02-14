@@ -39,11 +39,11 @@ export default function MyCloset() {
 				try {
 					const response = await getAllClothesInfo();
 					const data = response.data;
-
-					if(data.length) {
+					const filteredData = data.filter(item => !item.isDeleted);
+					if(filteredData.length) {
 						// "mCategory"로 분류
 						setCloset(
-							Map.groupBy(data, (item) => item["mcategory"])
+							Map.groupBy(filteredData, (item) => item["mcategory"])
 						);
 					}
 					else setCloset(new Map());
