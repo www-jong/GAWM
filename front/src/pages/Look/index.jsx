@@ -12,8 +12,8 @@ import views from '@/assets/images/views.png';
 import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
 import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
-import { fetchLookbookById } from '@/apis/lookbook.js';
 import Loading from "@/pages/Loading";
+import { fetchLookbookById, updateLookbook, deleteLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, addCommentToLookbook} from '@/apis/lookbook.js'
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -38,7 +38,7 @@ export default function Look() {
 
     //     fetchLookData();
     // }, [id]); // id가 변경될 때마다 API 호출
-    
+
     // if (!lookData) return <div><Loading /></div>;
     const { lookbookId, userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = LookTest.data;
     // (lookData? lookData : LookTest.data)로 나중에 수정
@@ -52,6 +52,8 @@ export default function Look() {
     const [commentModalVisible, setCommentModalVisible] = useState(false);
     const [comments, setComments] = useState(LookTest.data.comment); // 코멘트 데이터들을 상태로 관리
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLiked, setIsLiked] = useState(liked);
+    const [isBookmarked, setIsBookmarked] = useState(bookmarked);
 
     const { id } = useParams(); // URL에서 룩북 ID 가져옴
     const [lookData, setLookData] = useState(null); // API 호출 결과 저장
@@ -61,10 +63,6 @@ export default function Look() {
         e.preventDefault();
         console.log(commentText); // 입력된 댓글 로그
         setCommentText(""); // 입력 필드 초기화
-    };
-
-    const handleLike = () => {
-        setLikes(likes + 1); // 좋아요 수 증가
     };
 
     const toggleCommentModal = () => {
@@ -102,6 +100,15 @@ export default function Look() {
         }
     }, [followingNicknames, userNickname]);
 
+    const handleLike = () => {
+        setIsLiked(!isLiked); // 좋아요 상태 토글
+        setLikes(isLiked ? likes - 1 : likes + 1); // 좋아요 수 조정
+    };
+
+    const handleBookmark = () => {
+        setIsBookmarked(!isBookmarked); // 북마크 상태 토글
+    };
+
     const handleToggleFollow = async () => {
         try {
             await toggleFollow({
@@ -121,7 +128,7 @@ export default function Look() {
     const handleEditClick = (value, event) => {
         setIsModalOpen(true);
     };
-    
+
 
 
 
@@ -159,14 +166,13 @@ export default function Look() {
                             </button>
                             :
                             <button
-                            type="button"
-                            onClick={handleToggleFollow}
-                            className={`w-16 h-8 focus:outline-none border border-transparent text-xs rounded-full transition-colors ${
-                                isFollowing ? 'bg-main opacity-90 text-white' : 'bg-gray-100 text-main'
-                            }`}
-                        >
-                            {isFollowing ? '팔로우 중' : '팔로우'}
-                        </button>
+                                type="button"
+                                onClick={handleToggleFollow}
+                                className={`w-16 h-8 focus:outline-none border border-transparent text-xs rounded-full transition-colors ${isFollowing ? 'bg-main opacity-90 text-white' : 'bg-gray-100 text-main'
+                                    }`}
+                            >
+                                {isFollowing ? '팔로우 중' : '팔로우'}
+                            </button>
                     }
                 </div>
 
@@ -193,7 +199,7 @@ export default function Look() {
                     <div className="flex justify-between items-center p-2">
                         <div className="flex space-x-2 items-center">
                             <button onClick={handleLike} className="focus:outline-none Like">
-                                <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <svg className={`w-8 h-8 ${isLiked ? 'text-red-700' : 'text-gray-600'}`} fill={`${isLiked ? '#c62828' : 'none'}`} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                 </svg>
                             </button>
@@ -202,8 +208,8 @@ export default function Look() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                 </svg>
                             </button>
-                            <button className="focus:outline-none save">
-                                <svg className="w-7 h-7 text-gray-600 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <button onClick={handleBookmark} className="focus:outline-none save">
+                                <svg className={`w-7 h-7 text-gray-600 z-10`} fill={`${isBookmarked ? '#757575' : 'none'}`} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
                                 </svg>
                             </button>
