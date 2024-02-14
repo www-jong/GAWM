@@ -45,6 +45,7 @@ class EnterLive extends Component {
     this.handleChangeSubscribers = this.handleChangeSubscribers.bind(this);
     this.toggleChat = this.toggleChat.bind(this);
     this.onChat = this.onChat.bind(this);
+    this.handleChangeSubscribers = this.handleChangeSubscribers.bind(this);
   }
 
   componentDidMount() {
@@ -127,7 +128,14 @@ class EnterLive extends Component {
       this.setState({
         mainStreamManager: stream,
       });
+      localUser.setStreamManager(stream);
     }
+  }
+
+  handleChangeSubscribers(e) {
+    this.setState({
+      subscribers: e.target.value,
+    });
   }
 
   deleteSubscriber(streamManager) {
@@ -169,8 +177,21 @@ class EnterLive extends Component {
           // console.log(subscribers);
           // console.log(subscriber);
           subscribers.push(subscriber);
+<<<<<<< HEAD
        
           
+=======
+
+          // const data = { name: "subscriber", data: subscriber };
+          // console.log(data);
+          if (subscriber.stream != null) {
+            console.log("담았다!");
+            this.handleMainVideoStream(subscriber);
+            const data = { name: "담은거", subscriber };
+            console.log(data);
+          }
+
+>>>>>>> 0dbe4f4ea3b7f7b849e76d820ab47bb6496fb102
           this.setState({
             subscribers: subscribers,
           });
@@ -252,7 +273,7 @@ class EnterLive extends Component {
       isPublic: undefined,
       deleted: undefined,
       liveName: undefined,
-      chatDisplay: "block",
+      chatDisplay: "none",
       accessAllowed: false,
     });
   }
@@ -290,10 +311,17 @@ class EnterLive extends Component {
   }
 
   toggleChat(property) {
-    let display = "block"; // 항상 채팅 창을 보이도록 설정
+    let display = property;
 
-    console.log("chat", display);
-    this.setState({ chatDisplay: display });
+    if (display === undefined) {
+      display = this.state.chatDisplay === "none" ? "block" : "none";
+    }
+    if (display === "block") {
+      this.setState({ chatDisplay: display, messageReceived: false });
+    } else {
+      console.log("chat", display);
+      this.setState({ chatDisplay: display });
+    }
   }
 
   onChat(property) {
@@ -422,20 +450,20 @@ class EnterLive extends Component {
               /> */}
             </div>
 
-            {this.state.mainStreamManager !== undefined ? (
+            {/* {this.state.mainStreamManager !== undefined ? (
               <div id="main-video" className="col-md-6">
                 <UserVideoComponent streamManager={this.state.mainStreamManager} />
               </div>
-            ) : null}
+            ) : null} */}
             <div id="video-container" className="col-md-6">
-              {this.state.publisher !== undefined ? (
+              {/* {this.state.publisher !== undefined ? (
                 <div
                   className="stream-container col-md-6 col-xs-6"
                   onClick={() => this.handleMainVideoStream(this.state.publisher)}
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
-              ) : null}
+              ) : null} */}
               {this.state.subscribers.map((sub, i) => (
                 <div
                   key={sub.id}
@@ -446,6 +474,7 @@ class EnterLive extends Component {
                   <UserVideoComponent streamManager={sub} />
                 </div>
               ))}
+<<<<<<< HEAD
 
               <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                 <ChatComponent
@@ -456,6 +485,19 @@ class EnterLive extends Component {
                   subscribers={this.state.subscribers}
                 />
               </div>
+=======
+              {this.state.mainStreamManager !== undefined ? (
+                <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
+                  <ChatComponent
+                    user={localUser}
+                    myStream={this.mainStreamManager}
+                    chatDisplay={this.state.chatDisplay}
+                    close={this.toggleChat}
+                    messageReceived={this.checkNotification}
+                  />
+                </div>
+              ) : null}
+>>>>>>> 0dbe4f4ea3b7f7b849e76d820ab47bb6496fb102
             </div>
           </div>
         ) : null}

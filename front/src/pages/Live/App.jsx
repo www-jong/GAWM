@@ -209,7 +209,11 @@ class Live extends Component {
             localUser.setNickname(this.state.myUserName);
             localUser.setConnectionId(this.state.session.connection.connectionId);
             localUser.setScreenShareActive(true);
+<<<<<<< HEAD
             // localUser.setStreamManager(publisher);
+=======
+            localUser.setStreamManager(publisher); //<-여기 이 함수로 publisher자리에 sub 넣으면 됨
+>>>>>>> 0dbe4f4ea3b7f7b849e76d820ab47bb6496fb102
             localUser.setType("remote");
             localUser.setAudioActive(true);
             localUser.setVideoActive(true);
