@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { edit, getFollowingList, userInfo } from "../apis/user";
+import { edit, editNickname, getFollowingList, userInfo } from "../apis/user";
 
 /**
  * 로그인한 유저에 대한 store입니다
@@ -41,73 +41,31 @@ export async function fetchUserInfo() {
 /**
  * 사용자의 정보를 수정합니다
  * 
- * - nickname: 속성 존재 시 닉네임 수정
- * - gender: 속성 존재 시 성별 수정
- * - age: 속성 존재 시 나이 수정
- * 
- * @param {Object} data 수정할 데이터
+ * @param {string} gender 변경된 성별
+ * @param {number} age 변경된 나이
  */
-export async function updateUserInfo(data) {
-	// 현재 값 불러오기
-	const {
-		nickname, gender, age
-	} = useUserStore(
-		(state) => (
-			{
-				"nickname": state.user?.nickname,
-				"gender": state.user?.gender,
-				"age": state.user?.age
-			}
-		)
-	);
+export async function updateUserInfo(gender, age) {
+	const formData = new FormData();
 
-	// data에 필요한 속성이 없으면 중지
-	if(
-		!(
-			"nickname" in data ||
-			"gender" in data ||
-			"age" in data
-		)
-	) return;
+	formData.append("gender", gender);
+	formData.append("age", age);
 
-	// 새로운 값 존재 시 업데이트
-	const payload = {};
-	payload.nickname = "nickname" in data ? data.nickname : nickname;
-	payload.gender = "gender" in data ? data.gender : gender;
-	payload.age = "age" in data ? data.age : age;
-
-	// 수정 요청
-	await edit(payload);
+	await edit(formData);
 	await fetchUserInfo();
 }
 
 /**
- * 사용자의 별명을 업데이트합니다
+ * 사용자의 닉네임을 수정합니다
  * 
- * @param {string} nickname 닉네임
+ * @param {string} nickname 변경된 닉네임
  */
 export async function updateNickname(nickname) {
-	await updateUserInfo({ nickname });
-}
+	const formData = new FormData();
+	formData.append("nickname", nickname);
 
-/**
- * 사용자의 성별을 업데이트합니다
- * 
- * @param {string} gender 성별
- */
-export async function updateGender(gender) {
-	await updateUserInfo({ gender });
+	await editNickname(formData);
+	await fetchUserInfo();
 }
-
-/**
- * 사용자의 나이를 업데이트합니다
- * 
- * @param {number|string} age 나이
- */
-export async function updateAge(age) {
-	await updateUserInfo({ age });
-}
-
 
 /**
  * 로그인한 유저의 팔로잉 목록의 닉네임 배열을 불러와 저장합니다

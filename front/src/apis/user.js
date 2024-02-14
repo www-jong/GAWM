@@ -31,12 +31,25 @@ export function userInfo() {
 /**
  * 로그인한 사용자의 정보를 수정합니다
  * 
- * @param {Object} data 요청 데이터
+ * @param {FormData} data 요청 데이터를 포함한 FormData
  * @returns Promise 객체
  */
 export function edit(data) {
 	return axios.patch(
 		`${prefix}/userInfo`,
+		data
+	);
+}
+
+/**
+ * 로그인한 사용자의 닉네임을 변경합니다
+ * 
+ * @param {FormData} data 요청 데이터를 포함한 FormData
+ * @returns Promise 객체
+ */
+export function editNickname(data) {
+	return axios.patch(
+		`${prefix}/userNickname`,
 		data
 	);
 }
