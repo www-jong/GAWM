@@ -170,7 +170,6 @@ public class LiveService {
         Connection connection = session.createConnection(properties);
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(connection.getToken());
         String token = builder.build().getQueryParams().getFirst("token");
-        System.out.println(connection.getIp());
         System.out.println(connection.getConnectionId());
         return connection;
     }
@@ -178,17 +177,14 @@ public class LiveService {
     public String initSession(Integer userId, SessionProperties properties, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
         String name = null;
         boolean isPublic = true;
-        System.out.println(params.toString());
-        if(params.get("deleted").equals(true)) {
-
+        if (params.get("deleted").equals(true)) {
             this.deleteLiveByUserId(userId);
             return "라이브 삭제 완료";
         }
         if (params.get("name") instanceof String) {
             name = (String) params.get("name");
         }
-        if(params.get("isPublic").equals(true)) {
-
+        if (params.get("isPublic").equals(true)) {
             isPublic = true;
         } else isPublic = false;
         Session session = openvidu.createSession(properties);
