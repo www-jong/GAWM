@@ -54,7 +54,7 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end z-50" onClick={onClose}>
       <div ref={modalRef} className="fixed bottom-0 left-0 right-0 mx-auto p-4 bg-white rounded-t-xl shadow-lg flex flex-col items-center transition duration-300 ease-out translate-y-full" onClick={handleModalContentClick}>
-        <div className="my-3 mb-16">
+        <div className="my-3 mb-2">
           <div className="flex justify-center w-full">
             <p className="text-xl sm:text-xl md:text-2xl font-bold text-main">{date}의 감각</p>
           </div>
