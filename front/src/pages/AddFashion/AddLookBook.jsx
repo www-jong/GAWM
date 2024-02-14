@@ -4,6 +4,8 @@ import Backbutton from '@/components/Button/BackButton.jsx';
 import TagsInput from "@/components/TagsInput.jsx"
 import AddClothing from '@/assets/images/AddClothing.svg';
 import AddClothingModal from '@/components/Modal/AddClothingModal.jsx';
+import { createLookbook } from '@/apis/lookbook.js'
+
 
 export default function AddLookBook() {
   const navigate = useNavigate();
@@ -62,22 +64,17 @@ export default function AddLookBook() {
 
 
     try {
-      const response = await fetch('/look-book', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include', // 쿠키 포함
-      });
+      const response = await createLookbook(formData);
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
+      if (response.status === 200) {
         alert('룩북 생성 완료');
-        // navigate('/somewhere'); // 성공 시 해당 룩북으로 리다이렉트(나중에 룩북 상세페이지별 라우팅 하고나서)
+        navigate(`/closet`); // 성공 시 등록된 룩북 페이지로 navigate(`/lookbook/${response.data.lookbookId}`)
       } else {
-        console.error('Server error');
+        console.error('Server error:', response);
       }
     } catch (error) {
       console.error('Error:', error);
+      alert('룩북 생성에 실패했습니다.');
     }
   };
 
@@ -87,8 +84,7 @@ export default function AddLookBook() {
       <form onSubmit={handleSubmit} className="space-y-4 mb-16">
         {imagePreviewUrl ? (
           <div onClick={triggerFileSelectPopup} style={{ cursor: 'pointer' }}>
-            <img src={imagePreviewUrl} alt="미리보기" style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }} />
-            <p>이미지 변경</p>
+            <img src={imagePreviewUrl} alt="미리보기" className="w-full h-80 object-cover" />
           </div>
         ) : (
           <div onClick={triggerFileSelectPopup} className="w-full h-80 bg-gray-200 flex justify-center items-center cursor-pointer">
@@ -122,7 +118,6 @@ export default function AddLookBook() {
         <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
           <TagsInput onTagsChange={handleTagsChange} />
-          <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="(개발용)태그를 입력하세요, 쉼표로 구분" />
         </div>
 
         <hr className="my-4 border-gray-200" />

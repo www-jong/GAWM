@@ -39,6 +39,16 @@ public class LookbookController {
         );
     }
 
+    @GetMapping("/my_list")
+    public ResponseEntity<?> getMyLookbooks(
+            @LoginUser SessionUser sessionUser,
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                lookbookService.getUserLoobooks(sessionUser.getId(),pageable)
+        );
+    }
+
     @GetMapping("/top_list")
     public ResponseEntity<?> getTopLookbookList() {
         List<LookbookThumbnailResponse> topLookbooks = lookbookService.getTopLookbooks();
@@ -56,8 +66,8 @@ public class LookbookController {
                                             @RequestPart("image") List<MultipartFile> images,
                                             @RequestPart("data") LookbookCreateRequest lookbookCreateRequest) {
         final int userId = sessionUser.getId();
-        lookbookService.createLookbook(userId, images, lookbookCreateRequest);
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "룩북 생성 완료");
+        int lookbookId = lookbookService.createLookbook(userId, images, lookbookCreateRequest);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookId);
     }
 
 
