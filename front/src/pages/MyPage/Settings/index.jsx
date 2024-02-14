@@ -105,7 +105,7 @@ export default function Settings() {
 				</ListItem>
 				{/* TODO: 로그아웃, 회원탈퇴 링크 추가 */}
 				<ListGroup div>
-					<ListItem link>
+					<ListItem link href={`${import.meta.env.VITE_GAWM_API_URL}/user/logout`}>
 						로그아웃
 					</ListItem>
 					<ListItem link>
