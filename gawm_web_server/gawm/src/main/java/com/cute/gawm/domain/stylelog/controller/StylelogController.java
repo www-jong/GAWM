@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -28,9 +29,10 @@ public class StylelogController {
     // 스타일로그 생성
     @PostMapping
     public ResponseEntity<?> createStylelog(
-            @RequestBody StylelogCreateRequest request,
+            @RequestPart("image") MultipartFile image,
+            @RequestPart("data") StylelogCreateRequest request,
             @LoginUser SessionUser sessionUser) {
-        stylelogService.createStylelog(request, sessionUser.getId());
+        stylelogService.createStylelog(request,image, sessionUser.getId());
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "스타일로그 등록 완료.");
 
     }

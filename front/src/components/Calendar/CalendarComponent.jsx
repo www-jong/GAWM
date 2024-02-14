@@ -62,13 +62,16 @@ function ReactCalendar() {
         const monthString = moment(date).format('YYYYMM');
         const dayData = stylelogData[monthString] || [];
         
-        const dayHasData = dayData.some(entry => moment(entry.date).format('YYYYMMDD') === dateString);
-
-        if (dayHasData) {
+        // 해당 날짜에 스타일로그 데이터가 있는지 확인
+        const filteredEntries = dayData.filter(entry => moment(entry.date).format('YYYYMMDD') === dateString);
+    
+        if (filteredEntries.length > 0) {
+            // 첫 번째 스타일로그의 이미지 URL을 사용
+            const firstStyleLogImgUrl = filteredEntries[0].stylelogImg; // 여기서는 예시로 첫 번째 스타일로그의 이미지를 사용합니다.
             return (
                 <div className="diaryImgContainer">
                     <img
-                        src="emotion/good.svg"
+                        src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+firstStyleLogImgUrl} // 스타일로그 이미지 URL 사용
                         className="diaryImg"
                         alt="Style Log"
                     />

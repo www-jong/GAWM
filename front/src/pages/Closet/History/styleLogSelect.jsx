@@ -4,7 +4,7 @@ import BackButton from '@/components/Button/BackButton.jsx';
 import testClothesData from './testClothes.json';
 import {getAllClothesInfo} from '../../../apis/clothes'
 import {createStyleLog} from '../../../apis/stylelog'
-
+import moment from 'moment';
 export default function styleLogSelect() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -16,8 +16,30 @@ export default function styleLogSelect() {
     // 선택된 옷들의 상태와 위치 정보를 포함하는 배열로 변경
     const [selectedClothes, setSelectedClothes] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
+    const [backgroundColor, setBackgroundColor] = useState('#ffffff'); // 배경색 초기값 설정
+
 const [currentDraggingIndex, setCurrentDraggingIndex] = useState(null);
   
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // 캔버스 초기화
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 배경색 적용
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 선택된 모든 옷 이미지를 그림
+  selectedClothes.forEach(clothe => {
+      if (clothe.image && clothe.position) {
+          ctx.drawImage(clothe.image, clothe.position.x, clothe.position.y, 100, 100);
+      }
+  });
+}, [selectedClothes, backgroundColor]); // 의존성 배열에 backgroundColor 추
+
     useEffect(() => {
       const fetchClothesData = async () => {
         try {
@@ -42,22 +64,11 @@ const [currentDraggingIndex, setCurrentDraggingIndex] = useState(null);
       fetchClothesData();
     }, []);
   
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스 클리어
-      // 선택된 모든 옷 이미지를 그림
-      selectedClothes.forEach(clothe => {
-        if (clothe.image && clothe.position) {
-          ctx.drawImage(clothe.image, clothe.position.x, clothe.position.y, 100, 100);
-        }
-      });
-    }, [selectedClothes]); // selectedClothes가 변경될 때마다 실행
-  
+
     // 옷 선택 로직 수정: 옷 이미지 로드와 위치 정보 추가
     const handleClothingSelect = async (item) => {
       const img = new Image();
+      img.crossOrigin = "anonymous";
       img.src = import.meta.env.VITE_CLOTHES_BASE_URL + '/' + item.clothesImg;
       img.onload = () => {
         const isAlreadySelected = selectedClothes.some(clothe => clothe.clothesId === item.clothesId);
@@ -75,38 +86,60 @@ const [currentDraggingIndex, setCurrentDraggingIndex] = useState(null);
       };
     };
 
+    const handleBackgroundColorChange = (e) => {
+      setBackgroundColor(e.target.value); // 사용자가 선택한 배경색으로 상태 업데이트
+  };
     // 저장버튼
     const handleSave = async () => {
-        const timestamp = Date.now(); // 현재 시간을 timestamp로 변환
-        const clotheset = selectedClothes.map(clothe => ({
-            clothesId: clothe.clothesId, // 실제 clothe_id 필드에 맞춰야 함
-            x: clothe.position.x,
-            y: clothe.position.y,
-            rotate: 0, // 하드코딩된 값
-            size: 100 // 예시로 100을 사용, 실제 이미지 크기에 따라 변경 필요
-        }));
-    
-        const data = {
-            date: timestamp,
-            location: "부산",
-            weather: "좋음",
-            temperature: 35,
-            clotheset: clotheset
-        };
-        console.log(clotheset)
-        try {
-            const create = await createStyleLog(data); // createStyleLog는 서버로 데이터를 보내는 함수
-            console.log('Style log created:', create);
-            navigate('/closet');
-        } catch (error) {
-            console.error('Failed to create style log:', error);
-        }
-    };
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+  
+      canvas.toBlob(async (blob) => {
+        
+
+          let saveTimestamp;
+  if (date !== '날짜 불명') {
+    saveTimestamp = moment(date, 'YYYY년 M월 D일').valueOf();
+  } else {
+    saveTimestamp = Date.now();
+  }
+    console.log(saveTimestamp)
+          const clotheset = selectedClothes.map(clothe => ({
+              clothesId: clothe.clothesId,
+              x: clothe.position.x,
+              y: clothe.position.y,
+              rotate: 0,
+              size: 100
+          }));
+          console.log('dd')
+          const data = {
+              date: saveTimestamp,
+              location: "부산",
+              weather: "좋음",
+              temperature: 35,
+              clotheset: clotheset
+          };
+  
+          const formData = new FormData();
+          formData.append('image', blob, 'image.png'); // Blob 형태의 이미지 데이터
+          formData.append('data', JSON.stringify(data)); // 나머지 데이터를 문자열로 변환하여 추가
+  
+          try {
+              const create = await createStyleLog(formData); // 수정: formData를 전송
+              console.log('Style log created:', create);
+              navigate('/closet');
+          } catch (error) {
+              console.error('Failed to create style log:', error);
+          }
+      }, 'image/png');
+  };
 
     const draw = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
+        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = backgroundColor;
         ctx.drawImage(image, position.x, position.y, 100, 100);
       };
 
@@ -146,6 +179,7 @@ const handleTouchMove = (e) => {
 };
 
 const handleTouchEnd = () => {
+  
   setIsDragging(false);
   setCurrentDraggingIndex(null); // 드래그 종료 후 인덱스 초기화
 };
@@ -182,7 +216,11 @@ const handleTouchEnd = () => {
                     </button>
                 </div>
             </div>
-
+{/* 배경색 선택 */}
+<div className="p-4">
+                <label htmlFor="background-color-picker">배경색 선택:</label>
+                <input type="color" id="background-color-picker" value={backgroundColor} onChange={handleBackgroundColorChange} />
+            </div>
             {/* canvas영역 */}
             <div className="bg-gray-200 h-96 flex justify-center items-center">
             <canvas

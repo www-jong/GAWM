@@ -55,14 +55,28 @@ export function deleteStyleLog(calendarId) {
     return axios.delete(`${prefix}/${calendarId}`);
 }
 
+
+
+
+
 /**
  * 새로운 스타일로그 데이터 등록
  * 
- * @param {Object} data 등록할 스타일로그 데이터
+ * @param {FormData} formData 등록할 스타일로그 데이터
  * @returns Promise 객체
  */
-export function createStyleLog(data) {
-    return axios.post(`${prefix}`, data);
+export const createStyleLog = async (formData)=> {
+    try{
+        const response = await gawmApiAxios().post(`${prefix}`, formData, {
+            withCredentials: true,
+        });
+        console.log("등록 결과:", response);
+        return response.data; // 응답 데이터 반환
+    } catch (error) {
+        console.error("옷 이미지 업로드 중 오류 발생:", error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+
 }
 
 /**
