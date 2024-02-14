@@ -2,9 +2,10 @@ import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import CenteredTopBar from "../CenteredTopBar";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
-import { useUserStore } from "../../../stores/user";
+import { fetchUserInfo, useUserStore } from "../../../stores/user";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { updateProfileImge } from "../../../apis/user";
 
 /**
  * 마이페이지 내 설정 페이지를 생성합니다
@@ -13,10 +14,11 @@ import { useEffect } from "react";
  */
 export default function Settings() {
 	const {
-		nickname, gender, age
+		profileImg, nickname, gender, age
 	} = useUserStore(
 		(state) => (
 			{
+				"profileImg": state.user?.profileImg,
 				"nickname": state.user?.nickname,
 				"gender": state.user?.gender,
 				"age": state.user?.age
@@ -29,16 +31,37 @@ export default function Settings() {
 		() => {
 			// 속성이 준비되지 않았을 시 마이페이지로 되돌리기
 			if(
+				typeof profileImg === "undefined" ||
 				typeof nickname === "undefined" ||
 				typeof gender === "undefined" ||
 				typeof age === "undefined"
 			) navigate("/mypage");
-		}
+		},
+		[profileImg, nickname, gender, age]
 	);
 
 	const genderNames = {
 		"FEMALE": "여성",
 		"MALE": "남성"
+	};
+
+	// 프로필 사진 업데이트를 위한 사진 <input>
+	const profileImageInput = useRef(null);
+	const selectProfileImage = () => {
+		profileImageInput.current.click();
+	};
+	const changeProfileImage = async (event) => {
+		const file = event.target.files[0];
+		if(!file || !file.type.startsWith("image/"))
+			return;
+
+		try {
+			const formData = new FormData();
+			formData.append("multipartFile", file);
+			await updateProfileImge(formData);
+			await fetchUserInfo();
+		}
+		catch(error) { console.error(error); }
 	};
 
 	return (
@@ -53,6 +76,14 @@ export default function Settings() {
 					계정 설정
 				</ListItem>
 				<ListGroup div>
+					<ListItem div className="cursor-pointer flex flex-row gap-4 items-center" onClick={selectProfileImage}>
+						<span className="grow">프로필 사진 변경</span>
+						<input className="hidden" type="file" accept="image/*" ref={profileImageInput} onChange={changeProfileImage} />
+						<div
+							style={{"--image-url": `url(${import.meta.env.VITE_CLOTHES_BASE_URL}/${profileImg})`}}
+							className={`size-12 aspect-square rounded-full ${profileImg ? "bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat" : "bg-transparent"}`}
+						></div>
+					</ListItem>
 					{/* 닉네임 변경 */}
 					<ListItem link href="/mypage/settings/nickname" className="flex flex-row gap-4">
 						<span className="grow">닉네임 설정</span>
