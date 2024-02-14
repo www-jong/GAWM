@@ -155,7 +155,7 @@ class Live extends Component {
                     .catch((error) => {
                         console.log('There was an error connecting to the session:', error.code, error.message);
                     });
-            },
+            }
         );
     }
 
@@ -249,18 +249,16 @@ class Live extends Component {
                                         required
                                     />
                                 </p>
-
-                                
                                 <p>
                                     <label> isPublic : </label>
-                                    <label class="switch">
+                                    <label className="switch">
                                         <input 
                                         type="checkbox" 
                                         id="isPublic"
                                         checked={this.state.isPublic}
                                         onChange={this.handleChangeIspublic}
                                         />
-                                        <span class="slider"></span>
+                                        <span className="slider"></span>
                                     </label>
                                 </p>
                                 <p>
@@ -278,14 +276,14 @@ class Live extends Component {
                             
                                 <p>
                                     <label> 세션 비우기 : </label>
-                                    <label class="switch">
+                                    <label className="switch">
                                         <input 
                                         type="checkbox" 
                                         id="deleted"
                                         checked={this.state.deleted}
                                         onChange={this.handleChangeDeleted}
                                         />
-                                        <span class="slider"></span>
+                                        <span className="slider"></span>
                                     </label>
                                 </p>
   
@@ -354,8 +352,8 @@ class Live extends Component {
             isPublic : isPublic,
             deleted: deleted,
         }, {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials : true,
+            headers: { 'Content-Type': 'application/json' , 'sessionId': cookies.get("sessionId") }
+            // withCredentials : true,
         });
         console.log(response.data);
         return response.data;

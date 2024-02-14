@@ -19,6 +19,7 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         //String redirectUrl = "http://localhost:4000/gawm/";
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }
