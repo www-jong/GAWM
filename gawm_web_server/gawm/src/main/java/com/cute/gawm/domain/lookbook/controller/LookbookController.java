@@ -49,6 +49,16 @@ public class LookbookController {
         );
     }
 
+    @GetMapping("/bookmarked_list")
+    public ResponseEntity<?> getBookmarkedLookbooks(
+        @LoginUser SessionUser sessionUser
+    ) {
+        return ResponseUtil.buildBasicResponse(
+            HttpStatus.OK,
+            lookbookService.getUserBookmarkedLookbooks(sessionUser.getId())
+        );
+    }
+
     @GetMapping("/top_list")
     public ResponseEntity<?> getTopLookbookList() {
         List<LookbookThumbnailResponse> topLookbooks = lookbookService.getTopLookbooks();

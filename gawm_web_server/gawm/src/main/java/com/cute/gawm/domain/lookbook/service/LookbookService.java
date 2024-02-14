@@ -138,6 +138,28 @@ public class LookbookService {
                 .build();
     }
 
+    public List<LookbookCardResponse> getUserBookmarkedLookbooks(int sessionUserId) {
+        userRepository.findById(sessionUserId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
+
+        var lookbooks = bookmarkRepository.findByUserId(sessionUserId);
+        List<LookbookCardResponse> response = new ArrayList<>(lookbooks.size());
+
+        for(Bookmark lookbook : lookbooks) {
+            List<LookbookImage> lookbookImages = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbook().getLookbookId());
+
+            response.add(
+                LookbookCardResponse.builder(
+                ).lookbookId(
+                    lookbook.getLookbook().getLookbookId()
+                ).image(
+                    lookbookImages.get(0).getImage()
+                ).build()
+            );
+        }
+
+        return response;
+    }
+
     @Transactional
     public int createLookbook(Integer userId, List<MultipartFile> images, LookbookCreateRequest lookbookRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
