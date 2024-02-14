@@ -418,12 +418,34 @@ public class LookbookService {
     }
 
     @Transactional
-    public void likes(Integer userId, Integer lookbookId) {
+    public String manageLikes(Integer userId, Integer lookbookId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
         if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
         boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
-        if(isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 한 상태입니다.");
+        if(isLiked) {
+            unlikes(user ,lookbook);
+            return "좋아요 취소 완료";
+        } else {
+            likes(user, lookbook);
+            return "좋아요 반영 완료";
+        }
+    }
+
+
+    @Transactional
+    public void unlikes(User user, Lookbook lookbook) {
+        likesRepository.deleteByLookbookAndUser(lookbook, user);
+
+        user.minusPoint(3);
+        userRepository.save(user);
+        User author=lookbook.getUser();
+        author.minusPoint(5);
+        userRepository.save(author);
+    }
+
+    @Transactional
+    public void likes(User user, Lookbook lookbook) {
         Likes likes = Likes.builder().lookbook(lookbook).user(user).build();
         likesRepository.save(likes);
 
@@ -431,23 +453,6 @@ public class LookbookService {
         userRepository.save(user);
         User author=lookbook.getUser();
         author.addPoint(5);
-        userRepository.save(author);
-    }
-
-    @Transactional
-    public void unlikes(Integer userId, Integer lookbookId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해댱 유저가 존재하지 않습니다."));
-        Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);
-        if(lookbook==null) throw new DataNotFoundException("해당 룩북은 존재하지 않습니다.");
-        boolean isLiked = likesRepository.existsByLookbookAndUserUserId(lookbook, userId);
-        if(!isLiked) throw new DataMismatchException("해당 유저는 이미 좋아요를 하지 않은 상태입니다.");
-        likesRepository.deleteByLookbookAndUser(lookbook, user);
-
-
-        user.minusPoint(3);
-        userRepository.save(user);
-        User author=lookbook.getUser();
-        author.minusPoint(5);
         userRepository.save(author);
     }
 
