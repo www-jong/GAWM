@@ -20,6 +20,7 @@ import com.cute.gawm.domain.like.entity.Likes;
 import com.cute.gawm.domain.like.repository.LikesRepository;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookCreateRequest;
 import com.cute.gawm.domain.lookbook.dto.request.LookbookUpdateRequest;
+import com.cute.gawm.domain.lookbook.dto.response.LookbookCardResponse;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookMiniResponse;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookResponse;
 import com.cute.gawm.domain.lookbook.dto.response.LookbookThumbnailResponse;
@@ -138,7 +139,7 @@ public class LookbookService {
     }
 
     @Transactional
-    public void createLookbook(Integer userId, List<MultipartFile> images, LookbookCreateRequest lookbookRequest) {
+    public int createLookbook(Integer userId, List<MultipartFile> images, LookbookCreateRequest lookbookRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
 
         Lookbook lookbook = Lookbook.builder()
@@ -146,7 +147,7 @@ public class LookbookService {
                 .view(0)
                 .isPublic(lookbookRequest.isPublic())
                 .build();
-        lookbookRepository.save(lookbook);
+        int lookbookId=lookbookRepository.save(lookbook).getLookbookId();
 
         images.forEach(img -> {
             String name = s3Uploader.uploadFile(img);
@@ -183,6 +184,8 @@ public class LookbookService {
 
         user.addPoint(10);
         userRepository.save(user);
+
+        return lookbookId;
     }
 
     public PagingResponse<List<LookbookThumbnailResponse>> getLookbooks(Pageable pageable) {
@@ -201,6 +204,36 @@ public class LookbookService {
                     .userNickname(user.getNickname())
                     .userProfileImg(user.getProfileImg())
                     .images(ImageUrls)
+                    .build();
+            lookbookResponse.add(build);
+        });
+
+        return new PagingResponse(
+                HttpStatus.OK.value(),
+                lookbookResponse,
+                lookbooks.isFirst(),
+                lookbooks.isLast(),
+                lookbooks.getPageable().getPageNumber(),
+                lookbooks.getTotalPages(),
+                lookbooks.getSize(),
+                false,
+                false,
+                false
+        );
+    }
+
+    public PagingResponse<List<LookbookCardResponse>> getUserLoobooks(int userId, Pageable pageable) {
+        Page<Lookbook> lookbooks = lookbookRepository.findAllLookbookByUserId(userId, pageable);
+        List<LookbookCardResponse> lookbookResponse = new ArrayList<>();
+
+        lookbooks.forEach(lookbook -> {
+            LookbookImage lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId()).get(0);
+
+            Integer likeCnt=likesRepository.countByLookbook(lookbook);
+            User user=lookbook.getUser();
+            LookbookCardResponse build = LookbookCardResponse.builder()
+                    .lookbookId(lookbook.getLookbookId())
+                    .image(lookbookImage.getImage())
                     .build();
             lookbookResponse.add(build);
         });
@@ -443,4 +476,6 @@ public class LookbookService {
                 });
         return responseList;
     }
+
+
 }
