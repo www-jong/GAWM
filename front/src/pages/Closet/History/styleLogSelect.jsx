@@ -171,12 +171,11 @@ export default function styleLogSelect() {
       formData.append('data', JSON.stringify(data)); // 나머지 데이터를 문자열로 변환하여 추가
 
       try {
-        const create = await createStyleLog(formData); // 수정: formData를 전송
+        // const create = await createStyleLog(formData); // 수정: formData를 전송 ★★★★
         console.log('Style log created:', create);
-        navigate('/closet/stylelog-add');
+        navigate('/closet/stylelog-add', { state: { date: date } });
       } catch (error) {
         console.error('Failed to create style log:', error);
-        navigate('/closet/stylelog-add'); // 이건 테스트용
       }
     }, 'image/png');
   };
