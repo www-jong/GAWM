@@ -37,9 +37,8 @@ export default function MyCloset() {
 		() => {
 			const fetchCloset = async () => {
 				try {
-					// const response = await getAllClothesInfo();
-					// const data = response.data;
-					const data = testData.data;
+					const response = await getAllClothesInfo();
+					const data = response.data;
 
 					if(data.length) {
 						// "mCategory"로 분류
