@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CategoryList from "./CategoryList";
 import ClothesList from "./ClothesList";
 import ClothesDetail from "./ClothesDetail";
-import { getAllClothesInfo } from "../../../apis/clothes";
+import { deleteClothes, getAllClothesInfo } from "../../../apis/clothes";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import testData from "./test.json";
 
@@ -92,7 +92,12 @@ export default function MyCloset() {
 					<ClothesDetail
 						clothesId={clothesId}
 						clothesIdSetter={clothesIdSetter}
-						onDelete={refreshCountSetter}
+						onDelete={
+							() => {
+								deleteClothes(clothesId);
+								refreshCountSetter();
+							}
+						}
 					/>
 				) : category ? (
 					<ClothesList
