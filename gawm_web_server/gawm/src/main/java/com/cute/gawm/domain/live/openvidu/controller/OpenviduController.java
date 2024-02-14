@@ -1,6 +1,8 @@
 package com.cute.gawm.domain.live.openvidu.controller;
 
 import com.cute.gawm.common.auth.LoginUser;
+import com.cute.gawm.common.exception.SessionNotFoundException;
+import com.cute.gawm.common.util.ResponseUtil;
 import com.cute.gawm.domain.live.service.LiveService;
 import com.cute.gawm.domain.user.dto.SessionUser;
 import io.openvidu.java.client.*;
@@ -10,7 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import io.openvidu.java.client.SessionProperties;
+
 
 @CrossOrigin(origins = {"https://i10e203.p.ssafy.io/", "http://localhost:3000"})
 @RestController
@@ -28,12 +33,9 @@ public class OpenviduController {
     public ResponseEntity<String> initializeSession(
             @LoginUser SessionUser sessionUser,
             @RequestBody(required = false) Map<String, Object> params
-    ) throws OpenViduJavaClientException, OpenViduHttpException {
-        log.info("params={}",params);
-        log.info("sessionId={}",sessionUser.getId());
+    ) throws OpenViduJavaClientException, OpenViduHttpException, UnsupportedEncodingException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         String response = liveService.initSession(sessionUser.getId(), properties, params);
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -43,16 +45,13 @@ public class OpenviduController {
      * @return The Token associated to the Connection
      */
     @PostMapping("/{liveRoomId}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("liveRoomId") String liveRoomId,
+    public ResponseEntity<?> createConnection(@PathVariable("liveRoomId") String liveRoomId,
                                                    @LoginUser SessionUser sessionUser,
                                                    @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
-        log.info("createConnection");
-        log.info("!!params={}",params);
-        log.info("!!liveRoomId={}", liveRoomId);
         Session session = liveService.getSession(liveRoomId);
         if (session == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new SessionNotFoundException("해당 라이브방 세션이 존재하지 않습니다.");
         }
         Connection connection = liveService.enterLive(session, params);
 

@@ -146,35 +146,35 @@ class Live extends Component {
 
                 // const token = await this.getToken();
                 
-                mySession.connect(this.state.token, { clientData: this.state.myUserName })
-                    .then(async () => {
-                        let publisher = await this.OV.initPublisherAsync(undefined, {
-                            audioSource: undefined,
-                            videoSource: undefined,
-                            publishAudio: true,
-                            publishVideo: true,
-                            resolution: '640x480',
-                            frameRate: 30,
-                            insertMode: 'APPEND',
-                            mirror: false,
-                        });
+                // mySession.connect(this.state.token, { clientData: this.state.myUserName })
+                //     .then(async () => {
+                //         let publisher = await this.OV.initPublisherAsync(undefined, {
+                //             audioSource: undefined,
+                //             videoSource: undefined,
+                //             publishAudio: true,
+                //             publishVideo: true,
+                //             resolution: '640x480',
+                //             frameRate: 30,
+                //             insertMode: 'APPEND',
+                //             mirror: false,
+                //         });
 
-                        mySession.publish(publisher);
+                //         mySession.publish(publisher);
 
-                        var devices = await this.OV.getDevices();
-                        var videoDevices = devices.filter(device => device.kind === 'videoinput');
-                        var currentVideoDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
-                        var currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
+                //         var devices = await this.OV.getDevices();
+                //         var videoDevices = devices.filter(device => device.kind === 'videoinput');
+                //         var currentVideoDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
+                //         var currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
 
-                        this.setState({
-                            currentVideoDevice: currentVideoDevice,
-                            mainStreamManager: publisher,
-                            publisher: publisher,
-                        });
-                    })
-                    .catch((error) => {
-                        console.log('There was an error connecting to the session:', error.code, error.message);
-                    });
+                //         this.setState({
+                //             currentVideoDevice: currentVideoDevice,
+                //             mainStreamManager: publisher,
+                //             publisher: publisher,
+                //         });
+                //     })
+                //     .catch((error) => {
+                //         console.log('There was an error connecting to the session:', error.code, error.message);
+                //     });
             },
         );
     }
