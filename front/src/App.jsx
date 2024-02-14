@@ -45,7 +45,7 @@ function App() {
 					<Route path="look" element={<Look />} />
 					<Route path="look/:lookbookId" element={<Look />} />
                     <Route path="look/edit" element={<EditLook />} />
-					<Route path="look/:lookbookId" element={<EditLook />} />                    
+					<Route path="look/edit/:lookbookId" element={<EditLook />} />                    
 
 					{/* <Route path="/look/:id" element={<Look />} /> */}
 				</Route>
