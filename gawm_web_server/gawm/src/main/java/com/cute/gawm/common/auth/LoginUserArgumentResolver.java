@@ -32,9 +32,6 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-<<<<<<< HEAD
-
-=======
         HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
 
         // 쿠키에서 사용자 정보 가져오기
@@ -54,8 +51,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         // 쿠키에서 가져온 값을 사용하여 인증 객체 생성
 //        Authentication authentication = new UsernamePasswordAuthenticationToken(cookieValue, null);
 //        SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("!!");
->>>>>>> 070eaa8f0a95b5b44daf8c8cd1bfec3cefb306ec
+
         return httpSession.getAttribute("user");
     }
 
