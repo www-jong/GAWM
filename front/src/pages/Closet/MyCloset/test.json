@@ -1,0 +1,65 @@
+{
+	"status": 200,
+	"data": [
+		{
+			"clothesId": 8,
+			"userId": 12,
+			"clothesImg": "img_url",
+			"name": "Outfit 1",
+			"brand": "Brand A",
+			"mcategory": "Outerwear",
+			"scategory": "Jacket",
+			"orderNum": 4,
+			"colors": ["black", "white"],
+			"materials": ["wool", "cotton"],
+			"patterns": ["striped"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		},
+		{
+			"clothesId": 15,
+			"userId": 13,
+			"clothesImg": "img_url",
+			"name": "Outfit 2",
+			"brand": "Brand B",
+			"mcategory": "Outerwear",
+			"scategory": "Coat",
+			"orderNum": 3,
+			"colors": ["blue"],
+			"materials": ["polyester"],
+			"patterns": ["solid"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		},
+		{
+			"clothesId": 22,
+			"userId": 12,
+			"clothesImg": "img_url",
+			"name": "Outfit 3",
+			"brand": "Brand C",
+			"mcategory": "Outerwear",
+			"scategory": "Blazer",
+			"orderNum": 2,
+			"colors": ["grey", "black"],
+			"materials": ["linen", "silk"],
+			"patterns": ["checked"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		},
+		{
+			"clothesId": 30,
+			"userId": 13,
+			"clothesImg": "img_url",
+			"name": "Outfit 4",
+			"brand": "Brand D",
+			"mcategory": "Outerwear",
+			"scategory": "Windbreaker",
+			"orderNum": 1,
+			"colors": ["red"],
+			"materials": ["nylon"],
+			"patterns": ["camo"],
+			"created_at": "timestamp",
+			"updated_at": "timestamp"
+		}
+	]
+}
