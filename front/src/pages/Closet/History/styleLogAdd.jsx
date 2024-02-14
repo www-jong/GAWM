@@ -73,6 +73,7 @@ export default function styleLogAdd() {
                         날씨: {weatherData.weather[0].main} ({weatherData.weather[0].description})
                     </p>
                     <p>온도: {weatherData.main.temp}°C</p>
+                    <img src={`http://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`} alt="날씨이미지" />
                 </div>
             )}
 
