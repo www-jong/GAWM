@@ -19,6 +19,7 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LiveService {
     private final LiveRepository liveRepository;
     private final FollowingRepository followingRepository;
@@ -186,7 +188,7 @@ public class LiveService {
             isPublic = true;
         } else isPublic = false;
         Session session = openvidu.createSession(properties);
-
+        log.info(session.getSessionId());
 //        this.createLive(session.getSessionId(), userId, name, isPublic, params);
         return session.getSessionId();
     }
