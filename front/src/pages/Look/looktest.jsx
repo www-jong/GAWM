@@ -12,8 +12,8 @@ import views from '@/assets/images/views.png';
 import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
 import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
+import { fetchLookbookById } from '@/apis/lookbook.js';
 import Loading from "@/pages/Loading";
-import { fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, updateCommentInLookbook, deleteCommentFromLookbook } from '@/apis/lookbook.js'
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -22,108 +22,53 @@ import './index.css';
 
 
 export default function Look() {
-    const { lookbookId } = useParams(); // URL에서 룩북 ID 가져옴
-    const [lookData, setLookData] = useState(LookTest.data); // API 호출 결과 저장
+    // useEffect(() => {
+    //     const fetchLookData = async () => {
+    //         try {
+    //             const response = await fetchLookbookById(id); // API 호출
+    //             if (response.status === 200) {
+    //                 setLookData(response.data); // 상태 업데이트
+    //             } else {
+    //                 console.error('룩북을 불러오는 데 실패했습니다.');
+    //             }
+    //         } catch (error) {
+    //             console.error('Error:', error);
+    //         }
+    //     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetchLookbookById(lookbookId);
-                setLookData(response.data);
-            } catch (error) {
-                console.error('룩북 데이터를 불러오는데 실패했습니다.', error);
-            }
-        };
+    //     fetchLookData();
+    // }, [id]); // id가 변경될 때마다 API 호출
+    
+    // if (!lookData) return <div><Loading /></div>;
+    const { lookbookId, userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = LookTest.data;
+    // (lookData? lookData : LookTest.data)로 나중에 수정
 
-        fetchData();
-    }, [lookbookId]);
 
-    const { userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = lookData;
 
+    const [commentVisible, setCommentVisible] = useState(false);
+    const [repliesVisible, setRepliesVisible] = useState(false);
     const [commentText, setCommentText] = useState("");
     const [likes, setLikes] = useState(likeCnt);
     const [commentModalVisible, setCommentModalVisible] = useState(false);
-    const [comments, setComments] = useState(comment); // 코멘트 데이터들을 상태로 관리
+    const [comments, setComments] = useState(LookTest.data.comment); // 코멘트 데이터들을 상태로 관리
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isLiked, setIsLiked] = useState(liked);
-    const [isBookmarked, setIsBookmarked] = useState(bookmarked);
-    const [editingCommentId, setEditingCommentId] = useState(null);
-    const [editingCommentText, setEditingCommentText] = useState("");
+
+    const { id } = useParams(); // URL에서 룩북 ID 가져옴
+    const [lookData, setLookData] = useState(null); // API 호출 결과 저장
 
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        if(editingCommentId) {
-          // 수정 모드일 때의 처리 로직
-          try {
-            const response = await updateCommentInLookbook(lookbookId, editingCommentId, commentText);
-            if (response.status === 200) {
-              alert('댓글이 수정되었습니다.');
-              // 코멘트 목록 업데이트 로직 필요...
-              cancelEdit(); // 수정 모드 종료
-            } else {
-              console.error('댓글 수정 실패:', response);
-            }
-          } catch (error) {
-            console.error('댓글 수정 중 오류 발생:', error);
-            alert('댓글 수정에 실패했습니다.');
-          }
-        } else {
-          // 새 댓글 추가 모드일 때의 처리 로직...
-        }
-      };
-    
-
-    // 수정 관련
-    const handleUpdateComment = async (commentId, updatedContent) => {
-        try {
-            const response = await updateCommentInLookbook(lookbookId, commentId, updatedContent);
-            if (response.status === 200) {
-                alert('댓글이 수정되었습니다.');
-                // 댓글 목록을 업데이트하는 로직 구현 필요
-            } else {
-                console.error('댓글 수정 실패:', response);
-            }
-        } catch (error) {
-            console.error('댓글 수정 중 오류 발생:', error);
-            alert('댓글 수정에 실패했습니다.');
-        }
+        console.log(commentText); // 입력된 댓글 로그
+        setCommentText(""); // 입력 필드 초기화
     };
 
-    // 댓글 수정 모드로 전환하는 함수
-    const handleEditCommentClick = (commentId, currentContent) => {
-        setEditingCommentId(commentId);
-        setEditingCommentText(currentContent);
-        setCommentText(currentContent); // 댓글 입력 필드에 현재 내용을 미리 채워 넣음
-    };
-
-    // 댓글 수정 취소
-    const cancelEdit = () => {
-        setEditingCommentId(null);
-        setEditingCommentText("");
-        setCommentText(""); // 댓글 입력 필드를 비움
-    };
-
-    const handleDeleteComment = async (commentId) => {
-        if (window.confirm('댓글을 삭제하시겠습니까?')) {
-            try {
-                const response = await deleteCommentFromLookbook(lookbookId, commentId);
-                if (response.status === 200) {
-                    alert('댓글이 삭제되었습니다.');
-                    // 댓글 목록에서 해당 댓글을 제거하는 로직 구현 필요
-                } else {
-                    console.error('댓글 삭제 실패:', response);
-                }
-            } catch (error) {
-                console.error('댓글 삭제 중 오류 발생:', error);
-                alert('댓글 삭제에 실패했습니다.');
-            }
-        }
+    const handleLike = () => {
+        setLikes(likes + 1); // 좋아요 수 증가
     };
 
     const toggleCommentModal = () => {
         setCommentModalVisible(!commentModalVisible); // 댓글 입력 창 토글
-        console.log(lookbookId)
     };
 
     // createdAt 값 예쁘게 포맷
@@ -139,8 +84,7 @@ export default function Look() {
 
     // 로그인한 사용자가 작성한 글인지 확인하는 함수
     const isMyLookbook = () => {
-        // return userNickname === currentUserNickname;
-        return true; //테스트용
+        return userNickname === currentUserNickname;
     };
 
 
@@ -157,34 +101,6 @@ export default function Look() {
             setIsFollowing(false);
         }
     }, [followingNicknames, userNickname]);
-
-    const handleLike = async () => {
-        try {
-            if (isLiked) {
-                await unlikeLookbook(lookbookId);
-                setLikes(likes - 1);
-            } else {
-                await likeLookbook(lookbookId);
-                setLikes(likes + 1);
-            }
-            setIsLiked(!isLiked);
-        } catch (error) {
-            console.error('좋아요 상태 변경 실패:', error);
-        }
-    };
-
-    const handleBookmark = async () => {
-        try {
-            if (isBookmarked) {
-                await unbookmarkLookbook(lookbookId);
-            } else {
-                await bookmarkLookbook(lookbookId);
-            }
-            setIsBookmarked(!isBookmarked);
-        } catch (error) {
-            console.error('북마크 상태 변경 실패:', error);
-        }
-    };
 
     const handleToggleFollow = async () => {
         try {
@@ -205,7 +121,7 @@ export default function Look() {
     const handleEditClick = (value, event) => {
         setIsModalOpen(true);
     };
-
+    
 
 
 
@@ -243,13 +159,14 @@ export default function Look() {
                             </button>
                             :
                             <button
-                                type="button"
-                                onClick={handleToggleFollow}
-                                className={`w-16 h-8 focus:outline-none border border-transparent text-xs rounded-full transition-colors ${isFollowing ? 'bg-main opacity-90 text-white' : 'bg-gray-100 text-main'
-                                    }`}
-                            >
-                                {isFollowing ? '팔로우 중' : '팔로우'}
-                            </button>
+                            type="button"
+                            onClick={handleToggleFollow}
+                            className={`w-16 h-8 focus:outline-none border border-transparent text-xs rounded-full transition-colors ${
+                                isFollowing ? 'bg-main opacity-90 text-white' : 'bg-gray-100 text-main'
+                            }`}
+                        >
+                            {isFollowing ? '팔로우 중' : '팔로우'}
+                        </button>
                     }
                 </div>
 
@@ -276,7 +193,7 @@ export default function Look() {
                     <div className="flex justify-between items-center p-2">
                         <div className="flex space-x-2 items-center">
                             <button onClick={handleLike} className="focus:outline-none Like">
-                                <svg className={`w-8 h-8 ${isLiked ? 'text-red-700' : 'text-gray-600'}`} fill={`${isLiked ? '#c62828' : 'none'}`} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                 </svg>
                             </button>
@@ -285,8 +202,8 @@ export default function Look() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                 </svg>
                             </button>
-                            <button onClick={handleBookmark} className="focus:outline-none save">
-                                <svg className={`w-7 h-7 text-gray-600 z-10`} fill={`${isBookmarked ? '#616161' : 'none'}`} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <button className="focus:outline-none save">
+                                <svg className="w-7 h-7 text-gray-600 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
                                 </svg>
                             </button>
@@ -318,24 +235,21 @@ export default function Look() {
                                 </button>
                             </div>
                             <div className="p-2 mb-10">
+
                                 {/* 코멘트 내용 */}
                                 {comments.map((comment) => (
-                                    <div key={comment.commentId} className="flex flex-col space-y-3 px-2 border-b border-gray-100">
-                                        <div className="relative mt-1 mb-3 pt-2">
-                                            <div className="flex flex-row">
-                                                <img src={comment.userProfileImg ? comment.userProfileImg : Mascot} alt={comment.userNickname} className="w-8 h-8 rounded-full object-cover" />
-                                                <div className="ml-2">
-                                                    <p className="text-gray-600 md:text-sm text-xs">
-                                                        <span className="font-semibold text-gray-900">{comment.userNickname}</span> {comment.content}
-                                                    </p>
-                                                    <div className="mt-1 text-xs text-gray-400">
-                                                        <p>2d</p>
-                                                    </div>
-                                                </div>
+                                    <div key={comment.commentId} className="flex justify-start flex-col space-y-3 items-start px-2 border-b border-gray-100">
+                                        <div className="relative mt-1 mb-3 pt-2 flex">
+                                            <div className="mr-2">
+                                                <img src={comment.userProfileImg ? comment.userProfileImg : Mascot} alt={comment.userNickname} className="w-8 h-8 rounded-full object-cover bg-quaternary max-w-none" />
                                             </div>
-                                            <div className="absolute top-0 right-0 flex space-x-2">
-                                                <button className="text-xs text-main hover:text-main-dark" onClick={handleUpdateComment} >수정</button>
-                                                <button className="text-xs text-red-600 hover:text-red-700" onClick={handleDeleteComment}>삭제</button>
+                                            <div className="ml-2 w-full">
+                                                <p className="text-gray-600 md:text-sm text-xs w-full">
+                                                    <span className="text-gray-900 font-semibold">{comment.userNickname}</span> {comment.content}
+                                                </p>
+                                                <div className="time mt-1 text-gray-400 text-xs">
+                                                    <p>2d</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

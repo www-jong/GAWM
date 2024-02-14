@@ -21,8 +21,7 @@ export default function EditLookBook({ lookbookId, onClose, }) {
 
 
     const handleEdit = async () => {
-        navigate('/look/edit');
-        // navigate(`/look/edit/${lookbookId}`); 나중에 이걸로 수정
+        navigate(`/look/edit/${lookbookId}`);
         onClose();
     };
 
