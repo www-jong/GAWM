@@ -18,7 +18,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 load_dotenv()
 
-model_directory = "./classifi_model"
+model_directory = "./classifi_model2"
 if not os.path.exists(model_directory):
     os.makedirs(model_directory)  # 디렉토리가 없으면 생성
 model_files = os.listdir(model_directory)
@@ -35,10 +35,10 @@ async def app_lifespan(app: FastAPI):
     dummy_image.save(dummy_bytes, format="PNG")
     app.state.rembg_session = new_session(model_name="u2netp")
     if len(model_files):
-        app.state.classifi_model=pipeline("object-detection", model="./classifi_model")
+        app.state.classifi_model=pipeline("object-detection", model="./classifi_model2")
     else:
         print('model download')
-        model=pipeline("object-detection", model="valentinafeve/yolos-fashionpedia")
+        model=pipeline("image-classification", model="Monasterolo21/clothes-class")
         model.save_pretrained(model_directory)
         app.state.classifi_model=model
     remove(dummy_bytes.getvalue())
@@ -74,7 +74,7 @@ async def masking_image(image_file: UploadFile = File(...)):
         resized_image.save(buf, format='PNG')
         output_image_bytes = buf.getvalue()
 
-        output_image_bytes = remove(image_bytes,session=app.state.rembg_session)
+        output_image_bytes = remove(output_image_bytes,session=app.state.rembg_session)
         return StreamingResponse(io.BytesIO(output_image_bytes), media_type="image/png")
     except Exception as e:
         return JSONResponse(status_code=500, content={"status":500,"message": "이미지 처리 중 오류가 발생했습니다.", "error": str(e)})
@@ -101,18 +101,28 @@ async def upload_image(image_file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "이미지 저장 중 오류가 발생했습니다. :"+str(e)})
 
 #omnicommers에서 태그가져오기
-@prefix_router.post("/tag/get/{product_id}")
-async def past_tagging(product_id: str):
+@prefix_router.get("/tag/status/{product_id}")
+async def tagging_status(product_id: str):
+    print('태그조회')
     if not product_id:
         raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
     status_response = await check_status_until_done(product_id)# 등록완료되었는지 조회
-    print('옷 처리결과',status_response)
     if status_response.get("status") == "DONE":
-        tagging_info = await get_tagging_info(product_id)# 완료되었을 경우 태그값 조회
-        response=get_tagging_dto(tagging_info)
-        return JSONResponse(status_code=200,content=response)
+        return JSONResponse(status_code=200,content={"status":200,"data":"done"})
     else:
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"})
+
+#omnicommers에서 태그가져오기
+@prefix_router.get("/tag/get/{product_id}")
+async def past_tagging(product_id: str):
+    if not product_id:
+        raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
+    try:
+        tagging_info = await get_tagging_info(product_id)# 완료되었을 경우 태그값 조회
+        result=get_tagging_dto(tagging_info)
+        return JSONResponse(status_code=200,content=result)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"+e})
 
 
 @prefix_router.post("/tagging/")
@@ -147,18 +157,7 @@ async def test(image_file: UploadFile = File(...)):
     image = Image.open(io.BytesIO(image_bytes))
     image = resize_image(image)
     result=app.state.classifi_model(image)
-    image_center = (image.width/2,image.height/2)
-    objects_with_distance = []
-    for obj in result:
-        box_center = ((obj['box']['xmin'] + obj['box']['xmax']) / 2, (obj['box']['ymin'] + obj['box']['ymax']) / 2)
-        distance = calculate_distance(box_center, image_center)
-        objects_with_distance.append({
-            "label": obj['label'],
-            "score": round(obj['score'] * 100, 2),  # 점수를 백분율로 변환
-            "distance": distance
-        })
-    objects_sorted_by_distance = sorted(objects_with_distance, key=lambda x: x['distance'])
-    return objects_sorted_by_distance
+    return result
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):

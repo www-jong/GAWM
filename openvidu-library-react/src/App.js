@@ -5,7 +5,6 @@ import cookies from 'js-cookie';
 import axios from 'axios';
 import OpenViduSession from 'openvidu-react';
 
-
 class App extends Component {
     constructor(props) {
         super(props);
@@ -194,6 +193,7 @@ class App extends Component {
      */
     async getToken() {
         const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
+        console.log(sessionId);
         return await this.createToken(sessionId);
     }
 
@@ -208,25 +208,27 @@ class App extends Component {
    
 
     async createSession(sessionId, liveName, isPublic, deleted) {
-        return axios.post(this.APPLICATION_SERVER_URL+'gawm/back/api/sessions',  { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
+        // console.log(document.cookies.get('sessionId'));
+        const response = await axios.post(this.APPLICATION_SERVER_URL+'gawm/back/api/sessions',  { customSessionId: sessionId , name: liveName , isPublic: isPublic, deleted: deleted}, {
           headers: {
             'Content-Type': 'application/json',
-            Authorization : cookies.get('SESSION'),
-          }
+            sessionId : cookies.get('sessionId'),
+          },
+          withCredentials: true 
         });
+        return response.data;
       }
     /**
      * Backend API 서버 요청 Promise를 생성하는 데 사용되는 axios 객체입니다
      */
 
     async createToken(sessionId) {
-        const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
-            headers: { 'Content-Type': 'application/json', Authorization : cookies.get('SESSION'),},
+        const response = await axios.post(this.APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections',  { customSessionId: sessionId }, {
+            headers: { 'Content-Type': 'application/json', sessionId : cookies.get('sessionId'), },
+            withCredentials: true 
         });
         return response.data; // The token
     }
-
-
 }
 
 export default App;
