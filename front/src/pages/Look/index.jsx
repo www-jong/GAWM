@@ -13,7 +13,7 @@ import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
 import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
 import Loading from "@/pages/Loading";
-import { fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, addCommentToLookbook, updateCommentInLookbook, deleteCommentFromLookbook } from '@/apis/lookbook.js'
+import { fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, updateCommentInLookbook, deleteCommentFromLookbook } from '@/apis/lookbook.js'
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -158,13 +158,32 @@ export default function Look() {
         }
     }, [followingNicknames, userNickname]);
 
-    const handleLike = () => {
-        setIsLiked(!isLiked); // 좋아요 상태 토글
-        setLikes(isLiked ? likes - 1 : likes + 1); // 좋아요 수 조정
+    const handleLike = async () => {
+        try {
+            if (isLiked) {
+                await unlikeLookbook(lookbookId);
+                setLikes(likes - 1);
+            } else {
+                await likeLookbook(lookbookId);
+                setLikes(likes + 1);
+            }
+            setIsLiked(!isLiked);
+        } catch (error) {
+            console.error('좋아요 상태 변경 실패:', error);
+        }
     };
 
-    const handleBookmark = () => {
-        setIsBookmarked(!isBookmarked); // 북마크 상태 토글
+    const handleBookmark = async () => {
+        try {
+            if (isBookmarked) {
+                await unbookmarkLookbook(lookbookId);
+            } else {
+                await bookmarkLookbook(lookbookId);
+            }
+            setIsBookmarked(!isBookmarked);
+        } catch (error) {
+            console.error('북마크 상태 변경 실패:', error);
+        }
     };
 
     const handleToggleFollow = async () => {
