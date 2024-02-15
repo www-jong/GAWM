@@ -167,23 +167,13 @@ class EnterLive extends Component {
         session: this.OV.initSession(),
       },
          () => {
-          // this.handleChangeSubscribers();
         var mySession = this.state.session;
         
          mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
-          // console.log("subscriber: ",subscriber);
           var subscribers = this.state.subscribers;
-          // console.log(subscribers);
-          // console.log(subscriber);
           subscribers.push(subscriber);
-<<<<<<< HEAD
-       
-          
-=======
 
-          // const data = { name: "subscriber", data: subscriber };
-          // console.log(data);
           if (subscriber.stream != null) {
             console.log("담았다!");
             this.handleMainVideoStream(subscriber);
@@ -191,7 +181,6 @@ class EnterLive extends Component {
             console.log(data);
           }
 
->>>>>>> 0dbe4f4ea3b7f7b849e76d820ab47bb6496fb102
           this.setState({
             subscribers: subscribers,
           });
@@ -337,7 +326,6 @@ class EnterLive extends Component {
     const liveName = this.state.liveName;
     const deleted = this.state.deleted;
     this.handleChangeSubscribers();
-    // const subscribers = this.state.subscribers;
     var chatDisplay = { display: this.state.chatDisplay };
     console.log("vdvd");
     return (
@@ -474,18 +462,6 @@ class EnterLive extends Component {
                   <UserVideoComponent streamManager={sub} />
                 </div>
               ))}
-<<<<<<< HEAD
-
-              <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
-                <ChatComponent
-                  user={localUser}
-                  chatDisplay={this.state.chatDisplay}
-                  close={this.toggleChat}
-                  messageReceived={this.checkNotification}
-                  subscribers={this.state.subscribers}
-                />
-              </div>
-=======
               {this.state.mainStreamManager !== undefined ? (
                 <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                   <ChatComponent
@@ -497,7 +473,6 @@ class EnterLive extends Component {
                   />
                 </div>
               ) : null}
->>>>>>> 0dbe4f4ea3b7f7b849e76d820ab47bb6496fb102
             </div>
           </div>
         ) : null}
