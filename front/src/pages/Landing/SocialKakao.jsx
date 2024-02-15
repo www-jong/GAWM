@@ -1,6 +1,5 @@
 import React from 'react';
 import kakao_login from '../../assets/images/kakao_login.svg';
-import sendCookie from '../../cookie';
 
 const SocialKakao = () => {
 
@@ -12,10 +11,6 @@ const SocialKakao = () => {
     
     const handleLogin = () => {
         window.location.href = kakaoURL;
-        //console.log(window.location.host);
-        
-
-      
     };
 
     return (

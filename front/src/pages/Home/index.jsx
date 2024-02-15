@@ -7,7 +7,6 @@ import axios from "axios";
 import introduce1 from "@/assets/images/main_introduce1.svg";
 import introduce2 from "@/assets/images/main_introduce2.svg";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import sendCookie from "../../cookie";
 import './index.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -33,7 +32,6 @@ function Home() {
 				}
 			};
 			fetchLiveRooms();
-			sendCookie();
 		},
 		[]
 	);
