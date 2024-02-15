@@ -37,11 +37,11 @@ export default function History() {
     return (
 		<>
         {lookbooks.length > 0 ? (
-            <div>
+            <div className="grid grid-cols-3 gap-1">
                 {lookbooks.map((lookbook) => (
-                    <div key={lookbook.lookbookId}>
-                        <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+lookbook.image} alt={lookbook.title} />
-                        <p>{lookbook.title}</p>
+                    <div key={lookbook.lookbookId} className="overflow-hidden">
+                        <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+lookbook.image} alt={lookbook.title} className="aspect-w-1 aspect-h-1  object-cover w-full h-full" />
+                        <p className="text-center"> {lookbook.title}</p>
                     </div>
                 ))}
             </div>
