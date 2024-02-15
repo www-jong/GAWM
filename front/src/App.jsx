@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import Live from "./pages/Live/App.jsx";
+import StyleLogSelect from "./pages/Closet/History/styleLogSelect.jsx";
 // import VideoRoomComponent from "./pages/Live/VideoRoomComponent.jsx";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
