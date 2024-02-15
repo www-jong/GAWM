@@ -205,8 +205,11 @@ class Live extends Component {
       mySession.disconnect();
     }
 
+    this.deleteSession();
+
     this.OV = null;
     this.setState({
+      mySessionId: "SessionA",
       session: undefined,
       subscribers: [],
       mySessionId: "SessionA",
@@ -215,8 +218,13 @@ class Live extends Component {
       publisher: undefined,
       isPublic: undefined,
       deleted: undefined,
-      liveName: undefined,
-      chatDisplay: display,
+      liveName: "26C 라이브 이름",
+      isPublic: true,
+      token: "initial token", //같은 방이라도 다시 새로 들어가기
+      localUser: undefined,
+      chatDisplay: "none",
+      accessAllowed: false,
+      deleted: true, //세션 삭제 요청할 예정
     });
   }
 
@@ -381,7 +389,7 @@ class Live extends Component {
               {this.state.publisher !== undefined ? (
                 <div
                   className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                  // onClick={() => this.handleMainVideoStream(this.state.publisher)}
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
@@ -411,6 +419,19 @@ class Live extends Component {
       this.state.deleted
     );
     return await this.createToken(this.state.mySessionId);
+  }
+
+  async deleteSession() {
+    this.setState({
+      deleted: true,
+    });
+    const delret = await this.createSession(
+      this.state.mySessionId,
+      this.state.liveName,
+      this.state.isPublic,
+      this.state.deleted
+    );
+    return delret;
   }
 
   async createSession(sessionId, liveName, isPublic, deleted) {
