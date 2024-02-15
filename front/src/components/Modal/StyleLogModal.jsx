@@ -8,8 +8,6 @@ import { EffectCards } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-cards';
 
-import './StyleLog.module.css';
-
 export default function StyleLog({ date, onClose, stylelogIds }) {
   const navigate = useNavigate();
   const modalRef = useRef();
@@ -75,10 +73,10 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
                 effect={'cards'}
                 grabCursor={true}
                 modules={[EffectCards]}
-                className="mySwiper"
+                className="mt-3.5 mb-12 w-full max-w-[280px] mySwiper"
               >
                 {stylelogImgUrls.map((item, index) => (
-                  <SwiperSlide key={index}>
+                  <SwiperSlide key={index} className="relative flex items-center justify-center overflow-hidden rounded-[18px] w-full pt-full">
                     <img key={index} src={import.meta.env.VITE_CLOTHES_BASE_URL+'/'+item.url} alt={`스타일로그 이미지 ${index}`} onClick={() => handleImageClick(item.id)} />
                   </SwiperSlide>
                 ))}

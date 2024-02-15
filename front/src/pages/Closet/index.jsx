@@ -12,11 +12,11 @@ export default function Closet() {
 
     return (
         <>
-            <div className="fixed top-0 left-0 right-0 mx-2.5 my-1.5">
+            <div className="mx-2.5 my-3">
                 <TopBar title={<h1 className="font-bold text-2xl">내 옷장</h1>} />
             </div>
 
-            <div className="flex flex-col gap-4 mt-12 px-2.5">
+            <div className="flex flex-col gap-4 px-2.5">
                 <WeeklyWeather />
 
                 <div className="flex border-b">

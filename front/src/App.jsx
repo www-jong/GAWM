@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
@@ -28,11 +28,10 @@ import Image from "./pages/AddFashion/ImageEdit.jsx";
 
 function App() {
   return (
-    <BrowserRouter basename="/gawm">
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-
           <Route path="live" element={<Live />} />
           <Route path="enter" element={<EnterLive />} />
           <Route path="browse" element={<Browse />} />
@@ -40,7 +39,7 @@ function App() {
           <Route path="mypage" element={<MyPage />}>
             <Route index element={<MyPageMenu />} />
             <Route path="settings">
-              <Route index element={<MyPageSettings />} />
+              <Route index element={<Navigate to="/mypage" />} />
               <Route path="nickname" element={<MyPageSettingsPropertySetter />} />
               <Route path="gender" element={<MyPageSettingsPropertySetter />} />
               <Route path="age" element={<MyPageSettingsPropertySetter />} />
@@ -67,7 +66,7 @@ function App() {
         <Route path="landing" element={<Landing />} />
         <Route path="loading" element={<Loading />} />
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
   );
 }
 
