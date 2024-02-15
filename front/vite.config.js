@@ -5,7 +5,6 @@ import path from 'path';
 
 
 export default defineConfig({
-	base: '/gawm/',
 	plugins: [
 		react(),
 		VitePWA({
