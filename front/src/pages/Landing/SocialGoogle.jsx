@@ -1,8 +1,9 @@
 import React from 'react';
 import google_login from '../../assets/images/google_login.svg';
+import sendCookie from '../../cookie';
 
 const SocialGoogle = () => {
-    const redirect_uri = import.meta.env.VITE_MODE === "production" ? "https://i10e203.p.ssafy.io/" : "http://localhost:4000/";
+    const redirect_uri = import.meta.env.VITE_MODE === "production" ? "https://i10e203.p.ssafy.io/gawm" : "http://localhost:4000/gawm";
     const BACK_URL = import.meta.env.VITE_MODE === "production" ? "https://i10e203.p.ssafy.io/gawm/back" : "http://localhost:8080/gawm/back";
     
     // oauth 요청 URL

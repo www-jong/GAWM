@@ -7,7 +7,7 @@ import axios from "axios";
 import introduce1 from "@/assets/images/main_introduce1.svg";
 import introduce2 from "@/assets/images/main_introduce2.svg";
 import { Swiper, SwiperSlide } from 'swiper/react';
-
+import sendCookie from "../../cookie";
 import './index.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -21,7 +21,7 @@ import { Autoplay, Pagination } from 'swiper/modules';
  */
 function Home() {
 	const [liveRooms, setLiveRooms] = useState(undefined);
-
+	
 	useEffect(
 		() => {
 			const fetchLiveRooms = async () => {
@@ -33,6 +33,7 @@ function Home() {
 				}
 			};
 			fetchLiveRooms();
+			sendCookie();
 		},
 		[]
 	);
