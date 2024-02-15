@@ -53,7 +53,7 @@ public class SpringSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("*");
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 //        configuration.setAllowedHeaders(Arrays.asList("Authorization", "access_token","SESSION","sessionId","Cache-Control", "Content-Type"));
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true); // 중요: 쿠키를 포함시키기 위해 true로 설정

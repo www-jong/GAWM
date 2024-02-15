@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/BackButton.jsx';
 import downArrow from '@/assets/images/down-arrow.png';
-import {get_tagging_status,get_tag} from '../../apis/clothes'
+import {get_tagging_status,get_tag,uploadClothesImage} from '../../apis/clothes'
 export default function AddClothes() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -115,15 +115,10 @@ export default function AddClothes() {
     formData.append('data', JSON.stringify(jsonData));
     console.log(formData);
     try {
-      const response = await fetch('https://i10e203.p.ssafy.io/gawm/back/clothes', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        alert('성공: ' + result.data);
+      const response = await uploadClothesImage(formData)
+      console.log(response)
+      if (response.status==200) {
+        alert('성공');
         navigate('/closet');
       } else {
         const errorResult = await response.json();

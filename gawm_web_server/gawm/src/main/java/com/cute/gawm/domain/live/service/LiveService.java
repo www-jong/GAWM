@@ -11,6 +11,7 @@ import com.cute.gawm.domain.clothes.repository.ClothesDetailRepository;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
 import com.cute.gawm.domain.following.entity.Following;
 import com.cute.gawm.domain.following.repository.FollowingRepository;
+import com.cute.gawm.domain.live.dto.request.LiveDeleteRequest;
 import com.cute.gawm.domain.live.dto.response.LiveMiniResponse;
 import com.cute.gawm.domain.live.entity.Live;
 import com.cute.gawm.domain.live.repository.LiveRepository;
@@ -19,6 +20,7 @@ import com.cute.gawm.domain.user.entity.User;
 import com.cute.gawm.domain.user.repository.UserRepository;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +35,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class LiveService {
     private final LiveRepository liveRepository;
@@ -43,7 +46,7 @@ public class LiveService {
 
     private OpenVidu openvidu;
 
-    @Value("${OPENVIDU_URL}")
+   @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
 
     @Value("${OPENVIDU_SECRET}")
@@ -51,6 +54,7 @@ public class LiveService {
 
     @PostConstruct
     public void init() {
+        log.info(OPENVIDU_URL);
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
@@ -116,31 +120,14 @@ public class LiveService {
         );
     }
 
-    @Transactional
-    public void createLive(String session, Integer userId, String name, boolean isPublic, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
-//        Live live = liveRepository.findByUserAndIsDeletedFalse(user);
-//        if (live != null) {
-//            throw new DataMismatchException("해당 유저에게 아직 종료되지 않은 라이브가 존재합니다.");
-//        }
-        SessionProperties properties = SessionProperties.fromJson(params).build();
 
-        Live live = Live.builder()
-                .name(name)
-                .user(user)
-                .session(session)
-                .isPublic(isPublic)
-                .build();
 
-        liveRepository.save(live);
-    }
-
-    @Transactional
-    public void deleteLive(Integer userId, Integer liveId) {
-        Live live = liveRepository.findByLiveId(liveId);
-        if (live.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
-        liveRepository.deleteByLiveId(liveId);
-    }
+//    @Transactional
+//    public void deleteLive(Integer userId, LiveDeleteRequest request) { // 유저아이디랑 라이브세션이나 라이브이름으로 삭제하도록
+//        Live live = liveRepository.findByLiveId(liveId);
+//        if (live.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
+//        liveRepository.deleteByLiveId(liveId);
+//    }
 
     @Transactional
     public void deleteLiveByUserId(Integer userId) {
@@ -167,9 +154,35 @@ public class LiveService {
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(connection.getToken());
+
         String token = builder.build().getQueryParams().getFirst("token");
-        System.out.println(connection.getConnectionId());
+
+        log.info("connection.getConnectionId()={}",connection.getConnectionId());
+        log.info("connection.getIp()={}",connection.getIp());
+        log.info("token",token);
+
+
         return connection;
+    }
+
+    @Transactional
+    public void createLive(String session, Integer userId, String name, Integer point, boolean isPublic, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
+        Live live = liveRepository.findByUserAndIsDeletedFalse(user);
+        if (live != null) {
+            deleteLiveByUserId(userId);
+        }
+        SessionProperties properties = SessionProperties.fromJson(params).build();
+
+        live = Live.builder()
+                .name(name)
+                .user(user)
+                .point(point)
+                .session(session)
+                .isPublic(isPublic)
+                .build();
+
+        liveRepository.save(live);
     }
 
     public String initSession(Integer userId, SessionProperties properties, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
@@ -186,8 +199,18 @@ public class LiveService {
             isPublic = true;
         } else isPublic = false;
         Session session = openvidu.createSession(properties);
+        String customSessionId = (String) params.get("customSessionId");
+        String liveName = (String) params.get("liveName");
+        Integer livePoint = (Integer) params.get("livePoint");
+//        Boolean isPublic = (Boolean) params.get("isPublic");
+        Boolean deleted = (Boolean) params.get("deleted");
+        createLive(session.getSessionId(), userId, liveName, livePoint, isPublic, params);
 
-//        this.createLive(session.getSessionId(), userId, name, isPublic, params);
+        log.info("liveName={}",liveName );
+        log.info("livePoint={}",livePoint );
+        log.info("isPublic={}",isPublic );
+        log.info("params={}",params);
+
         return session.getSessionId();
     }
 

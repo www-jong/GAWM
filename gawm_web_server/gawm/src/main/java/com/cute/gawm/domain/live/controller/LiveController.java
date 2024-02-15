@@ -53,14 +53,14 @@ public class LiveController {
         );
     }
 
-    @DeleteMapping("/{liveId}")
-    public ResponseEntity<?> deleteLive(
-            @LoginUser SessionUser sessionUser,
-            @PathVariable Integer liveId
-    ){
-        liveService.deleteLive(sessionUser.getId(), liveId);
-        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 삭제 완료");
-    }
+//    @DeleteMapping("/{liveId}")
+//    public ResponseEntity<?> deleteLive(
+//            @LoginUser SessionUser sessionUser,
+//            @PathVariable Integer liveId
+//    ){
+//        liveService.deleteLive(sessionUser.getId(), liveId);
+//        return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 삭제 완료");
+//    }
 
     @GetMapping("/closet/{liveId}")
     public ResponseEntity<?> getLiveCloset(
@@ -68,6 +68,5 @@ public class LiveController {
     ){
         List<ClothesInfoResponse> closet = liveService.getLiveUserAllCloset(liveId);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, closet);
-
     }
 }

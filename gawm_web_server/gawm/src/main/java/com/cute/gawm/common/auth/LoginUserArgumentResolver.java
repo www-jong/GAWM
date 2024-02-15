@@ -51,7 +51,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         // 쿠키에서 가져온 값을 사용하여 인증 객체 생성
 //        Authentication authentication = new UsernamePasswordAuthenticationToken(cookieValue, null);
 //        SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("!!");
+
         return httpSession.getAttribute("user");
     }
 

@@ -16,7 +16,7 @@ class EnterLive extends Component {
 
     this.state = {
       mySessionId: "SessionA",
-      myUserName: "입장하는 사람1",
+      myUserName: "Participant" + Math.floor(Math.random() * 100),
       session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
@@ -225,7 +225,6 @@ class EnterLive extends Component {
 
     this.OV = null;
     this.setState({
-      mySessionId: "SessionA",
       session: undefined,
       subscribers: [],
       mySessionId: "SessionA",
@@ -234,11 +233,7 @@ class EnterLive extends Component {
       publisher: undefined,
       isPublic: undefined,
       deleted: undefined,
-      liveName: "26C 라이브 이름",
-      isPublic: true,
-      deleted: false,
-      token: "initial token", //같은 방이라도 다시 새로 들어가기
-      localUser: undefined,
+      liveName: undefined,
       chatDisplay: "none",
       accessAllowed: false,
     });
@@ -312,25 +307,32 @@ class EnterLive extends Component {
               <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
             </div>
             <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> 26C 라이브 </h1>
+              <h1> Join a video session </h1>
               <form className="form-group" onSubmit={this.joinSession}>
                 <p>
-                  <label>방송 이름 </label>
+                  <label>Participant: </label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="userName"
+                    value={myUserName}
+                    onChange={this.handleChangeUserName}
+                    required
+                  />
                 </p>
                 <p>
                   <label> Session: </label>
-                  {/* <input
+                  <input
                     className="form-control"
                     type="text"
                     id="sessionId"
                     value={mySessionId}
                     onChange={this.handleChangeSessionId}
                     required
-                  /> */}
-                  {this.state.mySessionId}
+                  />
                 </p>
 
-                {/* <p>
+                <p>
                   <label> isPublic : </label>
                   <label class="switch">
                     <input
@@ -341,18 +343,30 @@ class EnterLive extends Component {
                     />
                     <span class="slider"></span>
                   </label>
-                </p> */}
+                </p>
                 <p>
                   <label> liveName: </label>
-                  <div>{this.state.liveName}</div>
-                  {/* <input
+                  <input
                     className="form-control"
                     type="text"
                     id="liveName"
                     value={liveName}
                     onChange={this.handleChangeLiveName}
                     required
-                  /> */}
+                  />
+                </p>
+
+                <p>
+                  <label> 세션 비우기 : </label>
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      id="deleted"
+                      checked={this.state.deleted}
+                      onChange={this.handleChangeDeleted}
+                    />
+                    <span class="slider"></span>
+                  </label>
                 </p>
 
                 <p className="text-center">
@@ -386,11 +400,35 @@ class EnterLive extends Component {
                 onClick={this.switchCamera}
                 value="Switch Camera"
               />
+              {/* <input
+                className="btn btn-large btn-success"
+                type="button"
+                id="buttonSwitchChat"
+                onClick={this.onChat}
+                value="ON/OFF Chat"
+              /> */}
             </div>
 
+            {/* {this.state.mainStreamManager !== undefined ? (
+              <div id="main-video" className="col-md-6">
+                <UserVideoComponent streamManager={this.state.mainStreamManager} />
+              </div>
+            ) : null} */}
             <div id="video-container" className="col-md-6">
+              {/* {this.state.publisher !== undefined ? (
+                <div
+                  className="stream-container col-md-6 col-xs-6"
+                  onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                >
+                  <UserVideoComponent streamManager={this.state.publisher} />
+                </div>
+              ) : null} */}
               {this.state.subscribers.map((sub, i) => (
-                <div key={sub.id} className="stream-container col-md-6 col-xs-6">
+                <div
+                  key={sub.id}
+                  className="stream-container col-md-6 col-xs-6"
+                  onClick={() => this.handleMainVideoStream(sub)}
+                >
                   <span>{sub.id}</span>
                   <UserVideoComponent streamManager={sub} />
                 </div>
@@ -414,12 +452,13 @@ class EnterLive extends Component {
   }
 
   async getToken() {
-    const sessionId = await this.createSession(
-      this.state.mySessionId,
-      this.state.liveName,
-      this.state.isPublic,
-      this.state.deleted
-    );
+    // const sessionId = await this.createSession(
+    //   this.state.mySessionId,
+    //   this.state.liveName,
+    //   this.state.isPublic,
+    //   this.state.deleted
+    // );
+    const sessionId = "SessionA";
     return await this.createToken(this.state.mySessionId);
   }
 
