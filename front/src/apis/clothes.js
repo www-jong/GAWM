@@ -81,9 +81,7 @@ export const maskingImage = async (formData) => {
 export const get_tagging_status = async (productId) => {
     try {
         // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
-		console.log('조회시도',productId)
         const response = await aiApiAxios().get(`/tag/status/${productId}`);
-		console.log("조회결과",response)
         return response; // 응답 객체 반환
     } catch (error) {
         console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
@@ -100,9 +98,7 @@ export const get_tagging_status = async (productId) => {
   export const get_tag = async (productId) => {
     try {
         // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
-		console.log('조회시도',productId)
         const response = await aiApiAxios().get(`/tag/get/${productId}`);
-		console.log("조회결과",response)
         return response; // 응답 객체 반환
     } catch (error) {
         console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
@@ -119,9 +115,7 @@ export const get_tagging_status = async (productId) => {
   export const get_tag_v2 = async (productId) => {
     try {
         // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
-		console.log('조회시도',productId)
         const response = await aiApiAxios().get(`/tag/get_v2/${productId}`);
-		console.log("조회결과",response)
         return response; // 응답 객체 반환
     } catch (error) {
         console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
@@ -138,9 +132,7 @@ export const get_tagging_status = async (productId) => {
   export const get_tag_v3 = async (productId) => {
     try {
         // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
-		console.log('조회시도',productId)
         const response = await aiApiAxios().post(`/get_tags/${productId}`);
-		console.log("조회결과",response)
         return response; // 응답 객체 반환
     } catch (error) {
         console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
@@ -157,7 +149,6 @@ export const get_tagging_status = async (productId) => {
     try {
         // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
         const response = await aiApiAxios().get(`/get_alltag`);
-		console.log("조회결과",response)
         return response; // 응답 객체 반환
     } catch (error) {
         console.error("AI 태깅 상태 조회 중 오류 발생:", error);
@@ -228,7 +219,6 @@ export const getClothesInfo = async (clothesId) => {
         // gawmApiAxios 인스턴스를 사용하여 요청을 보냅니다.
         // URL은 전체 경로를 명시해야 합니다.
         const response = await gawmApiAxios().get(`/clothes/${clothesId}`);
-        console.log("조회 결과:", response);
 		response.data.data.clothesImg=`https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/`+response.data.data.clothesImg
         return response.data; // 응답 데이터 반환
     } catch (error) {
