@@ -76,6 +76,7 @@ public class LookbookController {
                                             @RequestPart("image") List<MultipartFile> images,
                                             @RequestPart("data") LookbookCreateRequest lookbookCreateRequest) {
         final int userId = sessionUser.getId();
+        System.out.println(lookbookCreateRequest.toString());
         int lookbookId = lookbookService.createLookbook(userId, images, lookbookCreateRequest);
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, lookbookId);
     }

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import { useEffect } from "react";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import Live from "./pages/Live/App.jsx";
@@ -25,8 +25,19 @@ import MyPageAccountList from "./pages/MyPage/AccountList";
 import EnterLive from "./pages/Live/EnterLive/App.jsx";
 import Image from "./pages/AddFashion/ImageEdit.jsx";
 // import LiveApp from "./pages/Live/App.jsx";
-
+import { fetchUserInfo  } from "./stores/user";
 function App() {
+	useEffect(
+		() => {
+			const load = async () => {
+				try { await fetchUserInfo(); }
+				catch(error) {}
+			};
+
+			load();
+		}
+	);
+
   return (
     <BrowserRouter>
       <Routes>

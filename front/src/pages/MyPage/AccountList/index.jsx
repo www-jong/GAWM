@@ -6,6 +6,7 @@ import ListGroup from "../../../components/ListGroup";
 import { useEffect, useState } from "react";
 import { getFollowerList, getFollowingList } from "../../../apis/user";
 import { useUserStore } from "../../../stores/user";
+import Gawm from "../../../assets/Gawm.svg";
 
 export default function AccountList() {
 	const pathname = useLocation().pathname;
@@ -79,8 +80,10 @@ export default function AccountList() {
 								<ListItem key={profile.userId} className="flex flex-row gap-4 items-center" link href={""}>
 									<div
 										style={{ "--image-url": `url(${import.meta.env.VITE_CLOTHES_BASE_URL}/${profile.profile_img})` }}
-										className={`size-14 rounded-full ${profile.profile_img ? "bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat" : "bg-[#d9d9d9]"}`}
-									></div>
+										className={`size-14 rounded-full ${profile.profile_img ? "bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat" : "bg-[#d9d9d9] flex flex-row justify-center items-center"}`}
+									>
+										{profile.profile_img ? "" : <img src={Gawm} className="w-1/2" />}
+									</div>
 									<span>{profile.nickname}</span>
 								</ListItem>
 							)

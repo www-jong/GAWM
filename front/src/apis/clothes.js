@@ -109,6 +109,61 @@ export const get_tagging_status = async (productId) => {
         throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
     }
 };
+
+  /**
+ * AI 태그 가져오기
+ * 
+ * @param {string} productId AI 태깅 상태를 조회할 제품의 ID
+ * @returns Promise 객체, AI 태깅 상태 조회 응답을 반환
+ */
+  export const get_tag_v2 = async (productId) => {
+    try {
+        // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
+		console.log('조회시도',productId)
+        const response = await aiApiAxios().get(`/tag/get_v2/${productId}`);
+		console.log("조회결과",response)
+        return response; // 응답 객체 반환
+    } catch (error) {
+        console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
+
+  /**
+ * AI 태그 가져오기
+ * 
+ * @param {string} productId AI 태깅 상태를 조회할 제품의 ID
+ * @returns Promise 객체, AI 태깅 상태 조회 응답을 반환
+ */
+  export const get_tag_v3 = async (productId) => {
+    try {
+        // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
+		console.log('조회시도',productId)
+        const response = await aiApiAxios().post(`/get_tags/${productId}`);
+		console.log("조회결과",response)
+        return response; // 응답 객체 반환
+    } catch (error) {
+        console.error("AI 태깅 상태 조회 중 오류 발생:",productId, error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
+
+  /**
+ * AI 태그 가져오기
+ * 
+ * @returns Promise 객체, AI 태깅 상태 조회 응답을 반환
+ */
+  export const get_alltag = async () => {
+    try {
+        // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 상태 조회 엔드포인트로 GET 요청
+        const response = await aiApiAxios().get(`/get_alltag`);
+		console.log("조회결과",response)
+        return response; // 응답 객체 반환
+    } catch (error) {
+        console.error("AI 태깅 상태 조회 중 오류 발생:", error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+};
 /**
  * 옷 이미지를 AI 서버에 업로드하여 태깅 정보를 받아오는 함수
  * 

@@ -32,9 +32,7 @@ export const fetchLookbookById = (lookbookId) => {
  * @returns {Promise} 룩북 등록 결과를 반환하는 Promise 객체
  */
 export const createLookbook = (formData) => {
-    return axios.post(`${prefix}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    return axios.post(`${prefix}`, formData);
 };
 
 /**
