@@ -7,6 +7,7 @@ import AllLookComponent from './AllLookComponent.jsx';
 import LiveComponent from './LiveComponent.jsx';
 import {get_top_list,fetchLookbooks} from '../../apis/lookbook'
 import { gawmApiAxios } from '../../utilities/http-commons';
+import Gawm from "../../assets/Gawm.svg"; 
 const gawmapiAxios = gawmApiAxios()
 export default function Browse() {
     const [todayLooks, setTodayLooks] = useState([]);
@@ -75,7 +76,7 @@ export default function Browse() {
                             key={look.lookbook_id}
                             lookImage={look.lookbook_img}
                             userId={look.user_id}
-                            profileImage={look.profile_img}
+                            profileImage={look.profile_img ? import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.profile_img : Gawm}
                         />
                     ))}
                 </div>
@@ -93,7 +94,7 @@ export default function Browse() {
                             key={look.lookbookId}
                             lookImage={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.images[0]}
                             userId={look.userNickname}
-                            profileImage={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.userProfileImg}
+                            profileImage={look.userProfileImg?import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.userProfileImg:Gawm}
                         />
                     ))}
                 </div>
