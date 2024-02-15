@@ -122,14 +122,14 @@ export default function AddLookBook() {
         <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
           <TagsInput onTagsChange={handleTagsChange} />
-          <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="(개발용)태그를 입력하세요, 쉼표로 구분" />
+          <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="쉼표와 엔터로 구분됩니다." />
         </div>
 
         <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex flex-col justify-between">
           <p className="text-lg font-semibold cursor-pointer">코디한 옷</p>
           <img className="mt-2" onClick={handleModalClick} src={AddClothing} alt="함께 입은 옷 추가" />
-          <input className="mt-2" type="text" ref={clothesInput} id="clothes" placeholder="(개발용)옷 ID를 입력하세요, 쉼표로 구분" />
+          <input className="mt-2" type="text" ref={clothesInput} id="clothes" placeholder="옷 ID를 입력하세요, 쉼표와 엔터로 구분됩니다." />
         </div>
 
 
