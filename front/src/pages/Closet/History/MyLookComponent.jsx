@@ -1,11 +1,19 @@
 import NoLookBookImg from '@/assets/images/no_lookbook.svg';
 import React, { useState, useEffect } from 'react';
 import { fetchMyLookbooks } from '../../../apis/lookbook';
+import { useNavigate } from 'react-router-dom';
+
 
 
 export default function History() {
     const [lookbooks, setLookbooks] = useState([]); // 룩북 데이터를 저장할 상태
 	const [isLoading, setIsLoading] = useState(false);
+
+    const navigate = useNavigate();
+
+    const handleLookbookClick = (lookbookId) => {
+        navigate(`/look/${lookbookId}`);
+    };
 
     useEffect(() => {
         // 룩북 데이터를 비동기로 불러오는 함수
@@ -39,7 +47,7 @@ export default function History() {
         {lookbooks.length > 0 ? (
             <div className="grid grid-cols-3 gap-1">
                 {lookbooks.map((lookbook) => (
-                    <div key={lookbook.lookbookId} className="overflow-hidden">
+                    <div key={lookbook.lookbookId} className="overflow-hidden" onClick={() => handleLookbookClick(lookbook.lookbookId)}>
                         <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+lookbook.image} alt={lookbook.title} className="aspect-w-1 aspect-h-1  object-cover w-full h-full" />
                         <p className="text-center"> {lookbook.title}</p>
                     </div>
