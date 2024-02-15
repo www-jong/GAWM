@@ -28,11 +28,9 @@ import Image from "./pages/AddFashion/ImageEdit.jsx";
 
 function App() {
   return (
-    <BrowserRouter basename="/gawm">
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-
           <Route path="live" element={<Live />} />
           <Route path="enter" element={<EnterLive />} />
           <Route path="browse" element={<Browse />} />
@@ -67,7 +65,6 @@ function App() {
         <Route path="landing" element={<Landing />} />
         <Route path="loading" element={<Loading />} />
       </Routes>
-    </BrowserRouter>
   );
 }
 
