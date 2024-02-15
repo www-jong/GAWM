@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -131,6 +132,27 @@ public class LookbookController {
             @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
     ) {
         PageImpl<LookbookThumbnailResponse> lookbooks = lookbookService.getSearchLookbook(keyword, pageable);
+
+        return ResponseUtil.buildPagingResponse(
+                HttpStatus.OK,
+                lookbooks.getContent(),
+                lookbooks.isFirst(),
+                lookbooks.isLast(),
+                pageable.getPageNumber(),
+                lookbooks.getTotalPages(),
+                lookbooks.getSize(),
+                true,
+                false,
+                false
+        );
+    }
+
+    @PostMapping("/tag")
+    public ResponseEntity<PagingResponse> getSearchLookbookByTag(
+            @RequestBody ArrayList<String> tags,
+            @PageableDefault(size = DEFAULT_SIZE, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) final Pageable pageable
+    ) {
+        PageImpl<LookbookThumbnailResponse> lookbooks = lookbookService.getSearchLookbookByTag(tags, pageable);
 
         return ResponseUtil.buildPagingResponse(
                 HttpStatus.OK,
