@@ -10,21 +10,30 @@ from fastapi.responses import JSONResponse,StreamingResponse
 from PIL import Image
 import asyncio, sys, io, uvicorn, os,datetime
 from dotenv import load_dotenv
-from transformers import pipeline
 from math import sqrt
 from util.image_util import check_status_until_done,get_tagging_dto,resize_image,submit_product_info,get_tagging_info
 from util.s3_util import upload_file_to_s3
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from util.mariadb_util import colors_tag_add,colors_tag_get,materials_tag_add,materials_tag_get,patterns_tag_add,patterns_tag_get
+import aiomysql
+import asyncio
 
 load_dotenv()
 
-model_directory = "./classifi_model2"
-if not os.path.exists(model_directory):
-    os.makedirs(model_directory)  # 디렉토리가 없으면 생성
-model_files = os.listdir(model_directory)
-
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+DB_CONFIG={
+    os.getenv("OMNICOMMERS_TAGGING_KEY")
+}
+
+# MariaDB에서 태그 목록을 비동기적으로 가져오는 함수
+async def fetch_tags():
+    async with aiomysql.create_pool(**DB_CONFIG) as pool:
+        async with pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cur:
+                await cur.execute("SELECT * FROM colors_tag")
+                tags = await cur.fetchall()
+                return tags
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
@@ -34,13 +43,6 @@ async def app_lifespan(app: FastAPI):
     dummy_bytes = io.BytesIO()
     dummy_image.save(dummy_bytes, format="PNG")
     app.state.rembg_session = new_session(model_name="u2netp")
-    if len(model_files):
-        app.state.classifi_model=pipeline("object-detection", model="./classifi_model2")
-    else:
-        print('model download')
-        model=pipeline("image-classification", model="Monasterolo21/clothes-class")
-        model.save_pretrained(model_directory)
-        app.state.classifi_model=model
     remove(dummy_bytes.getvalue())
     print("AI Model Loaded")
     yield
@@ -118,12 +120,27 @@ async def past_tagging(product_id: str):
     if not product_id:
         raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
     try:
-        tagging_info = await get_tagging_info(product_id)# 완료되었을 경우 태그값 조회
+        tagging_info = await get_tagging_info(product_id,"KO")# 완료되었을 경우 태그값 조회
         result=get_tagging_dto(tagging_info)
         return JSONResponse(status_code=200,content=result)
     except Exception as e:
         return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"+e})
 
+#omnicommers에서 태그가져오기
+@prefix_router.get("/tag/get_v2/{product_id}")
+async def past_tagging2(product_id: str):
+    if not product_id:
+        raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
+    try:
+        tagging_info_KO = await get_tagging_info(product_id,"KO")# 완료되었을 경우 태그값 조회
+        result_KO=get_tagging_dto(tagging_info_KO)
+        tagging_info_EN = await get_tagging_info(product_id,"EN")# 완료되었을 경우 태그값 조회
+        
+        result_EN=get_tagging_dto(tagging_info_EN)
+        res={"KO":result_KO,"EN":result_EN}  
+        return JSONResponse(status_code=200,content=res)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"+e})
 
 @prefix_router.post("/tagging/")
 async def upload_image(image_file: UploadFile = File(...)):
@@ -151,13 +168,53 @@ async def upload_image(image_file: UploadFile = File(...)):
     else:
         return result
 
-@prefix_router.post("/test/")
-async def test(image_file: UploadFile = File(...)):
-    image_bytes = await image_file.read()
-    image = Image.open(io.BytesIO(image_bytes))
-    image = resize_image(image)
-    result=app.state.classifi_model(image)
-    return result
+@prefix_router.post("/get_tags/{product_id}")
+async def test(product_id: str):
+    if not product_id:
+        raise JSONResponse(status_code=400, content={"status":500,"name":"error","message": "product_id가 없습니다. :"})
+    try:
+        tagging_info_KO = await get_tagging_info(product_id,"KO")# 완료되었을 경우 태그값 조회
+        result_KO=get_tagging_dto(tagging_info_KO)
+        tagging_info_EN = await get_tagging_info(product_id,"EN")# 완료되었을 경우 태그값 조회
+        result_EN=get_tagging_dto(tagging_info_EN)
+        filtered_colors=[]
+        filtered_patterns=[]
+        filtered_materials=[]
+        for i in range(min(len(result_KO['data']['colors']),len(result_EN['data']['colors']))):
+            filtered_colors.append(({'name':result_KO['data']['colors'][i],'colorCode':result_EN['data']['colors'][i]}))
+        for i in range(len(result_KO['data']['patterns'])):
+            filtered_patterns.append(({'name':result_KO['data']['patterns'][i]}))
+        for i in range(len(result_KO['data']['materials'])):
+            filtered_materials.append(({'name':result_KO['data']['materials'][i]}))
+        print('1',filtered_colors)
+        print('2',filtered_patterns)
+        print('3',filtered_materials)
+        try:
+            await colors_tag_add(filtered_colors)
+            await patterns_tag_add(filtered_patterns)
+            await materials_tag_add(filtered_materials)
+        except Exception as e:
+            print(e)
+            return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 등록중 오류가 발생했습니다. :"+str(e)})
+
+        res={"colors":filtered_colors,"patterns":filtered_patterns,"materials":filtered_materials}  
+        print(res)
+        return JSONResponse(status_code=200,content=res)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"+str(e)})
+
+@prefix_router.get("/get_alltag")
+async def test2():
+    try:
+        filtered_colors=await colors_tag_get()
+        filtered_patterns=await patterns_tag_get()
+        filtered_materials=await materials_tag_get()
+        res={"colors":filtered_colors,"patterns":filtered_patterns,"materials":filtered_materials}  
+        print(res)
+        return JSONResponse(status_code=200,content=res)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status":500,"name":"error","message": "태깅정보 조회중 오류가 발생했습니다. :"+str(e)})
+
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):

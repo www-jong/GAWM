@@ -40,7 +40,8 @@ export default function EditLookBook({ lookbookId, onClose, }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex z-50" onClick={onClose}>
+        <div className="fi
+        xed inset-0 bg-black bg-opacity-50 flex z-50" onClick={onClose}>
             <div ref={modalRef} className="fixed bottom-0 left-0 right-0 p-4 bg-white shadow-lg flex flex-col transition duration-300 ease-out translate-y-full" onClick={handleModalContentClick}>
                 <div className="flex flex-col w-full my-2 gap-4 font-semibold">
                     <button onClick={handleEdit} className="text-left text-base">수정하기</button>

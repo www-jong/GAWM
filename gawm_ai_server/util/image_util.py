@@ -60,13 +60,13 @@ async def check_status_until_done(product_id, attempts=20, delay=2):
             await asyncio.sleep(delay)  
     return {"error": "Status check attempts exceeded or failed."}
 
-async def get_tagging_info(product_id):
+async def get_tagging_info(product_id,lang="KO"):
     OMNICOMMERS_URL=os.getenv("OMNICOMMERS_URL")
     url = f"{OMNICOMMERS_URL}tagging/tags/{product_id}"
     headers = {
         "X-Api-Key": os.getenv("OMNICOMMERS_TAGGING_KEY"),
         "Content-Type": "application/json",
-        "Accept-Language": "KO"
+        "Accept-Language": lang
     }
 
     async with httpx.AsyncClient() as client:

@@ -78,7 +78,8 @@ export default function styleLogSelect() {
   useEffect(() => {
     const fetchClothesData = async () => {
       try {
-        const { data } = await getAllClothesInfo();
+        const response = await getAllClothesInfo();
+        const data = response.data.filter(item => !item.isDeleted);
         const grouped = data.reduce((acc, item) => {
           const category = item.mcategory;
           if (!acc[category]) {
@@ -185,6 +186,7 @@ export default function styleLogSelect() {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = import.meta.env.VITE_CLOTHES_BASE_URL + '/' + item.clothesImg;
+    console.log(img)
     img.onload = () => {
       // 이미 선택된 옷이 있는지 확인
       const isAlreadySelectedIndex = selectedClothes.findIndex(clothe => clothe.clothesId === item.clothesId);
@@ -192,9 +194,8 @@ export default function styleLogSelect() {
       // 새로 선택된 옷을 설정하고, 기존에 선택된 옷이 있다면 맨 앞으로 이동
       if (isAlreadySelectedIndex !== -1) {
         const updatedClothes = [...selectedClothes];
-        const [existingClothe] = updatedClothes.splice(isAlreadySelectedIndex, 1); // 선택된 옷 제거
-        updatedClothes.push({ ...existingClothe, isSelected: true }); // 맨 뒤로 추가
-        setSelectedClothes(updatedClothes.map((clothe, index) => ({ ...clothe, isSelected: index === updatedClothes.length - 1 }))); // 마지막 옷만 isSelected를 true로 설정
+        updatedClothes.splice(isAlreadySelectedIndex, 1); // 선택된 옷 제거
+        setSelectedClothes(updatedClothes); // 업데이트된 배열로 상태 업데이트
       } else {
         // 새로운 옷을 선택한 경우
         const newSelectedClothe = { ...item, image: img, position: { x: 50, y: 50 }, scale: 0.4, isSelected: true };

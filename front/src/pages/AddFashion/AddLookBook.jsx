@@ -1,12 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState,useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/BackButton.jsx';
 import TagsInput from "@/components/TagsInput.jsx"
 import AddClothing from '@/assets/images/AddClothing.svg';
+import plus_dark from '@/assets/images/plus_dark.png';
 import AddClothingModal from '@/components/Modal/AddClothingModal.jsx';
 import { createLookbook } from '@/apis/lookbook.js'
+import {getAllClothesInfo} from '@/apis/clothes.js'
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCards } from 'swiper/modules';
 
+import 'swiper/css';
+import 'swiper/css/effect-cards';
 
+//import './StyleLog.module.css';
 export default function AddLookBook() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,6 +26,45 @@ export default function AddLookBook() {
   const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
   const [tags, setTags] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  const [clothesData, setClothesData] = useState(null);
+  const [groupedClothes, setGroupedClothes] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedClothes, setSelectedClothes] = useState([]);
+
+  useEffect(()=> {
+    console.log(selectedClothes)
+  },[selectedClothes])
+  const handleSelectedClothesChange = (newSelectedClothes) => {
+    setSelectedClothes(newSelectedClothes);
+  };
+  useEffect(() => {
+    const fetchClothesData = async () => {
+      try {
+        const tmpdata = await getAllClothesInfo();
+        const data = tmpdata.data.filter(item => !item.isDeleted);
+					
+        const grouped = data.reduce((acc, item) => {
+          const category = item.mcategory;
+          if (!acc[category]) {
+            acc[category] = [];
+          }
+          acc[category].push(item);
+          return acc;
+        }, {});
+
+        setClothesData(data);
+        setGroupedClothes(grouped);
+        setSelectedCategory(Object.keys(grouped)[0]);
+        console.log(data)
+      } catch (error) {
+        console.error('Clothes data fetching failed:', error);
+      }
+    };
+
+    fetchClothesData();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -53,17 +99,19 @@ export default function AddLookBook() {
 
     const formData = new FormData();
     formData.append('image', selectedFile);
-
+    const clothesIds = selectedClothes.map(clothe => clothe.clothesId);
+   
     const data = {
-      isPublic: isPublic, // 기본 비공개로
-      clothes: clothesInput.current.value.split(',').map(id => parseInt(id.trim())), // 옷 id 배열
+      isPublic: isPublic ? "true" : "false", // 기본 비공개로
+      clothes: clothesIds, // 옷 id 배열
       tags: tags
     };
-
+    console.log(JSON.stringify(data))
     formData.append('data', JSON.stringify(data));
 
 
     try {
+      console.log(formData)
       const response = await createLookbook(formData);
 
       if (response.status === 200) {
@@ -116,16 +164,38 @@ export default function AddLookBook() {
 
         <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex flex-col justify-between">
-          <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
+          <div className="flex flex-row justify-start">
+          <p className="text-lg font-semibold cursor-pointer w-auto">태그</p>
+          <p className="text-gray-600 text-sm ml-1" >쉼표와 엔터로 구분됩니다.</p>
+          </div>
+          <div>
           <TagsInput onTagsChange={handleTagsChange} />
+          {/* <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="쉼표와 엔터로 구분됩니다." /> */}
+          </div>
         </div>
 
         <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex flex-col justify-between">
-          <p className="text-lg font-semibold cursor-pointer">코디한 옷</p>
-          <img className="mt-2" onClick={handleModalClick} src={AddClothing} alt="함께 입은 옷 추가" />
-          <input className="mt-2" type="text" ref={clothesInput} id="clothes" placeholder="(개발용)옷 ID를 입력하세요, 쉼표로 구분" />
-        </div>
+  <p className="text-lg font-semibold cursor-pointer">코디한 옷</p>
+  <div>
+  {selectedClothes.length > 0 ? (
+  <Swiper slidesPerView={3} spaceBetween={10} className="mySwiper">
+    {selectedClothes.map((clothe, index) => (
+      <SwiperSlide key={index}>
+        <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/' + clothe.clothesImg} alt={clothe.name} className="w-24 h-24 object-cover" />
+      </SwiperSlide>
+    ))}
+    <SwiperSlide>
+      <div className="flex justify-center items-center w-24 h-24">
+        <img onClick={handleModalClick} src={plus_dark} alt="함께 입은 옷 추가" className="w-16 h-16 object-cover" />
+      </div>
+    </SwiperSlide>
+  </Swiper>
+  ) : (
+    <img className="mt-2 w-screen h-auto" onClick={handleModalClick} src={AddClothing} alt="함께 입은 옷 추가" />
+  )}
+  </div>
+</div>
 
 
 
@@ -139,7 +209,12 @@ export default function AddLookBook() {
           </button>
         </div>
       </form>
-      {isModalOpen && <AddClothingModal onClose={handleCloseModal}/>}
+      {isModalOpen && <AddClothingModal 
+      onClose={handleCloseModal}
+      groupedClothesUse={groupedClothes}
+      onSelectedClothesChange={handleSelectedClothesChange}
+      selectedClothes={selectedClothes}
+      />}
     </>
   );
 }

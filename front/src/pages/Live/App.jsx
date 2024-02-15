@@ -1,15 +1,15 @@
-import axios from "axios";
-import React, { Component } from "react";
+import axios from 'axios';
+import React, { useEffect, Component } from 'react';
 import "./App.css";
 import UserVideoComponent from "./UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
 import UserModel from "./models/user-model.jsx";
-import ChatComponent from "./chat/ChatComponent.jsx";
-// import { useHistory } from "react-router-dom";
-// import { withRouter } from "react-router-dom";
-import { useNavigate, Outlet } from "react-router-dom";
+import ChatComponent from "./Chat/ChatComponent.jsx";
+import { userInfo } from "../../apis/user"
+import { fetchUserInfo, useUserStore } from '../../stores/user.js';
 
 var localUser = new UserModel();
+
 const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
 
@@ -141,7 +141,6 @@ class Live extends Component {
     event.preventDefault();
     if (this.state.mySessionId && this.state.myUserName) {
       const token = await this.getToken();
-      console.log(token);
       this.setState({
         token: token,
         session: true,
@@ -155,8 +154,7 @@ class Live extends Component {
         session: this.OV.initSession(),
       },
       async () => {
-        var mySession = this.state.session;
-
+        var mySession = this.state.session; 
         mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
           var subscribers = this.state.subscribers;
@@ -303,7 +301,6 @@ class Live extends Component {
     const liveName = this.state.liveName;
     const deleted = this.state.deleted;
     var chatDisplay = { display: this.state.chatDisplay };
-    // const navigate = useNavigate();
 
     return (
       <div className="container">
@@ -316,7 +313,7 @@ class Live extends Component {
               <h1> 26도씨 라이브 생성 </h1>
               <h1> 방정보 </h1>
               <form className="form-group" onSubmit={this.joinSession}>
-                {/* <p>
+                <p>
                   <label>Participant: </label>
                   <input
                     className="form-control"
@@ -326,8 +323,8 @@ class Live extends Component {
                     onChange={this.handleChangeUserName}
                     required
                   />
-                </p> */}
-                {/* <p>
+                </p>
+                <p>
                   <label> Session: </label>
                   <input
                     className="form-control"
@@ -503,4 +500,51 @@ class Live extends Component {
   }
 }
 
+
 export default Live;
+
+
+
+{/* <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-4xl font-bold text-gray-800">26°C 라이브</p>
+          <div className="space-x-1">
+            <span className="bg-red-200 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-400 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-600 rounded-full h-3 w-3 inline-block"></span>
+          </div>
+        </div>
+        <div className="mb-4">
+          <h2 className="text-lg text-gray-800 font-bold mb-2">방 정보</h2>
+          <input
+            className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="room-title"
+            type="text"
+            placeholder="제목을 입력해주세요"
+          />
+        </div>
+        <div className="mb-6">
+          <h2 className="text-lg text-gray-800 font-bold mb-2">공개 설정</h2>
+          <select
+            className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline"
+            id="room-visibility"
+          >
+            <option>전체 공개</option>
+            <option>친구 공개</option>
+          </select>
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+          >
+            라이브 시작
+          </button>
+          <button
+            className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+            type="button"
+          >
+            취소
+          </button>
+        </div>
+      </div> */}

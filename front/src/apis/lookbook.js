@@ -16,6 +16,18 @@ export const fetchLookbooks = ({ page = 0, size = 10, sort = 'createdAt,desc' })
 };
 
 /**
+ * 룩북 전체 조회
+ * 
+ * @param {Object} options 조회 옵션 (page, size, sort)
+ * @returns {Promise} 조회된 룩북 목록을 반환하는 Promise 객체
+ */
+export const fetchMyLookbooks = ({ page = 0, size = 10, sort = 'createdAt,desc' }) => {
+    return axios.get(`${prefix}/my_list`, {
+        params: { page, size, sort }
+    });
+};
+
+/**
  * 룩북 단일 조회
  * 
  * @param {number|string} lookbookId 조회할 룩북의 ID
@@ -32,9 +44,7 @@ export const fetchLookbookById = (lookbookId) => {
  * @returns {Promise} 룩북 등록 결과를 반환하는 Promise 객체
  */
 export const createLookbook = (formData) => {
-    return axios.post(`${prefix}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    return axios.post(`${prefix}`, formData);
 };
 
 /**

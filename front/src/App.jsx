@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import { useEffect } from "react";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import Live from "./pages/Live/App.jsx";
@@ -24,8 +24,14 @@ import MyPageSettingsPropertySetter from "./pages/MyPage/Settings/PropertySetter
 import MyPageAccountList from "./pages/MyPage/AccountList";
 import EnterLive from "./pages/Live/EnterLive/App.jsx";
 import Image from "./pages/AddFashion/ImageEdit.jsx";
+<<<<<<< HEAD
 
+=======
+// import LiveApp from "./pages/Live/App.jsx";
+import { fetchUserInfo  } from "./stores/user";
+>>>>>>> f0edfc77d85cd5480381bd96323e6edd0fad6a1c
 function App() {
+
   return (
     <BrowserRouter>
       <Routes>
