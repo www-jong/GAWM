@@ -5,7 +5,7 @@ import ListItem from "../../../components/ListGroup/ListItem";
 import { deleteAccount, fetchUserInfo, useUserStore } from "../../../stores/user";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { updateProfileImge } from "../../../apis/user";
+import { logout, updateProfileImge } from "../../../apis/user";
 
 /**
  * 마이페이지 내 설정 페이지를 생성합니다
@@ -46,6 +46,12 @@ export default function Settings() {
 		"FEMALE": "여성",
 		"MALE": "남성"
 	};
+
+	// 로그아웃 시도 시 처리
+	const onLogout = async () => {
+		await logout();
+		navigate("/landing");
+	}
 
 	// 회원 탈퇴 시도 시 처리
 	const onAccountDeletion = async () => {
@@ -119,7 +125,7 @@ export default function Settings() {
 				</ListItem>
 				{/* TODO: 로그아웃, 회원탈퇴 링크 추가 */}
 				<ListGroup div>
-					<ListItem link href={`${import.meta.env.VITE_GAWM_API_URL}/user/logout`}>
+					<ListItem div className="cursor-pointer" onClick={onLogout}>
 						로그아웃
 					</ListItem>
 					<ListItem div className="cursor-pointer" onClick={onAccountDeletion}>

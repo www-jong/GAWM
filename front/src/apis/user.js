@@ -16,7 +16,7 @@ const prefix = "user";
  * @returns Promise 객체
  */
 export function logout() {
-	return axios.post("logout");
+	return axios.post(`${prefix}/logout`);
 }
 
 /**
