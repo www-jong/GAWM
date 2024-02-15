@@ -15,16 +15,20 @@ export default function ImageEdit() {
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
     const [history, setHistory] = useState([]);
+    const [eraseSize, setEraseSize] = useState(20);
 
     const [cropStart, setCropStart] = useState(null);
     const [cropEnd, setCropEnd] = useState(null);
-
+    const [cropHistory, setCropHistory] = useState([]);
+    
+    const [isCropped, setIsCropped] = useState(false);
     const croppingRef = useRef(false);
 
     const originalImageRef = useRef(new Image());
     const processedImageURL = location.state?.processedImageURL || TestImage;
     const originalImageURL = location.state?.originalImageURL || TestImage;
     const product_id = location.state?.product_id || 'null';
+    
     //const product_id=location.state?.product_id || '';
 
     const getActualPosition = (canvasDom, touchEvent) => {
@@ -40,6 +44,7 @@ export default function ImageEdit() {
         const canvas = canvasRef.current;
         const imageData = canvas.toDataURL();
         setHistory([...history, imageData]);
+        setCropHistory([...cropHistory, isCropped]); // 현재 크롭 상태 저장
     };
 
     //원본이미지 로딩용
@@ -72,23 +77,18 @@ export default function ImageEdit() {
 
         // M지우개 기능
         const restoreAtPosition = (x, y, eraseSize) => {
-            // 현재 캔버스의 크기와 원본 이미지의 실제 크기 사이의 비율을 계산합니다.
             const scaleX = originalImageRef.current.naturalWidth / canvasRef.current.width;
             const scaleY = originalImageRef.current.naturalHeight / canvasRef.current.height;
         
-            // 캔버스 상의 위치를 원본 이미지 상의 실제 위치로 변환합니다.
             const originalX = x * scaleX;
             const originalY = y * scaleY;
         
-            // 캔버스 상의 지우개 크기를 원본 이미지 상의 실제 크기로 변환합니다.
             const originalEraseSizeX = eraseSize * scaleX;
             const originalEraseSizeY = eraseSize * scaleY;
         
-            // 원본 이미지에서 복원해야 할 영역의 위치와 크기를 계산합니다.
             const sourceX = originalX - originalEraseSizeX / 2;
             const sourceY = originalY - originalEraseSizeY / 2;
         
-            // 복원 영역을 캔버스에 그립니다.
             contextRef.current.drawImage(
                 originalImageRef.current,
                 sourceX, sourceY, originalEraseSizeX, originalEraseSizeY, // 원본 이미지에서의 영역
@@ -100,12 +100,12 @@ export default function ImageEdit() {
         const handleTouchMove = (event) => {
             //const touchPos = getTouchPos(canvas, event);
             const actualPos = getActualPosition(canvas, event)
-            const eraseSize = calculateActualSize(20);
+            const adjustedEraseSize = calculateActualSize(eraseSize);
             if (selectedTool === 'erase') { // 지우개 작동
-                eraseAtPosition(actualPos.x, actualPos.y, eraseSize);
+                eraseAtPosition(actualPos.x, actualPos.y, adjustedEraseSize);
             }
             if (selectedTool === 'maskingErase') { // M지우개 작동
-                restoreAtPosition(actualPos.x, actualPos.y, eraseSize);
+                restoreAtPosition(actualPos.x, actualPos.y, adjustedEraseSize);
             }
             event.preventDefault(); // 스크롤 등 기본 이벤트 방지
         };
@@ -262,8 +262,15 @@ export default function ImageEdit() {
         context.drawImage(croppedCanvas, 0, 0, width, height, dx, dy, newWidth, newHeight);
 
         // 새로운 이미지 상태를 저장합니다.
+        
         saveCanvasState();
+        setIsCropped(true);
     };
+    // 크롭 도구 사용하여 크롭 작업 완료 시 호출
+const completeCrop = () => {
+    setIsCropped(true); // 크롭 상태를 true로 설정
+    saveCanvasState(); // 캔버스 상태 및 크롭 상태 저장
+};
 
 
     const handleToolSelect = async (tool) => {
@@ -303,6 +310,11 @@ export default function ImageEdit() {
         setSelectedTool(tool);
     };
 
+        // 지우개 크기 조절용
+        const handleEraseSizeChange = (event) => {
+            setEraseSize(parseInt(event.target.value, 10));
+            console.log(event.target.value)
+        };
     const isToolSelected = (tool) => {
         return selectedTool === tool;
     }
@@ -327,9 +339,16 @@ export default function ImageEdit() {
 
     // 마지막 행동 되돌리기
     const undoLastAction = () => {
-        if (history.length <= 1) return; // 초기 상태 이외에 되돌릴 상태가 없음
+        if (history.length <= 1) {
+            return}; // 초기 상태 이외에 되돌릴 상태가 없음
         const prevState = history[history.length - 2];
+        const newCropHistory = cropHistory.slice(0, -1);
         setHistory(history.slice(0, -1)); // 마지막 상태 제거
+        setCropHistory(newCropHistory);
+
+        // 마지막 크롭 상태로 복원
+        setIsCropped(newCropHistory[newCropHistory.length - 1] || false);
+
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
         const image = new Image();
@@ -370,19 +389,31 @@ export default function ImageEdit() {
                 ></div>
             </div>
 
+            {['erase', 'masking', 'maskingErase'].includes(selectedTool) && (
+                <div className="flex justify-center p-4">
+                    <input
+                        type="range"
+                        min="1"
+                        max="100"
+                        value={eraseSize}
+                        onChange={handleEraseSizeChange}
+                        className="w-full"
+                    />
+                </div>
+            )}
             <div className="bg-gray-100 p-2 flex justify-around items-center mt-auto">
                 {/* Tool buttons */}
                 {[
                     { tool: 'crop', icon: CropIcon, alt: '크롭' },
                     { tool: 'erase', icon: EraseIcon, alt: '지우개' },
                     { tool: 'masking', icon: MaskingIcon, alt: '마스킹' },
-                    { tool: 'maskingErase', icon: MaskingEraseIcon, alt: 'M지우개' },
+                    { tool: 'maskingErase', icon: MaskingEraseIcon, alt: 'M지우개',disabled: isCropped },
                     { tool: 'doBack', icon: DoBackIcon, alt: '되돌리기' }
-                ].map(({ tool, icon, alt }) => (
+                ].map(({ tool, icon, alt, disabled }) => (
                     <button
                         key={tool}
-                        onClick={() => handleToolSelect(tool)}
-                        className={`flex flex-col items-center ${isToolSelected(tool) ? 'bg-gray-300' : ''}`}
+                        onClick={() => !disabled && handleToolSelect(tool)}
+                        className={`flex flex-col items-center ${isToolSelected(tool) ? 'bg-gray-300' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         <img src={icon} alt={alt} className="w-8 h-8" />
                         <span className="text-xs mt-1">{alt}</span>

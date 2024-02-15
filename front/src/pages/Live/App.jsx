@@ -1,368 +1,493 @@
-import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import React, { Component } from 'react';
-import './App.css';
-import UserVideoComponent from './UserVideoComponent.jsx';
-import cookies from 'js-cookie';
+import React, { useEffect, Component } from 'react';
+import "./App.css";
+import UserVideoComponent from "./UserVideoComponent.jsx";
+import { OpenVidu } from "openvidu-browser";
+import UserModel from "./models/user-model.jsx";
+import ChatComponent from "./Chat/ChatComponent.jsx";
+import { userInfo } from "../../apis/user"
+import { fetchUserInfo, useUserStore } from '../../stores/user.js';
 
-const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://i10e203.p.ssafy.io/';
+var localUser = new UserModel();
+
+const APPLICATION_SERVER_URL =
+  process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
 
 class Live extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            mySessionId: 'SessionA',
-            myUserName: 'Participant' + Math.floor(Math.random() * 100),
-            session: undefined,
-            mainStreamManager: undefined,
-            publisher: undefined,
-            subscribers: [],
-            isPublic : undefined,
-            liveName: "26C 라이브 이름",
-            deleted: false,
-        };
+    this.state = {
+      mySessionId: "세션이 자동 생성 됩니다!",
+      myUserName: "Participant" + Math.floor(Math.random() * 100),
+      session: undefined,
+      mainStreamManager: undefined,
+      publisher: undefined,
+      subscribers: [],
+      liveName: "26C 라이브 이름",
+      isPublic: true,
+      deleted: false,
+      token: "initial token",
+      localUser: undefined,
+      userId : undefined,
+      userNickname : undefined,
+      chatDisplay: "block",
+      accessAllowed: false,
+    };
+    this.handleLoadUserData();
 
-        // Bind this to the event handlers
-        this.joinSession = this.joinSession.bind(this);
-        this.leaveSession = this.leaveSession.bind(this);
-        this.switchCamera = this.switchCamera.bind(this);
-        this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-        this.handleChangeUserName = this.handleChangeUserName.bind(this);
-        this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
-        this.onbeforeunload = this.onbeforeunload.bind(this);
-        this.handleChangeIspublic = this.handleChangeIspublic.bind(this);
-        this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
-        this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
+    // Bind this to the event handlers
+    this.joinSession = this.joinSession.bind(this);
+    this.leaveSession = this.leaveSession.bind(this);
+    this.switchCamera = this.switchCamera.bind(this);
+    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
+    this.handleLoadSessionId = this.handleLoadSessionId.bind(this);
+    this.handleChangeUserName = this.handleChangeUserName.bind(this);
+    this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
+    this.onbeforeunload = this.onbeforeunload.bind(this);
+    this.handleChangeIspublic = this.handleChangeIspublic.bind(this);
+    this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
+    this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
+    this.handleChangeToken = this.handleChangeToken.bind(this);
+    this.handleLoadUserData = this.handleLoadUserData.bind(this);
+    this.toggleChat = this.toggleChat.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener("beforeunload", this.onbeforeunload);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("beforeunload", this.onbeforeunload);
+  }
+
+  onbeforeunload(event) {
+    this.leaveSession();
+  }
+
+  handleLoadSessionId(currentUserId, currentUserNickname) {
+    console.log(currentUserId, currentUserNickname);
+    const liveRoomSession = this.createBase64LiveSessionId(currentUserId, currentUserNickname); //1
+    console.log("liveRoomID: ", liveRoomSession );
+    this.setState({
+      mySessionId: liveRoomSession
+    });
+  }
+
+  handleChangeSessionId(e) {
+    this.setState({
+      mySessionId: e.target.value,
+    });
+  }
+  
+  handleChangeLiveName(e) {
+    this.setState({
+      liveName: e.target.value,
+    });
+  }
+
+  handleChangeToken(e) {
+    this.setState({
+      token: e.target.value,
+    });
+  }
+
+  handleChangeIspublic(e) {
+    this.setState({
+      isPublic: e.target.value,
+    });
+  }
+
+  handleChangeDeleted(event) {
+    const isChecked = event.target.checked;
+    this.setState({ deleted: isChecked });
+  }
+
+  handleChangeUserName(e) {
+    this.setState({
+      myUserName: e.target.value,
+    });
+  }
+
+  handleLoadUserData(e) {
+    let currentUserId;
+    let currentUserNickname;
+
+    const fetchUserInfoPromise = fetchUserInfo();
+
+    fetchUserInfoPromise.then(userData => {
+        // 사용자 정보가 가져와진 후에 필요한 작업을 수행합니다.
+        currentUserNickname = useUserStore.getState().user.nickname;
+        currentUserId = useUserStore.getState().user.userId; 
+        this.handleChangeSessionId(currentUserId, currentUserNickname);
+        // 데이터가 제대로 할당되었는지 확인하기 위해 콘솔에 출력합니다.
+        console.log("1",currentUserNickname, currentUserId);
+    }).catch(error => {
+        console.error('Error fetching user info:', error);
+    });
+    
+
+    this.setState({
+      userId: currentUserId,
+      userNickname: currentUserNickname,
+    });
+  }
+
+  handleMainVideoStream(stream) {
+    if (this.state.mainStreamManager !== stream) {
+      this.setState({
+        mainStreamManager: stream,
+      });
+    }
+  }
+
+  deleteSubscriber(streamManager) {
+    let subscribers = this.state.subscribers;
+    let index = subscribers.indexOf(streamManager, 0);
+    if (index > -1) {
+      subscribers.splice(index, 1);
+      this.setState({
+        subscribers: subscribers,
+      });
+    }
+  }
+
+  async joinSession() {
+    event.preventDefault();
+    if (this.state.mySessionId && this.state.myUserName) {
+      const token = await this.getToken();
+      this.setState({
+        token: token,
+        session: true,
+      });
     }
 
-    componentDidMount() {
-        window.addEventListener('beforeunload', this.onbeforeunload);
-    }
+    this.OV = new OpenVidu();
 
-    componentWillUnmount() {
-        window.removeEventListener('beforeunload', this.onbeforeunload);
-    }
+    this.setState(
+      {
+        session: this.OV.initSession(),
+      },
+      async () => {
+        var mySession = this.state.session; 
+        mySession.on("streamCreated", (event) => {
+          var subscriber = mySession.subscribe(event.stream, undefined);
+          var subscribers = this.state.subscribers;
+          subscribers.push(subscriber);
 
-    onbeforeunload(event) {
-        this.leaveSession();
-    }
-
-    handleChangeSessionId(e) {
-        this.setState({
-            mySessionId: e.target.value,
+          this.setState({
+            subscribers: subscribers,
+          });
         });
-    }
 
-    handleChangeLiveName(e) {
-        this.setState({
-            liveName: e.target.value,
+        mySession.on("streamDestroyed", (event) => {
+          this.deleteSubscriber(event.stream.streamManager);
         });
-    }
 
-    handleChangeIspublic(e) {
-        this.setState({
-            isPublic: e.target.value,
+        mySession.on("exception", (exception) => {
+          console.warn(exception);
         });
-    }
 
-    handleChangeDeleted(e) {
-        this.setState({
-            deleted: e.target.value,
-        });
-    }
+        // const token = await this.getToken();
 
-    handleChangeUserName(e) {
-        this.setState({
-            myUserName: e.target.value,
-        });
-    }
-
-    handleMainVideoStream(stream) {
-        if (this.state.mainStreamManager !== stream) {
-            this.setState({
-                mainStreamManager: stream
+        mySession
+          .connect(this.state.token, { clientData: this.state.myUserName })
+          .then(async () => {
+            let publisher = await this.OV.initPublisherAsync(undefined, {
+              audioSource: undefined,
+              videoSource: undefined,
+              publishAudio: true,
+              publishVideo: true,
+              resolution: "640x480",
+              frameRate: 30,
+              insertMode: "APPEND",
+              mirror: false,
             });
-        }
-    }
 
-    deleteSubscriber(streamManager) {
-        let subscribers = this.state.subscribers;
-        let index = subscribers.indexOf(streamManager, 0);
-        if (index > -1) {
-            subscribers.splice(index, 1);
+            mySession.publish(publisher);
+
+            localUser.setNickname(this.state.myUserName);
+            localUser.setConnectionId(this.state.session.connection.connectionId);
+            localUser.setScreenShareActive(true);
+            localUser.setStreamManager(publisher); //<-여기 이 함수로 publisher자리에 sub 넣으면 됨
+            localUser.setType("remote");
+            localUser.setAudioActive(true);
+            localUser.setVideoActive(true);
+
+            var devices = await this.OV.getDevices();
+            var videoDevices = devices.filter((device) => device.kind === "videoinput");
+            var currentVideoDeviceId = publisher.stream
+              .getMediaStream()
+              .getVideoTracks()[0]
+              .getSettings().deviceId;
+            var currentVideoDevice = videoDevices.find(
+              (device) => device.deviceId === currentVideoDeviceId
+            );
+
             this.setState({
-                subscribers: subscribers,
+              currentVideoDevice: currentVideoDevice,
+              mainStreamManager: publisher,
+              publisher: publisher,
             });
-        }
+          })
+          .catch((error) => {
+            console.log("There was an error connecting to the session:", error.code, error.message);
+          });
+      }
+    );
+  }
+
+  leaveSession() {
+    const mySession = this.state.session;
+
+    if (mySession) {
+      mySession.disconnect();
     }
 
-    async joinSession() {
-        this.OV = new OpenVidu();
+    this.OV = null;
+    this.setState({
+      session: undefined,
+      subscribers: [],
+      mySessionId: "SessionA",
+      myUserName: "Participant" + Math.floor(Math.random() * 100),
+      mainStreamManager: undefined,
+      publisher: undefined,
+      isPublic: undefined,
+      deleted: undefined,
+      liveName: undefined,
+      chatDisplay: display,
+    });
+  }
 
-        this.setState(
-            {
-                session: this.OV.initSession(),
-            },
-            async () => {
-                var mySession = this.state.session;
+  async switchCamera() {
+    try {
+      const devices = await this.OV.getDevices();
+      var videoDevices = devices.filter((device) => device.kind === "videoinput");
 
-                mySession.on('streamCreated', (event) => {
-                    var subscriber = mySession.subscribe(event.stream, undefined);
-                    var subscribers = this.state.subscribers;
-                    subscribers.push(subscriber);
-
-                    this.setState({
-                        subscribers: subscribers,
-                    });
-                });
-
-                mySession.on('streamDestroyed', (event) => {
-                    this.deleteSubscriber(event.stream.streamManager);
-                });
-
-                mySession.on('exception', (exception) => {
-                    console.warn(exception);
-                });
-
-                const token = await this.getToken();
-
-                mySession.connect(token, { clientData: this.state.myUserName })
-                    .then(async () => {
-                        let publisher = await this.OV.initPublisherAsync(undefined, {
-                            audioSource: undefined,
-                            videoSource: undefined,
-                            publishAudio: true,
-                            publishVideo: true,
-                            resolution: '640x480',
-                            frameRate: 30,
-                            insertMode: 'APPEND',
-                            mirror: false,
-                        });
-
-                        mySession.publish(publisher);
-
-                        var devices = await this.OV.getDevices();
-                        var videoDevices = devices.filter(device => device.kind === 'videoinput');
-                        var currentVideoDeviceId = publisher.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
-                        var currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
-
-                        this.setState({
-                            currentVideoDevice: currentVideoDevice,
-                            mainStreamManager: publisher,
-                            publisher: publisher,
-                        });
-                    })
-                    .catch((error) => {
-                        console.log('There was an error connecting to the session:', error.code, error.message);
-                    });
-            },
+      if (videoDevices && videoDevices.length > 1) {
+        var newVideoDevice = videoDevices.filter(
+          (device) => device.deviceId !== this.state.currentVideoDevice.deviceId
         );
-    }
 
-    leaveSession() {
-        const mySession = this.state.session;
+        if (newVideoDevice.length > 0) {
+          var newPublisher = this.OV.initPublisher(undefined, {
+            videoSource: newVideoDevice[0].deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            mirror: true,
+          });
 
-        if (mySession) {
-            mySession.disconnect();
+          await this.state.session.unpublish(this.state.mainStreamManager);
+          await this.state.session.publish(newPublisher);
+          this.setState({
+            currentVideoDevice: newVideoDevice[0],
+            mainStreamManager: newPublisher,
+            publisher: newPublisher,
+          });
         }
-
-        this.OV = null;
-        this.setState({
-            session: undefined,
-            subscribers: [],
-            mySessionId: 'SessionA',
-            myUserName: 'Participant' + Math.floor(Math.random() * 100),
-            mainStreamManager: undefined,
-            publisher: undefined,
-            isPublic: undefined,
-            
-        });
+      }
+    } catch (e) {
+      console.error(e);
     }
+  }
 
-    async switchCamera() {
-        try {
-            const devices = await this.OV.getDevices()
-            var videoDevices = devices.filter(device => device.kind === 'videoinput');
+  toggleChat(property) {
+    let display = property;
 
-            if (videoDevices && videoDevices.length > 1) {
-                var newVideoDevice = videoDevices.filter(device => device.deviceId !== this.state.currentVideoDevice.deviceId)
-
-                if (newVideoDevice.length > 0) {
-                    var newPublisher = this.OV.initPublisher(undefined, {
-                        videoSource: newVideoDevice[0].deviceId,
-                        publishAudio: true,
-                        publishVideo: true,
-                        mirror: true
-                    });
-
-                    await this.state.session.unpublish(this.state.mainStreamManager)
-                    await this.state.session.publish(newPublisher)
-                    this.setState({
-                        currentVideoDevice: newVideoDevice[0],
-                        mainStreamManager: newPublisher,
-                        publisher: newPublisher,
-                    });
-                }
-            }
-        } catch (e) {
-            console.error(e);
-        }
+    if (display === undefined) {
+      display = this.state.chatDisplay === "none" ? "block" : "none";
     }
+    if (display === "block") {
+      this.setState({ chatDisplay: display, messageReceived: false });
+    } else {
+      console.log("chat", display);
+      this.setState({ chatDisplay: display });
+    }
+  }
 
-    render() {
-        const mySessionId = this.state.mySessionId;
-        const myUserName = this.state.myUserName;
-        const isPublic = this.state.isPublic;
-        const liveName = this.state.liveName;
-        const deleted = this.state.deleted;
+  render() {
+    const mySessionId = this.state.mySessionId;
+    const myUserName = this.state.myUserName;
+    const isPublic = this.state.isPublic;
+    const liveName = this.state.liveName;
+    const deleted = this.state.deleted;
+    var chatDisplay = { display: this.state.chatDisplay };
 
-        return (
-            <div className="container">
-                {this.state.session === undefined ? (
-                    <div id="join">
-                        <div id="img-div">
-                            <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
-                        </div>
-                        <div id="join-dialog" className="jumbotron vertical-center">
-                            <h1> Join a video session </h1>
-                            <form className="form-group" onSubmit={this.joinSession}>
-                                <p>
-                                    <label>Participant: </label>
-                                    <input
-                                        className="form-control"
-                                        type="text"
-                                        id="userName"
-                                        value={myUserName}
-                                        onChange={this.handleChangeUserName}
-                                        required
-                                    />
-                                </p>
-                                <p>
-                                    <label> Session: </label>
-                                    <input
-                                        className="form-control"
-                                        type="text"
-                                        id="sessionId"
-                                        value={mySessionId}
-                                        onChange={this.handleChangeSessionId}
-                                        required
-                                    />
-                                </p>
-
-                                <p>
-                                    <label> isPublic: </label>
-                                    <input
-                                        className="form-control"
-                                        type="checkbox"
-                                        id="isPublic"
-                                        value={isPublic}
-                                        onChange={this.handleChangeIspublic}                                 
-                                    />
-                                </p>
-
-                                <p>
-                                    <label> liveName: </label>
-                                    <input
-                                        className="form-control"
-                                        type="text"
-                                        id="liveName"
-                                        value={liveName}
-                                        onChange={this.handleChangeLiveName}
-                                        required
-                                    />
-                                </p>
-
-                                <p>
-                                    <label> 세션 비우기: </label>
-                                    <input
-                                        className="form-control"
-                                        type="checkbox"
-                                        id="deleted"
-                                        value={deleted}
-                                        onChange={this.handleChangeDeleted}                                       
-                                    />
-                                </p>
-
-                                <p className="text-center">
-                                    <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
-                                </p>
-                            </form>
-                        </div>
-                    </div>
-                ) : null}
-
-                {this.state.session !== undefined ? (
-                    <div id="session">
-                        <div id="session-header">
-                            <h1 id="session-title">{mySessionId}</h1>
-                            <input
-                                className="btn btn-large btn-danger"
-                                type="button"
-                                id="buttonLeaveSession"
-                                onClick={this.leaveSession}
-                                value="Leave session"
-                            />
-                            <input
-                                className="btn btn-large btn-success"
-                                type="button"
-                                id="buttonSwitchCamera"
-                                onClick={this.switchCamera}
-                                value="Switch Camera"
-                            />
-                        </div>
-
-                        {this.state.mainStreamManager !== undefined ? (
-                            <div id="main-video" className="col-md-6">
-                                <UserVideoComponent streamManager={this.state.mainStreamManager} />
-                            </div>
-                        ) : null}
-                        <div id="video-container" className="col-md-6">
-                            {this.state.publisher !== undefined ? (
-                                <div className="stream-container col-md-6 col-xs-6" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                                    <UserVideoComponent streamManager={this.state.publisher} />
-                                </div>
-                            ) : null}
-                            {this.state.subscribers.map((sub, i) => (
-                                <div key={sub.id} className="stream-container col-md-6 col-xs-6" onClick={() => this.handleMainVideoStream(sub)}>
-                                    <span>{sub.id}</span>
-                                    <UserVideoComponent streamManager={sub} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : null}
+    return (
+      <div className="container">
+        {this.state.session === undefined ? (
+          <div id="join">
+            <div id="img-div">
+              <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
             </div>
-        );
-    }
+            <div id="join-dialog" className="jumbotron vertical-center">
+              <h1> Join a video session </h1>
+              <form className="form-group" onSubmit={this.joinSession}>
+                <p>
+                  <label>Participant: </label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="userName"
+                    value={myUserName}
+                    onChange={this.handleChangeUserName}
+                    required
+                  />
+                </p>
+                <p>
+                  <label> Session: </label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="sessionId"
+                    value={mySessionId}
+                    onChange={this.handleChangeSessionId}
+                    required
+                  />
+                </p>
+                <p>
+                  <label> isPublic : </label>
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      id="isPublic"
+                      checked={this.state.isPublic}
+                      onChange={this.handleChangeIspublic}
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </p>
+                <p>
+                  <label> liveName: </label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="liveName"
+                    value={liveName}
+                    onChange={this.handleChangeLiveName}
+                    required
+                  />
+                </p>
 
-    async getToken() {
-        const sessionId = await this.createSession(this.state.mySessionId, this.state.liveName, this.state.isPublic, this.state.deleted);
-        return await this.createToken(sessionId);
-    }
+                <p>
+                  <label> 세션 비우기 : </label>
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      id="deleted"
+                      checked={this.state.deleted}
+                      onChange={this.handleChangeDeleted}
+                    />
+                    <span class="slider"></span>
+                  </label>
+                </p>
 
-    async createSession(sessionId, liveName, isPublic , deleted) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions',  {
-            customSessionId : sessionId,
-            liveName : liveName,
-            isPublic : isPublic,
-            deleted: deleted,
-        }, {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials : true,
-        });
-        return response.data;
-    }
+                <p className="text-center">
+                  <input
+                    className="btn btn-lg btn-success"
+                    name="commit"
+                    type="submit"
+                    value="JOIN"
+                  />
+                </p>
+              </form>
+            </div>
+          </div>
+        ) : null}
 
-   
+        {this.state.session !== undefined ? (
+          <div id="session">
+            <div id="session-header">
+              <h1 id="session-title">{liveName}</h1>
+              <input
+                className="btn btn-large btn-danger"
+                type="button"
+                id="buttonLeaveSession"
+                onClick={this.leaveSession}
+                value="Leave session"
+              />
+              <input
+                className="btn btn-large btn-success"
+                type="button"
+                id="buttonSwitchCamera"
+                onClick={this.switchCamera}
+                value="Switch Camera"
+              />
+            </div>
 
-    async createToken(sessionId) {
-        const response = await axios.post(APPLICATION_SERVER_URL + 'gawm/back/api/sessions/' + sessionId + '/connections', {}, {
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials: true 
-        });
-        return response.data;
-    }
+            <div id="video-container" className="col-md-6">
+              {this.state.publisher !== undefined ? (
+                <div
+                  className="stream-container col-md-6 col-xs-6"
+                  onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                >
+                  <UserVideoComponent streamManager={this.state.publisher} />
+                </div>
+              ) : null}
+              {this.state.mainStreamManager !== undefined && (
+                <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
+                  <ChatComponent
+                    user={localUser}
+                    chatDisplay={this.state.chatDisplay}
+                    close={this.toggleChat}
+                    messageReceived={this.checkNotification}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  async getToken() {
+    const sessionId = await this.createSession(
+      this.state.mySessionId,
+      this.state.liveName,
+      this.state.isPublic,
+      this.state.deleted
+    );
+    return await this.createToken(this.state.mySessionId);
+  }
+
+   createBase64LiveSessionId(userId, nickname) {
+      var userIdBase64 = window.btoa(unescape(encodeURIComponent( userId )));
+      var nickNameBase64 = window.btoa(unescape(encodeURIComponent( nickname )));
+      var liveSessionId = (userIdBase64 + nickNameBase64);
+      liveSessionId=liveSessionId.replaceAll('=','_').replaceAll('\\','_').replaceAll('+','_');
+      return liveSessionId;
+  }
+
+  async createSession(sessionId, liveName, isPublic, deleted) {
+    const response = await axios.post(
+      APPLICATION_SERVER_URL + "gawm/back/api/sessions",
+      {
+        customSessionId: sessionId,
+        liveName: liveName,
+        isPublic: isPublic,
+        deleted: deleted,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  }
+
+  async createToken(liveRoomId) {
+    const response = await axios.post(
+      APPLICATION_SERVER_URL + "gawm/back/api/sessions/" + liveRoomId + "/connections",
+      { customSessionId: liveRoomId },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  }
 }
+
 
 export default Live;

@@ -37,11 +37,11 @@ export function getStyleLogsByYearAndMonth(year, month) {
 /**
  * 특정 스타일로그의 세부 정보 조회
  * 
- * @param {number|string} calendarId 조회할 스타일로그 ID
+ * @param {number|string} stylelogId 조회할 스타일로그 ID
  * @returns Promise 객체
  */
-export function getStyleLogDetails(calendarId) {
-    return axios.get(`${prefix}/${calendarId}`);
+export function getStyleLogDetails(stylelogId) {
+    return axios.get(`${prefix}/${stylelogId}`);
 }
 
 
@@ -55,23 +55,37 @@ export function deleteStyleLog(calendarId) {
     return axios.delete(`${prefix}/${calendarId}`);
 }
 
+
+
+
+
 /**
  * 새로운 스타일로그 데이터 등록
  * 
- * @param {Object} data 등록할 스타일로그 데이터
+ * @param {FormData} formData 등록할 스타일로그 데이터
  * @returns Promise 객체
  */
-export function createStyleLog(data) {
-    return axios.post(`${prefix}`, data);
+export const createStyleLog = async (formData)=> {
+    try{
+        const response = await gawmApiAxios().post(`${prefix}`, formData, {
+            withCredentials: true,
+        });
+        console.log("등록 결과:", response);
+        return response.data; // 응답 데이터 반환
+    } catch (error) {
+        console.error("옷 이미지 업로드 중 오류 발생:", error);
+        throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
+    }
+
 }
 
 /**
  * 기존 스타일로그 데이터 수정
  * 
- * @param {number|string} calendarId 수정할 스타일로그 ID
+ * @param {number|string} stylelogId 수정할 스타일로그 ID
  * @param {Object} data 수정할 스타일로그 데이터
  * @returns Promise 객체
  */
-export function updateStyleLog(calendarId, data) {
-    return axios.put(`${prefix}/${calendarId}`, data);
+export function updateStyleLog(stylelogId, data) {
+    return axios.patch(`${prefix}/${stylelogId}`, data);
 }

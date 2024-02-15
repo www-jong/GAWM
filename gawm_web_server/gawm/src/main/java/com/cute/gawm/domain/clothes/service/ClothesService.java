@@ -119,8 +119,11 @@ public class ClothesService {
         if (clothes.getUser().getUserId() != userId) {
             throw new AccessDeniedException("본인의 옷만 삭제할 수 있습니다.");
         }
-        clothesDetailRepository.deleteByClothesId(clothesId);
-        clothesRepository.deleteById(clothesId);
+
+        //clothesDetailRepository.deleteByClothesId(clothesId);
+        clothes.setDeleted(true);
+        clothesRepository.save(clothes);
+        //clothesRepository.deleteById(clothesId);
     }
 
     // 옷 수정

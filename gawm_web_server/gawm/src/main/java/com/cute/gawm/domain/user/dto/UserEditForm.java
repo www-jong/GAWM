@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UserEditForm {
-    private String nickname;
     private User.Gender gender;
     private Integer age;
 }

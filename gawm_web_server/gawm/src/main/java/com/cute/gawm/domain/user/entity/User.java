@@ -59,9 +59,12 @@ public class User {
     }
 
     public void update(UserEditForm form) {
-        this.nickname = form.getNickname();
         this.gender = form.getGender();
         this.age = form.getAge();
+    }
+
+    public void updateNickname(String nickname){
+        this.nickname=nickname;
     }
 
     public void updateProfileImge(String profileImg) {
