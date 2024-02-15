@@ -77,7 +77,10 @@ export default function AccountList() {
 						list.map(
 							(profile) => (
 								<ListItem key={profile.userId} className="flex flex-row gap-4 items-center" link href={""}>
-									<img className="size-14 rounded-full bg-[#d9d9d9]" src={profile.profile_img} />
+									<div
+										style={{ "--image-url": `url(${import.meta.env.VITE_CLOTHES_BASE_URL}/${profile.profile_img})` }}
+										className={`size-14 rounded-full ${profile.profile_img ? "bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat" : "bg-[#d9d9d9]"}`}
+									></div>
 									<span>{profile.nickname}</span>
 								</ListItem>
 							)
