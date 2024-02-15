@@ -21,6 +21,7 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
   };
 
   useEffect(() => {
+    console.log(stylelogIds)
     if (stylelogIds.length > 0) {
       // 모든 stylelogIds에 대해 getStyleLogDetails 호출
       Promise.all(stylelogIds.map(stylelogId => getStyleLogDetails(stylelogId)))
@@ -32,6 +33,7 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
               url: response.data.data.stylelogImg,
               id: response.data.data.stylelogId // ID를 저장
             }));
+            console.log(urls)
           setStylelogImgUrls(urls); // 이미지 URL 및 ID 배열을 업데이트
         })
         .catch(error => {
