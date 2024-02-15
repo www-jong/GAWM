@@ -1,24 +1,21 @@
-import axios from 'axios';
-import React, { useEffect, Component } from 'react';
+import axios from "axios";
+import React, { Component } from "react";
 import "./App.css";
-import UserVideoComponent from "./UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
-import UserModel from "./models/user-model.jsx";
-import ChatComponent from "./Chat/ChatComponent.jsx";
-import { userInfo } from "../../apis/user"
-import { fetchUserInfo, useUserStore } from '../../stores/user.js';
+import UserVideoComponent from "../UserVideoComponent.jsx";
+import UserModel from "../models/user-model.jsx";
+import ChatComponent from "../Chat/ChatComponent.jsx";
 
 var localUser = new UserModel();
-
 const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
 
-class Live extends Component {
+class EnterLive extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      mySessionId: "세션이 자동 생성 됩니다!",
+      mySessionId: "SessionA",
       myUserName: "Participant" + Math.floor(Math.random() * 100),
       session: undefined,
       mainStreamManager: undefined,
@@ -29,19 +26,15 @@ class Live extends Component {
       deleted: false,
       token: "initial token",
       localUser: undefined,
-      userId : undefined,
-      userNickname : undefined,
       chatDisplay: "block",
       accessAllowed: false,
     };
-    this.handleLoadUserData();
 
     // Bind this to the event handlers
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-    this.handleLoadSessionId = this.handleLoadSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -49,8 +42,10 @@ class Live extends Component {
     this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
     this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
     this.handleChangeToken = this.handleChangeToken.bind(this);
-    this.handleLoadUserData = this.handleLoadUserData.bind(this);
+    this.handleChangeSubscribers = this.handleChangeSubscribers.bind(this);
     this.toggleChat = this.toggleChat.bind(this);
+    this.onChat = this.onChat.bind(this);
+    this.handleChangeSubscribers = this.handleChangeSubscribers.bind(this);
   }
 
   componentDidMount() {
@@ -65,21 +60,12 @@ class Live extends Component {
     this.leaveSession();
   }
 
-  handleLoadSessionId(currentUserId, currentUserNickname) {
-    console.log(currentUserId, currentUserNickname);
-    const liveRoomSession = this.createBase64LiveSessionId(currentUserId, currentUserNickname); //1
-    console.log("liveRoomID: ", liveRoomSession );
-    this.setState({
-      mySessionId: liveRoomSession
-    });
-  }
-
   handleChangeSessionId(e) {
     this.setState({
       mySessionId: e.target.value,
     });
   }
-  
+
   handleChangeLiveName(e) {
     this.setState({
       liveName: e.target.value,
@@ -98,6 +84,34 @@ class Live extends Component {
     });
   }
 
+  handleChangeSubscribers(e){
+
+    this.OV = new OpenVidu();
+
+     this.setState(
+      {
+        session: this.OV.initSession(),
+      });
+      
+    var mySession = this.state.session;
+    console.log(mySession);
+      mySession.on("streamCreated", (event) => {
+      var subscriber = mySession.subscribe(event.stream, undefined);
+      console.log("subscriber: ",subscriber);
+      var subscribers = this.state.subscribers;
+      console.log(subscribers);
+      console.log(subscriber);
+      subscribers.push(subscriber);
+    
+      
+      this.setState({
+        subscribers: subscribers,
+      });
+    });
+    console.log("handleChangeSubscriber: " , this.state.subscribers);
+  }
+
+
   handleChangeDeleted(event) {
     const isChecked = event.target.checked;
     this.setState({ deleted: isChecked });
@@ -109,36 +123,19 @@ class Live extends Component {
     });
   }
 
-  handleLoadUserData(e) {
-    let currentUserId;
-    let currentUserNickname;
-
-    const fetchUserInfoPromise = fetchUserInfo();
-
-    fetchUserInfoPromise.then(userData => {
-        // 사용자 정보가 가져와진 후에 필요한 작업을 수행합니다.
-        currentUserNickname = useUserStore.getState().user.nickname;
-        currentUserId = useUserStore.getState().user.userId; 
-        this.handleChangeSessionId(currentUserId, currentUserNickname);
-        // 데이터가 제대로 할당되었는지 확인하기 위해 콘솔에 출력합니다.
-        console.log("1",currentUserNickname, currentUserId);
-    }).catch(error => {
-        console.error('Error fetching user info:', error);
-    });
-    
-
-    this.setState({
-      userId: currentUserId,
-      userNickname: currentUserNickname,
-    });
-  }
-
   handleMainVideoStream(stream) {
     if (this.state.mainStreamManager !== stream) {
       this.setState({
         mainStreamManager: stream,
       });
+      localUser.setStreamManager(stream);
     }
+  }
+
+  handleChangeSubscribers(e) {
+    this.setState({
+      subscribers: e.target.value,
+    });
   }
 
   deleteSubscriber(streamManager) {
@@ -152,10 +149,11 @@ class Live extends Component {
     }
   }
 
-  async joinSession() {
+   async joinSession() {
     event.preventDefault();
     if (this.state.mySessionId && this.state.myUserName) {
       const token = await this.getToken();
+      console.log(token);
       this.setState({
         token: token,
         session: true,
@@ -164,16 +162,24 @@ class Live extends Component {
 
     this.OV = new OpenVidu();
 
-    this.setState(
+     this.setState(
       {
         session: this.OV.initSession(),
       },
-      async () => {
-        var mySession = this.state.session; 
-        mySession.on("streamCreated", (event) => {
+         () => {
+        var mySession = this.state.session;
+        
+         mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
           var subscribers = this.state.subscribers;
           subscribers.push(subscriber);
+
+          if (subscriber.stream != null) {
+            console.log("담았다!");
+            this.handleMainVideoStream(subscriber);
+            const data = { name: "담은거", subscriber };
+            console.log(data);
+          }
 
           this.setState({
             subscribers: subscribers,
@@ -192,43 +198,44 @@ class Live extends Component {
 
         mySession
           .connect(this.state.token, { clientData: this.state.myUserName })
-          .then(async () => {
-            let publisher = await this.OV.initPublisherAsync(undefined, {
-              audioSource: undefined,
-              videoSource: undefined,
-              publishAudio: true,
-              publishVideo: true,
-              resolution: "640x480",
-              frameRate: 30,
-              insertMode: "APPEND",
-              mirror: false,
-            });
+          .then(  () =>  {
+            // let publisher = await this.OV.initPublisherAsync(undefined, {
+            //   audioSource: undefined,
+            //   videoSource: undefined,
+            //   publishAudio: true,
+            //   publishVideo: true,
+            //   resolution: "640x480",
+            //   frameRate: 30,
+            //   insertMode: "APPEND",
+            //   mirror: false,
+            // });
+            
 
-            mySession.publish(publisher);
+            // mySession.publish(publisher);
 
-            localUser.setNickname(this.state.myUserName);
-            localUser.setConnectionId(this.state.session.connection.connectionId);
-            localUser.setScreenShareActive(true);
-            localUser.setStreamManager(publisher); //<-여기 이 함수로 publisher자리에 sub 넣으면 됨
-            localUser.setType("remote");
-            localUser.setAudioActive(true);
-            localUser.setVideoActive(true);
+             localUser.setNickname(this.state.myUserName);
+             localUser.setConnectionId(this.state.session.connection.connectionId);
+             localUser.setScreenShareActive(true);
+             localUser.setStreamManager(publisher);
+             localUser.setType("remote");
+             localUser.setAudioActive(true);
+             localUser.setVideoActive(true);
 
-            var devices = await this.OV.getDevices();
-            var videoDevices = devices.filter((device) => device.kind === "videoinput");
-            var currentVideoDeviceId = publisher.stream
-              .getMediaStream()
-              .getVideoTracks()[0]
-              .getSettings().deviceId;
-            var currentVideoDevice = videoDevices.find(
-              (device) => device.deviceId === currentVideoDeviceId
-            );
+            // var devices = await this.OV.getDevices();
+            // var videoDevices = devices.filter((device) => device.kind === "videoinput");
+            // var currentVideoDeviceId = publisher.stream
+            //   .getMediaStream()
+            //   .getVideoTracks()[0]
+            //   .getSettings().deviceId;
+            // var currentVideoDevice = videoDevices.find(
+            //   (device) => device.deviceId === currentVideoDeviceId
+            // );
 
-            this.setState({
-              currentVideoDevice: currentVideoDevice,
-              mainStreamManager: publisher,
-              publisher: publisher,
-            });
+            // this.setState({
+            //   currentVideoDevice: currentVideoDevice,
+            //   mainStreamManager: publisher,
+            //   publisher: publisher,
+            // });
           })
           .catch((error) => {
             console.log("There was an error connecting to the session:", error.code, error.message);
@@ -255,7 +262,8 @@ class Live extends Component {
       isPublic: undefined,
       deleted: undefined,
       liveName: undefined,
-      chatDisplay: display,
+      chatDisplay: "none",
+      accessAllowed: false,
     });
   }
 
@@ -305,14 +313,21 @@ class Live extends Component {
     }
   }
 
+  onChat(property) {
+    let display = property;
+    console.log("chat", display);
+    this.setState({ chatDisplay: display });
+  }
+
   render() {
     const mySessionId = this.state.mySessionId;
     const myUserName = this.state.myUserName;
     const isPublic = this.state.isPublic;
     const liveName = this.state.liveName;
     const deleted = this.state.deleted;
+    this.handleChangeSubscribers();
     var chatDisplay = { display: this.state.chatDisplay };
-
+    console.log("vdvd");
     return (
       <div className="container">
         {this.state.session === undefined ? (
@@ -345,6 +360,7 @@ class Live extends Component {
                     required
                   />
                 </p>
+
                 <p>
                   <label> isPublic : </label>
                   <label class="switch">
@@ -398,7 +414,7 @@ class Live extends Component {
         {this.state.session !== undefined ? (
           <div id="session">
             <div id="session-header">
-              <h1 id="session-title">{liveName}</h1>
+              <h1 id="session-title">{mySessionId}</h1>
               <input
                 className="btn btn-large btn-danger"
                 type="button"
@@ -413,27 +429,50 @@ class Live extends Component {
                 onClick={this.switchCamera}
                 value="Switch Camera"
               />
+              {/* <input
+                className="btn btn-large btn-success"
+                type="button"
+                id="buttonSwitchChat"
+                onClick={this.onChat}
+                value="ON/OFF Chat"
+              /> */}
             </div>
 
+            {/* {this.state.mainStreamManager !== undefined ? (
+              <div id="main-video" className="col-md-6">
+                <UserVideoComponent streamManager={this.state.mainStreamManager} />
+              </div>
+            ) : null} */}
             <div id="video-container" className="col-md-6">
-              {this.state.publisher !== undefined ? (
+              {/* {this.state.publisher !== undefined ? (
                 <div
                   className="stream-container col-md-6 col-xs-6"
                   onClick={() => this.handleMainVideoStream(this.state.publisher)}
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
-              ) : null}
-              {this.state.mainStreamManager !== undefined && (
+              ) : null} */}
+              {this.state.subscribers.map((sub, i) => (
+                <div
+                  key={sub.id}
+                  className="stream-container col-md-6 col-xs-6"
+                  onClick={() => this.handleMainVideoStream(sub)}
+                >
+                  <span>{sub.id}</span>
+                  <UserVideoComponent streamManager={sub} />
+                </div>
+              ))}
+              {this.state.mainStreamManager !== undefined ? (
                 <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                   <ChatComponent
                     user={localUser}
+                    myStream={this.mainStreamManager}
                     chatDisplay={this.state.chatDisplay}
                     close={this.toggleChat}
                     messageReceived={this.checkNotification}
                   />
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -449,14 +488,6 @@ class Live extends Component {
       this.state.deleted
     );
     return await this.createToken(this.state.mySessionId);
-  }
-
-   createBase64LiveSessionId(userId, nickname) {
-      var userIdBase64 = window.btoa(unescape(encodeURIComponent( userId )));
-      var nickNameBase64 = window.btoa(unescape(encodeURIComponent( nickname )));
-      var liveSessionId = (userIdBase64 + nickNameBase64);
-      liveSessionId=liveSessionId.replaceAll('=','_').replaceAll('\\','_').replaceAll('+','_');
-      return liveSessionId;
   }
 
   async createSession(sessionId, liveName, isPublic, deleted) {
@@ -485,9 +516,9 @@ class Live extends Component {
         withCredentials: true,
       }
     );
+    console.log(response);
     return response.data;
   }
 }
 
-
-export default Live;
+export default EnterLive;
