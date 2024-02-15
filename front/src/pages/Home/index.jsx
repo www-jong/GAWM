@@ -7,6 +7,7 @@ import axios from "axios";
 import introduce1 from "@/assets/images/main_introduce1.svg";
 import introduce2 from "@/assets/images/main_introduce2.svg";
 import { Swiper, SwiperSlide } from 'swiper/react';
+import nolive from "@/assets/images/home_nolive.svg";
 import './index.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -73,6 +74,8 @@ function Home() {
 						<SwiperSlide><img src={introduce2} alt="소개이미지2" className="w-screen object-contain" /></SwiperSlide>
 					</Swiper>
 				</div>
+				<div>
+					<div className="h2-nps text-lg">26도˚C 라이브</div>
 				<div className="flex gap-4 items-center scroll-pl-4 px-2.5 pr-4 snap-x overflow-x-auto">
 					{
 						liveRooms ? (
@@ -85,8 +88,9 @@ function Home() {
 									points={room.point}
 								/>
 							))
-						) : ""
+						) : <img src={nolive} alt="라이브없음" className="w-screen my-2.5"/>
 					}
+				</div>
 				</div>
 
 
