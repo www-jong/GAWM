@@ -164,9 +164,14 @@ export default function AddLookBook() {
 
         <hr className="my-4 border-gray-200" />
         <div className="mx-3 flex flex-col justify-between">
-          <p className="text-lg font-semibold cursor-pointer w-20">태그</p>
+          <div className="flex flex-row justify-start">
+          <p className="text-lg font-semibold cursor-pointer w-auto">태그</p>
+          <p className="text-gray-600 text-sm ml-1" >쉼표와 엔터로 구분됩니다.</p>
+          </div>
+          <div>
           <TagsInput onTagsChange={handleTagsChange} />
-          <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="쉼표와 엔터로 구분됩니다." />
+          {/* <input className="mt-2" type="text" ref={tagsInput} id="tags" placeholder="쉼표와 엔터로 구분됩니다." /> */}
+          </div>
         </div>
 
         <hr className="my-4 border-gray-200" />
@@ -190,7 +195,7 @@ export default function AddLookBook() {
       </SwiperSlide>
     </Swiper>
   ) : (
-    <img className="mt-2" onClick={handleModalClick} src={AddClothing} alt="함께 입은 옷 추가" />
+    <img className="mt-2 w-screen h-auto" onClick={handleModalClick} src={AddClothing} alt="함께 입은 옷 추가" />
   )}
   </div>
 </div>
