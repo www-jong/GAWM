@@ -77,7 +77,7 @@ export default function AccountList() {
 						list.map(
 							(profile) => (
 								<ListItem key={profile.userId} className="flex flex-row gap-4 items-center" link href={""}>
-									<img className="size-14 rounded-full bg-[#767676]" src={profile.profile_img} />
+									<img className="size-14 rounded-full bg-[#d9d9d9]" src={profile.profile_img} />
 									<span>{profile.nickname}</span>
 								</ListItem>
 							)
