@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 /**
  * Navbar의 한 메뉴를 생성합니다
  * 
+ * - className: 내부 요소에 추가할 className
  * - icon: 사용하는 아이콘
  * - selectedIcon: 메뉴가 선택되었을 시 표시할 아이콘
  * - name: 메뉴의 이름
@@ -11,9 +12,9 @@ import { Link } from "react-router-dom";
  * 
  * @returns NavItem instance
  */
-function NavItem({ icon, selectedIcon = icon, name, href, isSelected }) {
+function NavItem({ className, icon, selectedIcon = icon, name, href, isSelected }) {
 	return (
-		<Link className="flex flex-col justify-around flex-none size-14" to={href}>
+		<Link className={`flex flex-col justify-around flex-none size-14 ${className ? className : ""}`} to={href}>
 			<img
 				className="size-8 mx-auto"
 				src={isSelected? selectedIcon : icon}
