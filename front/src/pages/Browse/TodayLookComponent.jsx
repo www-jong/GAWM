@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 function TodayLookComponent ({ lookImage, userId, profileImage }) {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+      navigate(`/look/${lookbookId}`);
+    };
     return (
+        <div onClick={handleClick} className="cursor-pointer">
         <div className="relative rounded-lg shadow-md w-full overflow-hidden mt-1">
             <img className="w-full h-60 object-cover" src={lookImage} alt="Lookbook" />
             <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-end">
@@ -10,6 +16,7 @@ function TodayLookComponent ({ lookImage, userId, profileImage }) {
                     <span className="ml-2 text-sm font-semibold text-white">{userId}</span>
                 </div>
             </div>
+        </div>
         </div>
     );
 };

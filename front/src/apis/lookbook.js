@@ -146,7 +146,7 @@ export const likeLookbook = (lookbookId) => {
  * @returns {Promise} '감있어요' 취소 결과를 반환하는 Promise 객체
  */
 export const unlikeLookbook = (lookbookId) => {
-    return axios.post(`${prefix}/${lookbookId}/unlikes`);
+    return axios.post(`${prefix}/${lookbookId}/likes`);
 };
 
 /**
