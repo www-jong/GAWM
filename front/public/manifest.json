@@ -1,9 +1,9 @@
 {
-    "name": "vite-pwa",
-    "short_name": "vite-pwa",
+    "name": "GAWM˚",
+    "short_name": "GAWM˚",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
+    "background_color": "transparent",
     "theme_color": "#485EEE",
     "icons": [
       {
