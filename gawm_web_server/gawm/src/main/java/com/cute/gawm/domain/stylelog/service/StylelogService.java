@@ -3,6 +3,7 @@ package com.cute.gawm.domain.stylelog.service;
 import com.cute.gawm.common.exception.ClothesNotFoundException;
 import com.cute.gawm.common.exception.StylelogNotFoundException;
 import com.cute.gawm.common.exception.UserNotFoundException;
+import com.cute.gawm.common.util.s3.S3Uploader;
 import com.cute.gawm.domain.clothes.dto.response.ClothesInfoResponse;
 import com.cute.gawm.domain.clothes.entity.Clothes;
 import com.cute.gawm.domain.clothes.repository.ClothesRepository;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.persistence.EntityNotFoundException;
@@ -51,8 +53,11 @@ public class StylelogService {
     @Autowired
     private ClothesService clothesService;
 
+    @Autowired
+    private S3Uploader s3Uploader;
+
     @Transactional
-    public void createStylelog(StylelogCreateRequest request, int userId) {
+    public void createStylelog(StylelogCreateRequest request, MultipartFile image, int userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. User ID:" + userId));
 
@@ -68,6 +73,7 @@ public class StylelogService {
                         })
                         .orElseThrow(() -> new ClothesNotFoundException("옷을 찾을 수 없습니다. Clothes ID: " + clothesId)))
                 .collect(Collectors.toList());
+        String imageName = s3Uploader.uploadFile(image);
 
         // Stylelog 엔티티 생성 및 저장
         Stylelog stylelog = Stylelog.builder()
@@ -76,6 +82,7 @@ public class StylelogService {
                 .temperature(request.getTemperature())
                 .weather(request.getWeather())
                 .date(request.getDate())
+                .stylelogImg(imageName)
                 .build();
         stylelogRepository.save(stylelog);
 

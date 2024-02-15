@@ -3,6 +3,7 @@ package com.cute.gawm.domain.stylelog.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.persistence.Column;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class StylelogUpdateRequest {
     private Timestamp date;
     private List<ClothesStylelogData> clotheset;
 
+    private String stylelogImg;
     @Getter
     @AllArgsConstructor
     public static class ClothesStylelogData {

@@ -45,4 +45,6 @@ public class Stylelog extends BaseEntity {
     @Column
     private Timestamp date;
 
+    @Column(name = "stylelog_img")
+    private String stylelogImg;
 }

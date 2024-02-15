@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import CategoryList from "./CategoryList";
 import ClothesList from "./ClothesList";
 import ClothesDetail from "./ClothesDetail";
-import { getAllClothesInfo } from "../../../apis/clothes";
+import { deleteClothes, getAllClothesInfo } from "../../../apis/clothes";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
+import testData from "./test.json";
 import testData from "./test.json";
 
 /**
@@ -37,14 +38,13 @@ export default function MyCloset() {
 		() => {
 			const fetchCloset = async () => {
 				try {
-					// const response = await getAllClothesInfo();
-					// const data = response.data;
-					const data = testData.data;
-
-					if(data.length) {
+					const response = await getAllClothesInfo();
+					const data = response.data;
+					const filteredData = data.filter(item => !item.isDeleted);
+					if(filteredData.length) {
 						// "mCategory"로 분류
 						setCloset(
-							Map.groupBy(data, (item) => item["mcategory"])
+							Map.groupBy(filteredData, (item) => item["mcategory"])
 						);
 					}
 					else setCloset(new Map());
@@ -93,7 +93,12 @@ export default function MyCloset() {
 					<ClothesDetail
 						clothesId={clothesId}
 						clothesIdSetter={clothesIdSetter}
-						onDelete={refreshCountSetter}
+						onDelete={
+							() => {
+								deleteClothes(clothesId);
+								refreshCountSetter();
+							}
+						}
 					/>
 				) : category ? (
 					<ClothesList

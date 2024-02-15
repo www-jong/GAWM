@@ -18,15 +18,16 @@ public class StylelogDetailResponse {
     private int temperature;
     private Timestamp date;
     private List<CustomClothesResponse> clothesDetails;
-
+    private String stylelogImg;
     // 추가된 생성자
-    public StylelogDetailResponse(int stylelogId, String location, String weather, int temperature, Timestamp date, List<CustomClothesResponse> clothesDetails) {
+    public StylelogDetailResponse(int stylelogId, String location, String weather, int temperature, Timestamp date, List<CustomClothesResponse> clothesDetails,String stylelogImg) {
         this.stylelogId = stylelogId;
         this.location = location;
         this.weather = weather;
         this.temperature = temperature;
         this.date = date;
         this.clothesDetails = clothesDetails;
+        this.stylelogImg = stylelogImg;
     }
 
     public StylelogDetailResponse(Stylelog stylelog, List<CustomClothesResponse> clothesDetails) {
@@ -35,6 +36,7 @@ public class StylelogDetailResponse {
         this.weather = stylelog.getWeather();
         this.temperature = stylelog.getTemperature();
         this.date = stylelog.getDate();
+        this.stylelogImg = stylelog.getStylelogImg();
         this.clothesDetails = clothesDetails;
     }
 

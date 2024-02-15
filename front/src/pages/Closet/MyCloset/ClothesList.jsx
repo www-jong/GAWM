@@ -98,6 +98,7 @@ export default function ClothesList({ categoryName, clothes, categorySetter, clo
 									name={item.name}
 									clothes={item}
 									clothesIdSetter={() => clothesIdSetter(item.clothesId)}
+									image={item.clothesImg}
 								/>
 							)
 						)

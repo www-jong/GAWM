@@ -5,6 +5,7 @@ import com.cute.gawm.domain.clothes.entity.ClothesDetail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
@@ -22,6 +23,11 @@ public class ClothesInfoResponse {
     private List<String> materials;
     private List<String> patterns;
 
+    // BaseEntity의 필드 추가
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private Boolean isDeleted;
+
     public ClothesInfoResponse(Clothes clothes, ClothesDetail clothesDetail) {
         this.clothesId = clothes.getClothesId();
         this.userId = clothes.getUser().getUserId();
@@ -34,6 +40,9 @@ public class ClothesInfoResponse {
         this.colors = clothesDetail.getColors();
         this.materials = clothesDetail.getMaterials();
         this.patterns = clothesDetail.getPatterns();
+        this.createdAt = clothes.getCreatedAt();
+        this.updatedAt = clothes.getUpdatedAt();
+        this.isDeleted = clothes.getIsDeleted();
     }
 
 }
