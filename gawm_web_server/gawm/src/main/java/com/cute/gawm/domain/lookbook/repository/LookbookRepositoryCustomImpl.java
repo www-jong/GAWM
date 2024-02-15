@@ -45,6 +45,24 @@ public class LookbookRepositoryCustomImpl extends QueryDslSupport implements Loo
     }
 
     @Override
+    public PageImpl<Lookbook> findAllLookbookByUserId(int userId, Pageable pageable) {
+        JPAQuery<?> query = queryFactory.from(lookbook);
+        final Long count = query.select(lookbook.count())
+                .from(lookbook)
+                .where(lookbook.user.userId.eq(userId))
+                .fetchOne();
+
+        List<Lookbook> lookbookList = query.select(lookbook)
+                .from(lookbook)
+                .where(lookbook.user.userId.eq(userId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(lookbookList, pageable, count);
+    }
+
+    @Override
     public PageImpl<Lookbook> searchLookbook(String keyword, Pageable pageable) {
         JPAQuery<?> where = queryFactory.from(QClothesLookbook.clothesLookbook)
                 .leftJoin(QClothesLookbook.clothesLookbook.lookbook, lookbook)

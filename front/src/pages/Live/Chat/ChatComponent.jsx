@@ -17,7 +17,12 @@ export default class ChatComponent extends Component {
   }
 
   componentDidMount() {
-    this.props.user.getStreamManager().stream.session.on("signal:chat", (event) => {
+    const data = { name: "myStream", data: this.props.myStream };
+    console.log(data);
+    const session = this.props.user.getStreamManager().stream.session;
+    session.off("signal:chat"); // 이전에 등록된 이벤트 리스너 제거
+
+    session.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       let messageList = this.state.messageList;
       messageList.push({
@@ -81,13 +86,16 @@ export default class ChatComponent extends Component {
 
   render() {
     const styleChat = { display: this.props.chatDisplay };
+    console.log("chatCompoenet-subscribers : ",this.props.subscribers);
     return (
       <div id="chatContainer">
         <div id="chatComponent" style={styleChat}>
           <div id="chatToolbar">
             <span>{this.props.user.getStreamManager().stream.session.sessionId} - CHAT</span>
+            <span>{this.props.subscribers.stream.session.sessionId} - CHAT</span>
             <button id="closeButton" onClick={this.close}>
               {/* <HighlightOff color="secondary" /> */}
+              Close
             </button>
           </div>
           <div className="message-wrap" ref={this.chatScroll}>
