@@ -49,7 +49,7 @@ function Home() {
 	return (
 		<>
 			{/* 제목 영역 */}
-			<div className="fixed top-0 left-0 right-0 px-2.5 py-1.5 bg-white">
+			<div className="px-2.5 py-1.5 bg-white">
 				<TopBar
 					title={
 						<>
@@ -60,7 +60,7 @@ function Home() {
 				/>
 			</div>
 
-			<div className="flex flex-col gap-4 mt-12 mb-24">
+			<div className="flex flex-col gap-4 mb-24">
 				{/* 라이브 목록 */}
 				<div className="my-2">
 					<Swiper autoplay={{
