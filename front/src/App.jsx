@@ -28,6 +28,7 @@ import Image from "./pages/AddFashion/ImageEdit.jsx";
 
 function App() {
   return (
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -65,6 +66,7 @@ function App() {
         <Route path="landing" element={<Landing />} />
         <Route path="loading" element={<Loading />} />
       </Routes>
+      </BrowserRouter>
   );
 }
 
