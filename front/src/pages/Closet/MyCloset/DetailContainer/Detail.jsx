@@ -15,13 +15,13 @@ import ListItem from "../../../../components/ListGroup/ListItem";
  *  
  * @returns 생성된 JSX component
  */
-export default function Detail({ label, name, value, isEditing, options, onInput = (value) => {} }) {
+export default function Detail({ label, name, value, isEditing, options, onInput = (value) => { } }) {
 	const id = useId();
-
-	const Radio = ({ name, value, defaultChecked }) => {
+	console.log(name,value)
+	const Radio = ({ name, value, checkedValue }) => {
 		return (
 			<label>
-				<input className="hidden peer" type="radio" name={name} value={value} defaultChecked={defaultChecked} />
+				<input className="hidden peer" type="radio" name={name} value={value} defaultChecked={checkedValue === value} />
 				<span className="peer py-2 px-4 rounded-lg peer-checked:bg-main peer-checked:text-white bg-gray-200">
 					{value}
 				</span>
@@ -29,16 +29,22 @@ export default function Detail({ label, name, value, isEditing, options, onInput
 		);
 	};
 
-	const Checkbox = ({ name, value, defaultChecked }) => {
+	const Checkbox = ({ name, value, checkedValues }) => {
 		return (
-			<label>
-				<input className="hidden peer" type="checkbox" name={name} value={value} defaultChecked={defaultChecked} />
-				<span className="peer py-2 px-4 rounded-lg peer-checked:bg-main peer-checked:text-white bg-gray-200">
-					{value}
-				</span>
-			</label>
+		  <label>
+			<input 
+			  className="hidden peer" 
+			  type="checkbox" 
+			  name={name} 
+			  value={value} 
+			  defaultChecked={checkedValues.includes(value)} // 현재 값이 선택된 상태인지 확인
+			/>
+			<span className="peer py-2 px-4 rounded-lg peer-checked:bg-main peer-checked:text-white bg-gray-200">
+			  {value}
+			</span>
+		  </label>
 		);
-	};
+	  };
 
 	return (
 		<ListItem div noHover className="flex flex-col gap-2">
@@ -52,18 +58,37 @@ export default function Detail({ label, name, value, isEditing, options, onInput
 						>
 							{
 								"radio" in arguments[0] ? (
-									options.map(
-										(item) => (
-											<Radio key={`${name}-${item}`} name={name} value={item} defaultChecked={value.includes(item)} onChange={() => onInput(item)} />
-										)
-									)
+									options.map((item) => (
+										<Radio
+											key={`${name}-${item}`}
+											name={name}
+											value={item}
+											checkedValue={value} // 현재 선택된 mcategory 값을 Radio 컴포넌트에 전달
+											defaultChecked={value === item} // 이 줄은 필요 없어 보이며, Radio 컴포넌트 내에서 처리됨
+											onChange={() => onInput(item)}
+										/>
+									))
 								) : "multiple" in arguments[0] ? (
-									options.map(
-										(item) => (
-											<Checkbox key={`${name}-${item}`} name={name} value={item} defaultChecked={value.includes(item)} onChange={() => onInput(item)} />
-										)
-									)
-								) : <input id={id} className="-mx-1 px-1 py-1 w-full" type="text" required placeholder={label} defaultValue={value} />
+									options.map((item) => (
+									  <Checkbox
+										key={`${name}-${item}`}
+										name={name}
+										value={item}
+										checkedValues={Array.isArray(value) ? value : [value]}
+										onChange={(e) => {
+										  const itemValue = e.target.value;
+										  const isChecked = e.target.checked;
+										  let newValue;
+										  if (isChecked) {
+											newValue = [...value, itemValue];
+										  } else {
+											newValue = value.filter((v) => v !== itemValue);
+										  }
+										  onInput(newValue);
+										}}
+									  />
+									))
+								  ) :  <input id={id} className="-mx-1 px-1 py-1 w-full" type="text" required placeholder={label} defaultValue={value} />
 							}
 						</div>
 					</>

@@ -82,13 +82,13 @@ export default function AddClothing({ onClose, groupedClothesUse, onSelectedClot
         </div>
         <div className="flex flex-col justify-center gap-4 mt-4 mb-2">
           {/* 카테고리 선택 영역 */}
-          <div className="flex flex-nowrap overflow-x-auto whitespace-nowrap p-4 bg-white">
+          <div className="flex flex-nowrap overflow-x-auto whitespace-nowrap p-4 bg-white w-full">
             {Object.keys(groupedClothes).map((category) => (
               <button
                 key={category}
                 onClick={() => handleCategorySelect(category)}
-                className={`px-4 py-2 border rounded mb-2 ${selectedCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-400 transition duration-200`}
-              >
+                className={`px-4 py-2 border rounded mb-2 mr-1 ${selectedCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-400 transition duration-200`}
+                >
                 {category}
               </button>
             ))}

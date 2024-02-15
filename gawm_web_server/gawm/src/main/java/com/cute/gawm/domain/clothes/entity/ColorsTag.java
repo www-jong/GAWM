@@ -1,5 +1,6 @@
 package com.cute.gawm.domain.clothes.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,6 +10,6 @@ import javax.persistence.Id;
 public class ColorsTag {
     @Id // name을 기본 키로 사용
     private String name;
-
+    @Column(name = "colorCode")
     private String colorCode; // 실제 색상 코드를 저장하는 필드
 }
