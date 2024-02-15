@@ -26,7 +26,6 @@ export default function Menu() {
 			</ListItem>
 			<ListGroup div>
 				<ListItem link href="/mypage/bookmark" className="flex flex-row items-center gap-2">
-					<BookmarkIcon className="size-6" />
 					<span>북마크한 감각</span>
 				</ListItem>
 			</ListGroup>

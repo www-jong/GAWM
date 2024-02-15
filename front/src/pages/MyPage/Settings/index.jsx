@@ -110,7 +110,7 @@ export default function Settings() {
 				</ListItem>
 				<ListItem link href="/mypage/settings/age" className="flex flex-row gap-4">
 					<span className="grow">나이 설정</span>
-					<span className="text-[#767676]">{age ? age : ""}</span>
+					<span className="text-[#767676]">{age ? `${age}세` : ""}</span>
 				</ListItem>
 			</ListGroup>
 
