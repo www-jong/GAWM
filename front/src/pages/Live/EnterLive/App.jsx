@@ -4,7 +4,7 @@ import "./App.css";
 import { OpenVidu } from "openvidu-browser";
 import UserVideoComponent from "../UserVideoComponent.jsx";
 import UserModel from "../models/user-model.jsx";
-import ChatComponent from "../chat/ChatComponent.jsx";
+import ChatComponent from "../Chat/ChatComponent.jsx";
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
@@ -301,11 +301,20 @@ class EnterLive extends Component {
 
     return (
       <div className="container">
+         <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm mx-auto">
         {this.state.session === undefined ? (
           <div id="join">
             <div id="img-div">
               <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
             </div>
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-4xl font-bold text-gray-800">26°C 라이브</p>
+                <div className="space-x-1">
+                  <span className="bg-red-200 rounded-full h-3 w-3 inline-block"></span>
+                  <span className="bg-red-400 rounded-full h-3 w-3 inline-block"></span>
+                  <span className="bg-red-600 rounded-full h-3 w-3 inline-block"></span>
+                </div>
+              </div>
             <div id="join-dialog" className="jumbotron vertical-center">
               <h1> Join a video session </h1>
               <form className="form-group" onSubmit={this.joinSession}>
@@ -380,6 +389,7 @@ class EnterLive extends Component {
               </form>
             </div>
           </div>
+        
         ) : null}
 
         {this.state.session !== undefined ? (
@@ -448,6 +458,7 @@ class EnterLive extends Component {
           </div>
         ) : null}
       </div>
+      </div>
     );
   }
 
@@ -494,3 +505,54 @@ class EnterLive extends Component {
 }
 
 export default EnterLive;
+
+
+
+
+
+    
+      <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-4xl font-bold text-gray-800">26°C 라이브</p>
+          <div className="space-x-1">
+            <span className="bg-red-200 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-400 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-600 rounded-full h-3 w-3 inline-block"></span>
+          </div>
+        </div>
+        <div className="mb-4">
+          <h2 className="text-lg text-gray-800 font-bold mb-2">방 정보</h2>
+          <input
+            className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="room-title"
+            type="text"
+            placeholder="제목을 입력해주세요"
+          />
+        </div>
+        <div className="mb-6">
+          <h2 className="text-lg text-gray-800 font-bold mb-2">공개 설정</h2>
+          <select
+            className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline"
+            id="room-visibility"
+          >
+            <option>전체 공개</option>
+            <option>친구 공개</option>
+          </select>
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+          >
+            라이브 시작
+          </button>
+          <button
+            className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+            type="button"
+          >
+            취소
+          </button>
+        </div>
+      </div>
+  
+  

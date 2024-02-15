@@ -24,19 +24,15 @@ import MyPageSettingsPropertySetter from "./pages/MyPage/Settings/PropertySetter
 import MyPageAccountList from "./pages/MyPage/AccountList";
 import EnterLive from "./pages/Live/EnterLive/App.jsx";
 import Image from "./pages/AddFashion/ImageEdit.jsx";
-<<<<<<< HEAD
-
-=======
-// import LiveApp from "./pages/Live/App.jsx";
 import { fetchUserInfo  } from "./stores/user";
->>>>>>> f0edfc77d85cd5480381bd96323e6edd0fad6a1c
-function App() {
 
+function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
+
           <Route path="live" element={<Live />} />
           <Route path="enter" element={<EnterLive />} />
           <Route path="browse" element={<Browse />} />
@@ -44,7 +40,7 @@ function App() {
           <Route path="mypage" element={<MyPage />}>
             <Route index element={<MyPageMenu />} />
             <Route path="settings">
-              <Route index element={<Navigate to="/mypage" />} />
+              <Route index element={<MyPageSettings />} />
               <Route path="nickname" element={<MyPageSettingsPropertySetter />} />
               <Route path="gender" element={<MyPageSettingsPropertySetter />} />
               <Route path="age" element={<MyPageSettingsPropertySetter />} />
@@ -71,7 +67,7 @@ function App() {
         <Route path="landing" element={<Landing />} />
         <Route path="loading" element={<Loading />} />
       </Routes>
-      </BrowserRouter>
+    </BrowserRouter>
   );
 }
 

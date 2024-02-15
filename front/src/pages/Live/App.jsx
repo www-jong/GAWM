@@ -25,7 +25,7 @@ class Live extends Component {
       mainStreamManager: undefined,
       publisher: undefined,
       subscribers: [],
-      liveName: "26C 라이브 이름",
+      liveName: undefined,
       isPublic: true,
       deleted: false,
       token: "initial token",
@@ -305,51 +305,51 @@ class Live extends Component {
     return (
       <div className="container">
         {this.state.session === undefined ? (
-          <div id="join">
-            <div id="img-div">
-              <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
-            </div>
+
+          <div id="join" >
+    
+          <div className="flex justify-between items-center mb-4">
+          <p className="text-4xl font-bold text-gray-800">26°C 라이브 생성</p>
+          <div className="space-x-1">
+            <span className="bg-red-200 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-400 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-600 rounded-full h-3 w-3 inline-block"></span>
+          </div>
+        </div>
             <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> 26도씨 라이브 생성 </h1>
-              <h1> 방정보 </h1>
-              <form className="form-group" onSubmit={this.joinSession}>
-                <p>
-                  <label>Participant: </label>
+              
+              <form className="bg-white rounded-lg p-6 shadow-lg max-w-sm mx-auto" onSubmit={this.joinSession}>
+              <div className="mb-4">
+                <h2 className="text-lg text-gray-800 font-bold mb-2">방 정보</h2>
+                <input
+                  className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="liveName"
+                  type="text"
+                  placeholder="제목을 입력해주세요"
+                  value={liveName}
+                  onChange={this.handleChangeLiveName}
+                  required
+                />
+              </div>
+              <div className="mb-6">
+                <h2 className="text-lg text-gray-800 font-bold mb-2">공개 설정</h2>
+                <select
+                  className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline"
+                  type="text"
+                  id="isPublic"
+                  value={isPublic}
+                  onChange={this.handleChangeIspublic}
+                >
+                  <option>전체 공개</option>
+                  <option>친구 공개</option>
+                </select>
+              </div>
+              <div className="mb-6">
+
+              <p>
+              <h2 className="text-lg text-gray-800 font-bold mb-2">감 포인트</h2>
                   <input
-                    className="form-control"
-                    type="text"
-                    id="userName"
-                    value={myUserName}
-                    onChange={this.handleChangeUserName}
-                    required
-                  />
-                </p>
-                <p>
-                  <label> Session: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="sessionId"
-                    value={mySessionId}
-                    onChange={this.handleChangeSessionId}
-                    required
-                  />
-                </p> */}
-                <p>
-                  <label> 제목: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="liveName"
-                    value={liveName}
-                    onChange={this.handleChangeLiveName}
-                    required
-                  />
-                </p>
-                <p>
-                  <label> 감포인트: </label>
-                  <input
-                    className="form-control"
+                    className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     type="number"
                     id="livePoint"
                     value={this.state.myPoint}
@@ -357,64 +357,33 @@ class Live extends Component {
                     required
                   />
                 </p>
-                <p>
-                  <label> isPublic : </label>
-                  <label class="switch">
-                    <input
-                      type="checkbox"
-                      id="isPublic"
-                      checked={this.state.isPublic}
-                      onChange={this.handleChangeIspublic}
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </p>
-
-                <p>
-                  <label> 세션 비우기 : </label>
-                  <label class="switch">
-                    <input
-                      type="checkbox"
-                      id="deleted"
-                      checked={this.state.deleted}
-                      onChange={this.handleChangeDeleted}
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </p>
-
-                <p className="text-center">
+                </div>
+                
+                <p className="flex items-center justify-between">
                   <input
-                    className="btn btn-lg btn-success"
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     name="commit"
                     type="submit"
                     value="라이브 시작"
                   />
+                  <button
+                    className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                    type="button"
+                    onClick={this.handleRedirect}
+                  >
+                    취소
+                  </button>
                 </p>
               </form>
-              <p className="text-center">
-                <button onClick={this.handleRedirect}>취소</button>
-              </p>
-              {/* <p>
-                <button onClick={this.handleBack}>리다이렉트111</button>
-              </p>
-              <p>
-                <input
-                  className="btn btn-lg btn-success"
-                  name="commit"
-                  type="submit"
-                  value="취소"
-                  onClick={this.handleCancel}
-                />
-              </p> */}
+             
             </div>
           </div>
+      
         ) : null}
 
         {this.state.session !== undefined ? (
           <div id="session">
             <div id="session-header">
-              {/* <h1 id="session-title">{mySessionId}</h1> */}
               <input
                 className="btn btn-large btn-danger"
                 type="button"
@@ -439,7 +408,9 @@ class Live extends Component {
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
+              
               ) : null}
+                </div>
               {this.state.mainStreamManager !== undefined && (
                 <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                   <ChatComponent
@@ -451,7 +422,7 @@ class Live extends Component {
                 </div>
               )}
             </div>
-          </div>
+        
         ) : null}
       </div>
     );
@@ -505,7 +476,7 @@ export default Live;
 
 
 
-{/* <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm mx-auto">
+<div className="bg-white rounded-lg p-6 shadow-lg max-w-sm mx-auto">
         <div className="flex justify-between items-center mb-4">
           <p className="text-4xl font-bold text-gray-800">26°C 라이브</p>
           <div className="space-x-1">
@@ -547,4 +518,4 @@ export default Live;
             취소
           </button>
         </div>
-      </div> */}
+      </div> 
