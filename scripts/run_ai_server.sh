@@ -1,2 +1,2 @@
 cd ../gawm_ai_server
-aienv/bin/python main.py
+sudo aienv/bin/python main.py

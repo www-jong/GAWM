@@ -48,7 +48,7 @@ export default function ProfileBadge() {
 			{/* 프로필 사진 */}
 			<div
 				style={{ "--image-url": `url(${import.meta.env.VITE_CLOTHES_BASE_URL}/${profileImg})` }}
-				className={`flex-auto w-24 md:w-28 lg:w-32 min-w-20 md:min-w-28 lg:min-w-32 max-w-28 md:max-w-32 lg:max-w-36 aspect-square object-cover rounded-full ${profileImg ? "bg-[image:var(--image-url)]" : "bg-[#d9d9d9]"}`}
+				className={`flex-auto w-24 md:w-28 lg:w-32 min-w-20 md:min-w-28 lg:min-w-32 max-w-28 md:max-w-32 lg:max-w-36 aspect-square object-cover rounded-full ${profileImg ? "bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat" : "bg-[#d9d9d9]"}`}
 				src={``}
 			></div>
 			{/* 프로필 정보 */}

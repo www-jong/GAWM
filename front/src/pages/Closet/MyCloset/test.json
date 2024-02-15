@@ -3,7 +3,6 @@
 	"data": [
 		{
 			"clothesId": 8,
-			"userId": 12,
 			"clothesImg": "img_url",
 			"name": "Outfit 1",
 			"brand": "Brand A",
@@ -18,7 +17,6 @@
 		},
 		{
 			"clothesId": 15,
-			"userId": 13,
 			"clothesImg": "img_url",
 			"name": "Outfit 2",
 			"brand": "Brand B",
@@ -33,7 +31,6 @@
 		},
 		{
 			"clothesId": 22,
-			"userId": 12,
 			"clothesImg": "img_url",
 			"name": "Outfit 3",
 			"brand": "Brand C",
@@ -48,7 +45,6 @@
 		},
 		{
 			"clothesId": 30,
-			"userId": 13,
 			"clothesImg": "img_url",
 			"name": "Outfit 4",
 			"brand": "Brand D",

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import ListGroup from "../../../components/ListGroup";
 import ListItem from "../../../components/ListGroup/ListItem";
-import { updateUserInfo, useUserStore } from "../../../stores/user";
+import { updateNickname, updateUserInfo, useUserStore } from "../../../stores/user";
 import CenteredTopBar from "../CenteredTopBar";
 
 /**
@@ -19,7 +19,6 @@ export default function PropertySetter() {
 			"name": "nickname",
 			"label": "닉네임",
 			"type": "text",
-			"pattern": "^[a-z|A-Z|가-힣| |_|0-9]*$",
 			"value": undefined,
 			"setValue": undefined
 		},
@@ -56,11 +55,22 @@ export default function PropertySetter() {
 		}
 	}
 
+	const navigate = useNavigate();
+
 	// 정해지지 않은 URL 사용 시 빈 element 반환
 	if(!property) return <></>;
 
-	// user store에서 현재 값 가져오기
+	// user store에서 현재와 기본 값 가져오기
 	const initialValue = useUserStore((state) => state?.user[property.name]);
+	const defaultValues = useUserStore(
+		(state) => (
+			{
+				"nickname": state?.user?.nickname,
+				"gender": state?.user?.gender,
+				"age": state?.user?.age
+			}
+		)
+	);
 	[property.value, property.setValue] = useState(initialValue);
 
 	// 서버 요청 실패 시 표시할 메시지
@@ -80,12 +90,17 @@ export default function PropertySetter() {
 		if (initialValue === property.value)
 			return;
 
-		const payload = {};
-		payload[property.name] = property.value;
-
 		try {
-			await updateUserInfo(payload);
-			useNavigate("/mypage/settings");
+			if(property.name === "nickname") {
+				await updateNickname(property.value);
+			}
+			else {
+				await updateUserInfo(
+					property.name === "gender" ? property.value : defaultValues.gender,
+					property.name === "age" ? property.value : defaultValues.age
+				);
+			}
+			navigate("/mypage/settings");
 		}
 		catch(error) {
 			if(error?.response?.data?.message)

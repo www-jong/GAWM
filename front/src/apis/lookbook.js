@@ -111,6 +111,15 @@ export const unbookmarkLookbook = (lookbookId) => {
 };
 
 /**
+ * 북마크한 룩북 조회
+ * 
+ * @returns Promise 객체
+ */
+export const getBookmarkedLookbooks = () => (
+    axios.get(`${prefix}/bookmarked_list`)
+);
+
+/**
  * 룩북에 '감있어요' 등록
  *
  * @param {number|string} lookbookId '감있어요'를 할 룩북의 ID

@@ -41,6 +41,12 @@ public class UserController {
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, null);
     }
 
+    @PatchMapping("/userNickname")
+    public ResponseEntity<?> editNickname(String nickname, @LoginUser SessionUser sessionUser) throws IOException {
+        userService.updateNickname(sessionUser.getId(), nickname);
+        return ResponseUtil.buildBasicResponse(HttpStatus.OK, null);
+    }
+
     @GetMapping
     public ResponseEntity<?> search(@LoginUser SessionUser sessionUser, String keyword,
                                     @RequestParam(defaultValue = "0") int page,

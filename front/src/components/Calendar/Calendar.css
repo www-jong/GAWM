@@ -1,3 +1,12 @@
+.calendar-container {
+  width: 100vw; /* 화면 너비에 맞춤 */
+  max-width: 100%; /* 최대 너비를 100%로 제한 */
+  height: auto; /* 높이는 자동으로 조정 */
+  display: flex; /* Flexbox를 사용하여 중앙 정렬 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+}
+
 .react-calendar {
     margin-top: -0.5em;
     width: 100vw;

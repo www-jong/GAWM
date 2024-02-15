@@ -77,7 +77,7 @@ function ReactCalendar() {
 
 
     return (
-        <div>
+        <div class="calendar-container" className="flex justify-center">
             <Calendar
                 locale="ko"
                 onChange={setValue}
