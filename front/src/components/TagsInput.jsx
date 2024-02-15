@@ -8,10 +8,18 @@ export default function TagsInput({ onTagsChange }) {
     }, [tags, onTagsChange]);
 
     function handleKeyDown(e) {
-        if (e.key !== 'Enter') return;
+        if(e.key===' '){
+            e.preventDefault();
+            return;
+        }
+        if (e.key !== 'Enter' && e.key !==',') return;
         e.preventDefault();
-        const value = e.target.value;
-        if (!value.trim()) return;
+        const value = e.target.value.trim();
+        if (!value) return;
+        if (tags.includes(value)) {
+            alert('이미 존재하는 태그입니다.'); // 사용자에게 중복을 알리거나 다른 피드백 제공
+            return;
+        }
         setTags([...tags, value]);
         e.target.value = '';
     }

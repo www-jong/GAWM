@@ -3,12 +3,15 @@ import axios from 'axios';
 import logoImage from '../../assets/images/HomeLogo.svg';
 import LiveImg from './LiveImg.png';
 import TodayLookComponent from './TodayLookComponent.jsx';
+import AllLookComponent from './AllLookComponent.jsx';
 import LiveComponent from './LiveComponent.jsx';
-import {get_top_list} from '../../apis/lookbook'
+import {get_top_list,fetchLookbooks} from '../../apis/lookbook'
 import { gawmApiAxios } from '../../utilities/http-commons';
 const gawmapiAxios = gawmApiAxios()
 export default function Browse() {
     const [todayLooks, setTodayLooks] = useState([]);
+    const [allLooks, setAllLooks] = useState([]);
+    
     const [liveRooms, setLiveRooms] = useState([]);
 
     useEffect(() => {
@@ -37,7 +40,22 @@ export default function Browse() {
         fetchLiveRooms();
     }, []);
 
+    //내감어때 모든데이터 
+    useEffect(() => {
+        const fetchAllLooks = async () => {
+            try {
+                const response = await fetchLookbooks({ page: 0, size: 10, sort: 'createdAt,desc' });
+                console.log("모든내감어떄",response)
+                const filteredLooks = response.data.content.filter(look => look.isPublic === true);
 
+                setAllLooks(filteredLooks);
+            } catch (error) {
+                console.error('Today Looks 데이터를 불러오는데 실패했습니다.', error);
+            }
+        };
+
+        fetchAllLooks();
+    }, []);
 
     const Header = () => {
         return (
@@ -58,6 +76,24 @@ export default function Browse() {
                             lookImage={look.lookbook_img}
                             userId={look.user_id}
                             profileImage={look.profile_img}
+                        />
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    const AllLookSection = ({ title }) => {
+        return (
+            <div className="today-look-section mt-4">
+                <h2 className="h2-nps">{title}</h2>
+                <div className="grid grid-cols-2 gap-4 px-4">
+                    {allLooks?.map((look) => (
+                        <AllLookComponent
+                            key={look.lookbookId}
+                            lookImage={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.images[0]}
+                            userId={look.userNickname}
+                            profileImage={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.userProfileImg}
                         />
                     ))}
                 </div>
@@ -96,7 +132,7 @@ export default function Browse() {
             <div className="flex-1 mt-9">
                 <TodayLookSection title="오늘의 감각" />
                 <LiveSection title="26˚C 라이브" />
-                <TodayLookSection title="내감어때" />
+                <AllLookSection title="내감어때" />
             </div>
         </div>
     );

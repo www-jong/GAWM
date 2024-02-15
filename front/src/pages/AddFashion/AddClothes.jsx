@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Backbutton from '@/components/Button/BackButton.jsx';
 import downArrow from '@/assets/images/down-arrow.png';
-import {get_tagging_status,get_tag,uploadClothesImage} from '../../apis/clothes'
+import {get_tagging_status,get_tag_v2,uploadClothesImage,get_tag_v3,get_alltag} from '../../apis/clothes'
 export default function AddClothes() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,8 +31,70 @@ export default function AddClothes() {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedPatterns, setSelectedPatterns] = useState([]);
+  const [colorsArray, setColorsArray] = useState([]);
+  const [patternsArray,setPatternsArray]=useState([]);
+  const [materialsArray, setMaterialsArray] = useState([]);
+  /**
+  const colorsArray = [
+    { name: '흰색', colorCode: 'white' },
+    { name: '크림', colorCode: '#FFFDD0' },
+    { name: '베이지', colorCode: '#F5F5DC' },
+    { name: '연회색', colorCode: '#D3D3D3' },
+    { name: '검정색', colorCode: 'black' },
+    { name: '노랑', colorCode: 'yellow' },
+    { name: '코랄', colorCode: '#FF7F50' },
+    { name: '연분홍', colorCode: '#FFB6C1' },
+    { name: '빨강', colorCode: '#FF0000' },
+    { name: '파랑', colorCode: '#0000FF' },
+    { name: '하늘색', colorCode: '#87CEEB' },
+    // 다채색은 나중에 이미지로?
+  ];
 
+  const patternsArray = ['무지', '체크', '스트라이프', '프린트', '도트', '애니멀', '플로럴', '트로피칼', '페이즐리', '아가일', '밀리터리', '기타'];
+  const materialsArray = [
+    '면', '린넨', '폴리에스테르', '니트', '울', '퍼', '트위드', '나일론', '데님', '가죽', '스웨이드', '벨벳', '쉬폰', '실크', '코듀로이', '레이스', '기타'
+  ];
+   */
+  const fetchData = async () => {
+    try {
+      // get_alltag() 함수 호출을 통해 태그 데이터를 비동기로 받아옴
+      const response = await get_alltag();
+      if (response.status === 200) {
+        const data = await response.data; // JSON 형태로 데이터를 파싱
+        // 받아온 데이터를 각 상태에 설정
+        setColorsArray(data.colors);
+        setPatternsArray(data.patterns.map(pattern => pattern.name)); // 패턴 배열에서는 객체가 아닌 이름만 저장
+        setMaterialsArray(data.materials.map(material => material.name)); // 재질 배열에서는 객체가 아닌 이름만 저장
+      }
+    } catch (error) {
+      console.error('태그 데이터 로딩 중 오류 발생:', error);
+    }
+  };
+
+/**
+  useEffect(() => {
+    // aiTaggingInProgress 상태가 true일 때만 실행
+    if (aiTaggingInProgress) {
+      const performAiTagging = async () => {
+        console.log('AI 태깅 시작...');
+        try {
+          // 여기에 AI 태깅과 관련된 비동기 로직을 구현
+          const taggingResult = await get_tag_v3(product_id);
+          console.log('AI 태깅 결과:', taggingResult);
+          // 태깅 완료 후 필요한 상태 업데이트
+          setAiTaggingInProgress(false); // AI 태깅 작업이 완료되었으므로 진행 중 상태를 false로 설정
+        } catch (error) {
+          console.error('AI 태깅 중 오류 발생:', error);
+          setAiTaggingInProgress(false); // 오류 발생 시에도 진행 중 상태 해제
+        }
+      };
+  
+      performAiTagging();
+    }
+  }, [aiTaggingInProgress, product_id]);
+  */
   const checkImageStatus = async () => {
+
     try {
       const response = await get_tagging_status(product_id);
       if (response.status === 200) {
@@ -48,8 +110,10 @@ export default function AddClothes() {
     useEffect(() => {
       if (imagePreviewUrl && product_id) {
         setAiTaggingInProgress(true); // AI 태깅 시작 전 상태를 진행 중으로 설정
-
+        fetchData();
         checkImageStatus();
+        //fetchData();
+
       }
     }, [imagePreviewUrl, product_id]);
   
@@ -59,8 +123,17 @@ export default function AddClothes() {
       e.preventDefault();
       if(aiTaggingStatus&&!aiTaggingInProgress){
         try{
-          const tagResult = await get_tag(product_id);
-          console.log("태깅결과",tagResult);
+          const tagResult = await get_tag_v3(product_id);
+          fetchData()
+
+          if (tagResult.status === 200) {
+            const { colors, materials, patterns } = tagResult.data;
+    
+            // 각 태그 상태 업데이트
+            setSelectedColors(colors.map(color => color.name)); // 색상 이름 배열로 변환하여 상태 업데이트
+            setSelectedMaterials(materials.map(material => material.name)); // 재질 이름 배열로 변환하여 상태 업데이트
+            setSelectedPatterns(patterns.map(pattern => pattern.name)); // 패턴 이름 배열로 변환하여 상태 업데이트
+          }
         }catch(error){
           console.error("태깅가져오기 실패",error)
         }
@@ -108,15 +181,13 @@ export default function AddClothes() {
       m_category: mCategoryInput.current?.value,
       s_category: sCategoryInput.current?.value,
       colors: selectedColors,
-      materials: materialsInput.current?.value.split(',').map((item) => item.trim()),
-      patterns: patternsInput.current?.value.split(',').map((item) => item.trim()),
+      materials: selectedMaterials,
+      patterns: selectedPatterns,
     };
 
     formData.append('data', JSON.stringify(jsonData));
-    console.log(formData);
     try {
       const response = await uploadClothesImage(formData)
-      console.log(response)
       if (response.status==200) {
         alert('성공');
         navigate('/closet');
@@ -146,25 +217,7 @@ export default function AddClothes() {
     { m_category: '아우터', s_category: ['카디건', '재킷', '레더재킷', '트위드재킷', '코트', '숏패딩', '롱패딩', '경량 패딩', '트렌치코트', '사파리/헌팅재킷', '점퍼', '무스탕', '베스트', '레인코트'] }
   ];
 
-  const colorsArray = [
-    { name: '흰색', colorCode: '#FFFFFF' },
-    { name: '크림', colorCode: '#FFFDD0' },
-    { name: '베이지', colorCode: '#F5F5DC' },
-    { name: '연회색', colorCode: '#D3D3D3' },
-    { name: '검정색', colorCode: '#000000' },
-    { name: '노랑', colorCode: '#FFFF00' },
-    { name: '코랄', colorCode: '#FF7F50' },
-    { name: '연분홍', colorCode: '#FFB6C1' },
-    { name: '빨강', colorCode: '#FF0000' },
-    { name: '파랑', colorCode: '#0000FF' },
-    { name: '하늘색', colorCode: '#87CEEB' },
-    // 다채색은 나중에 이미지로?
-  ];
 
-  const patternsArray = ['무지', '체크', '스트라이프', '프린트', '도트', '애니멀', '플로럴', '트로피칼', '페이즐리', '아가일', '밀리터리', '기타'];
-  const materialsArray = [
-    '면', '린넨', '폴리에스테르', '니트', '울', '퍼', '트위드', '나일론', '데님', '가죽', '스웨이드', '벨벳', '쉬폰', '실크', '코듀로이', '레이스', '기타'
-  ];
 
 
 

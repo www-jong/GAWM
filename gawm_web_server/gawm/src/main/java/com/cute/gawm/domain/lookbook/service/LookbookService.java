@@ -152,7 +152,7 @@ public class LookbookService {
                     lookbook.getLookbook().getLookbookId()
                 ).image(
                     lookbookImages.get(0).getImage()
-                ).build()
+                ).isPublic(lookbook.getLookbook().isPublic()).build()
             );
         }
 
@@ -162,11 +162,10 @@ public class LookbookService {
     @Transactional
     public int createLookbook(Integer userId, List<MultipartFile> images, LookbookCreateRequest lookbookRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
-
         Lookbook lookbook = Lookbook.builder()
                 .user(user)
                 .view(0)
-                .isPublic(lookbookRequest.isPublic())
+                .isPublic(lookbookRequest.getIsPublic())
                 .build();
         int lookbookId=lookbookRepository.save(lookbook).getLookbookId();
 
@@ -219,6 +218,7 @@ public class LookbookService {
             Integer likeCnt=likesRepository.countByLookbook(lookbook);
             User user=lookbook.getUser();
             LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
+                    .isPublic(lookbook.isPublic())
                     .lookbookId(lookbook.getLookbookId())
                     .createdAt(lookbook.getCreatedAt())
                     .likeCnt(likeCnt)
@@ -255,6 +255,7 @@ public class LookbookService {
             LookbookCardResponse build = LookbookCardResponse.builder()
                     .lookbookId(lookbook.getLookbookId())
                     .image(lookbookImage.getImage())
+                    .isPublic(lookbook.isPublic())
                     .build();
             lookbookResponse.add(build);
         });
@@ -367,6 +368,7 @@ public class LookbookService {
                             .lookbookId(lookbook.getLookbookId())
                             .createdAt(lookbook.getCreatedAt())
                             .likeCnt(likeCnt)
+                            .isPublic(lookbook.isPublic())
                             .userNickname(user.getNickname())
                             .userProfileImg(user.getProfileImg())
                             .images(ImageUrls)
@@ -406,6 +408,7 @@ public class LookbookService {
                     .userNickname(user.getNickname())
                     .userProfileImg(user.getProfileImg())
                     .images(ImageUrls)
+                    .isPublic(lookbook.isPublic())
                     .build();
             responseList.add(build);
         });
@@ -489,6 +492,7 @@ public class LookbookService {
             LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
                     .lookbookId(lookbook.getLookbookId())
                     .createdAt(lookbook.getCreatedAt())
+                    .isPublic(lookbook.isPublic())
                     .likeCnt(likeCnt)
                     .userNickname(user.getNickname())
                     .userProfileImg(user.getProfileImg())

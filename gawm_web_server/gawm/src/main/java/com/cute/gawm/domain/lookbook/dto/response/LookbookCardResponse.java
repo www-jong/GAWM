@@ -8,4 +8,5 @@ import lombok.Getter;
 public class LookbookCardResponse {
     private int lookbookId;
     private String image;
+    private Boolean isPublic;
 }
