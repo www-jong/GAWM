@@ -13,8 +13,8 @@ import { toggleFollow } from '@/apis/user';
 import { useUserStore } from '@/stores/user.js'; // Zustand
 import EditLookBookModal from '@/components/Modal/EditLookBookModal.jsx';
 import Loading from "@/pages/Loading";
-import { fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, updateCommentInLookbook, deleteCommentFromLookbook } from '@/apis/lookbook.js'
-
+import { addCommentToLookbook, fetchLookbookById, updateLookbook, bookmarkLookbook, unbookmarkLookbook, likeLookbook, unlikeLookbook, updateCommentInLookbook, deleteCommentFromLookbook } from '@/apis/lookbook.js'
+//import LookClothes from './LookClothes'
 import 'swiper/css';
 import 'swiper/css/pagination';
 import './index.css';
@@ -22,6 +22,17 @@ import './index.css';
 
 
 export default function Look() {
+
+    const [commentText, setCommentText] = useState("");
+    const [likes, setLikes] = useState(0);
+    const [commentModalVisible, setCommentModalVisible] = useState(false);
+    const [comments, setComments] = useState([]); // 코멘트 데이터들을 상태로 관리
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editingCommentText, setEditingCommentText] = useState("");
+
     const { lookbookId } = useParams(); // URL에서 룩북 ID 가져옴
     const [lookData, setLookData] = useState(LookTest.data); // API 호출 결과 저장
 
@@ -29,7 +40,14 @@ export default function Look() {
         const fetchData = async () => {
             try {
                 const response = await fetchLookbookById(lookbookId);
-                setLookData(response.data);
+                const r_data = response.data.data
+                console.log(response)
+                setLookData(response.data.data);
+                setLikes(r_data.likeCnt)
+                setIsLiked(r_data.liked)
+                setIsBookmarked(r_data.bookmarked)
+                setComments(r_data.comment)
+                console.log(comments)
             } catch (error) {
                 console.error('룩북 데이터를 불러오는데 실패했습니다.', error);
             }
@@ -40,39 +58,34 @@ export default function Look() {
 
     const { userId, userNickname, userProfileImg, createdAt, clothes, lookbookImgs, comment, likeCnt, view, tag, liked, bookmarked, followed } = lookData;
 
-    const [commentText, setCommentText] = useState("");
-    const [likes, setLikes] = useState(likeCnt);
-    const [commentModalVisible, setCommentModalVisible] = useState(false);
-    const [comments, setComments] = useState(comment); // 코멘트 데이터들을 상태로 관리
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isLiked, setIsLiked] = useState(liked);
-    const [isBookmarked, setIsBookmarked] = useState(bookmarked);
-    const [editingCommentId, setEditingCommentId] = useState(null);
-    const [editingCommentText, setEditingCommentText] = useState("");
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if(editingCommentId) {
-          // 수정 모드일 때의 처리 로직
-          try {
-            const response = await updateCommentInLookbook(lookbookId, editingCommentId, commentText);
-            if (response.status === 200) {
-              alert('댓글이 수정되었습니다.');
-              // 코멘트 목록 업데이트 로직 필요...
-              cancelEdit(); // 수정 모드 종료
-            } else {
-              console.error('댓글 수정 실패:', response);
+        if (editingCommentId) {
+            // 수정 모드일 때의 처리 로직
+            try {
+                const response = await updateCommentInLookbook(lookbookId, editingCommentId, commentText);
+                if (response.status === 200) {
+                    alert('댓글이 수정되었습니다.');
+                    // 코멘트 목록 업데이트 로직 필요...
+                    cancelEdit(); // 수정 모드 종료
+                } else {
+                    console.error('댓글 수정 실패:', response);
+                }
+            } catch (error) {
+                console.error('댓글 수정 중 오류 발생:', error);
+                alert('댓글 수정에 실패했습니다.');
             }
-          } catch (error) {
-            console.error('댓글 수정 중 오류 발생:', error);
-            alert('댓글 수정에 실패했습니다.');
-          }
         } else {
-          // 새 댓글 추가 모드일 때의 처리 로직...
+            try {
+                const response = await addCommentToLookbook(lookbookId, commentText)
+            } catch (error) {
+                console.error('댓글 작성 중 에러발생', error)
+                alert('댓글 작성에 실패했습니다.')
+            }
         }
-      };
-    
+    };
+
 
     // 수정 관련
     const handleUpdateComment = async (commentId, updatedContent) => {
@@ -260,11 +273,9 @@ export default function Look() {
                         className="mySwiper"
                     >
                         <SwiperSlide>
-                            <img src={LookTestImg1} alt="룩 이미지1" className="w-full h-96 object-cover" />
+                            <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/' + lookbookImgs} alt="룩 이미지1" className="w-full h-96 object-cover" />
                         </SwiperSlide>
-                        <SwiperSlide>
-                            <img src={LookTestImg2} alt="룩 이미지2" className="w-full h-96 object-cover" />
-                        </SwiperSlide>
+
                     </Swiper>
                 </div>
 
@@ -369,6 +380,21 @@ export default function Look() {
                 </div>
 
 
+                {/* 옷 슬라이더 */}
+                <div className="mt-4">
+                    <Swiper
+                        slidesPerView={3} // 한 번에 보여줄 슬라이드 수
+                        spaceBetween={10} // 슬라이드 간의 간격
+                        className="mySwiper"
+                    >
+                        {clothes.map((clothe, index) => (
+                            <SwiperSlide key={index}>
+                                <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/' + clothe.clothesImg} alt={clothe.name} className="w-full object-cover" />
+                            </SwiperSlide>
+                        ))}
+                        {/* 옷 추가하기 버튼 */}
+                    </Swiper>
+                </div>
             </div>
             {isModalOpen && <EditLookBookModal lookbookId={lookbookId} onClose={() => setIsModalOpen(false)} />}
         </div>

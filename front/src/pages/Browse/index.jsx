@@ -92,6 +92,7 @@ export default function Browse() {
                     {allLooks?.map((look) => (
                         <AllLookComponent
                             key={look.lookbookId}
+                            lookbookId={look.lookbookId}
                             lookImage={import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.images[0]}
                             userId={look.userNickname}
                             profileImage={look.userProfileImg?import.meta.env.VITE_CLOTHES_BASE_URL + '/'+look.userProfileImg:Gawm}
