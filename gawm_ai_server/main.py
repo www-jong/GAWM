@@ -10,7 +10,6 @@ from fastapi.responses import JSONResponse,StreamingResponse
 from PIL import Image
 import asyncio, sys, io, uvicorn, os,datetime
 from dotenv import load_dotenv
-from transformers import pipeline
 from math import sqrt
 from util.image_util import check_status_until_done,get_tagging_dto,resize_image,submit_product_info,get_tagging_info
 from util.s3_util import upload_file_to_s3
