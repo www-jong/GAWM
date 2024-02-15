@@ -20,4 +20,5 @@ public class LookbookThumbnailResponse {
     private Timestamp createdAt;
     private List<String> images;
     private Integer likeCnt;
+    private Boolean isPublic;
 }

@@ -17,4 +17,5 @@ public class LookbookMiniResponse {
     private Timestamp createdAt;
     private List<LookbookImage> images;
     private Integer view;
+    private Boolean isPublic;
 }

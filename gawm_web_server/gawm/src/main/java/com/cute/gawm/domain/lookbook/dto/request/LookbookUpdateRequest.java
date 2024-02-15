@@ -9,4 +9,5 @@ import java.util.List;
 public class LookbookUpdateRequest {
     private List<Integer> clothes;
     private List<String> tags;
+    private Boolean isPublic;
 }
