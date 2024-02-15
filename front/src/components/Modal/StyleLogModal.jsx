@@ -73,7 +73,7 @@ export default function StyleLog({ date, onClose, stylelogIds }) {
                 effect={'cards'}
                 grabCursor={true}
                 modules={[EffectCards]}
-                className="mt-3.5 mb-12 w-full max-w-[280px] mySwiper"
+                className="mt-3.5 mb-12 w-full max-w-[280px] h-auto mySwiper"
               >
                 {stylelogImgUrls.map((item, index) => (
                   <SwiperSlide key={index} className="relative flex items-center justify-center overflow-hidden rounded-[18px] w-full pt-full">

@@ -179,21 +179,18 @@ export default function AddLookBook() {
   <p className="text-lg font-semibold cursor-pointer">코디한 옷</p>
   <div>
   {selectedClothes.length > 0 ? (
-    <Swiper
-    slidesPerView={3} // 한 번에 보여줄 슬라이드 수를 3으로 설정
-      spaceBetween={10}
-      className="mySwiper"
-    >
-      {selectedClothes.map((clothe, index) => (
-        <SwiperSlide key={index}>
-          <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/' + clothe.clothesImg} alt={clothe.name} className="object-cover w-24 h-full" />
-        </SwiperSlide>
-      ))}
-      {/* 옷 추가하기 버튼을 슬라이드로 추가 */}
-      <SwiperSlide>
-      <img className="mt-2" onClick={handleModalClick} src={plus_dark} alt="함께 입은 옷 추가" />
+  <Swiper slidesPerView={3} spaceBetween={10} className="mySwiper">
+    {selectedClothes.map((clothe, index) => (
+      <SwiperSlide key={index}>
+        <img src={import.meta.env.VITE_CLOTHES_BASE_URL + '/' + clothe.clothesImg} alt={clothe.name} className="w-24 h-24 object-cover" />
       </SwiperSlide>
-    </Swiper>
+    ))}
+    <SwiperSlide>
+      <div className="flex justify-center items-center w-24 h-24">
+        <img onClick={handleModalClick} src={plus_dark} alt="함께 입은 옷 추가" className="w-16 h-16 object-cover" />
+      </div>
+    </SwiperSlide>
+  </Swiper>
   ) : (
     <img className="mt-2 w-screen h-auto" onClick={handleModalClick} src={AddClothing} alt="함께 입은 옷 추가" />
   )}

@@ -27,16 +27,6 @@ import Image from "./pages/AddFashion/ImageEdit.jsx";
 // import LiveApp from "./pages/Live/App.jsx";
 import { fetchUserInfo  } from "./stores/user";
 function App() {
-	useEffect(
-		() => {
-			const load = async () => {
-				try { await fetchUserInfo(); }
-				catch(error) {}
-			};
-
-			load();
-		}
-	);
 
   return (
     <BrowserRouter>

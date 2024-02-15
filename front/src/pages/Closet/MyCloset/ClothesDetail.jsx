@@ -7,6 +7,7 @@ import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import { CheckIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { fetchUserInfo, useUserStore } from "../../../stores/user";
 
+
 /**
  * 옷의 상세정보를 표시하는 component를 생성합니다
  * 
@@ -49,20 +50,27 @@ export default function ClothesDetail({ clothesId, clothesIdSetter, onDelete }) 
 			const formData = new FormData(form.current);
 			const data = {};
 
-			data["name"] = formData.get("name");
-			data["brand"] = formData.get("brand");
-			data["m_category"] = formData.get("m_category");
-			data["s_category"] = formData.get("s_category");
+			data["name"] = clothes.name;
+			data["brand"] = clothes.brand;
+			data["mCategory"] = formData.get("m_category");
+			data["sCategory"] = formData.get("s_category");
 			data["colors"] = formData.getAll("colors");
 			data["materials"] = formData.getAll("materials");
 			data["patterns"] = formData.getAll("patterns");
 
 			const payload = new FormData();
-			payload.append("data", data);
+			payload.append("data",  JSON.stringify(data));
+			const parts = clothes.clothesImg.split(".com/");
+
+// 분할된 배열의 두 번째 요소(인덱스 1)가 원하는 값
+			const valueAfterDotCom = parts[1];
+			const emptyFile = new Blob([], { type: 'image/jpeg' });
+			payload.append("image",emptyFile,valueAfterDotCom);
+			console.log(data)
 			console.log(payload);
 
 			try {
-				await updateClothes(clothesId, formData);
+				await updateClothes(clothesId, payload);
 				fetchClothes();
 			}
 			catch(error) {

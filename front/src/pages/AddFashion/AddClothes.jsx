@@ -189,7 +189,7 @@ export default function AddClothes() {
     try {
       const response = await uploadClothesImage(formData)
       if (response.status==200) {
-        alert('성공');
+        //alert('성공');
         navigate('/closet');
       } else {
         const errorResult = await response.json();

@@ -164,6 +164,12 @@ export const get_tagging_status = async (productId) => {
         throw error; // 오류를 다시 던져 호출한 곳에서 처리할 수 있도록 합니다.
     }
 };
+
+export const logFormData = (formData) => {
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+};
 /**
  * 옷 이미지를 AI 서버에 업로드하여 태깅 정보를 받아오는 함수
  * 
@@ -172,6 +178,7 @@ export const get_tagging_status = async (productId) => {
  */
 export const uploadImageForTagging = async (formData) => {
     try {
+        
         // 'aiApiAxios' 인스턴스를 사용하여 AI 서버의 엔드포인트로 POST 요청
         const response = await aiApiAxios().post('/tag/upload/', formData, {
             headers: {
@@ -193,6 +200,7 @@ export const uploadImageForTagging = async (formData) => {
  * @returns Promise 객체
  */
 export function updateClothes(clothesId, data) {
+    logFormData(data)
 	return axios.patch(
 		`${prefix}/${clothesId}`,
 		data
