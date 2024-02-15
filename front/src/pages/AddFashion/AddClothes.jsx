@@ -127,6 +127,7 @@ export default function AddClothes() {
           fetchData()
 
           if (tagResult.status === 200) {
+
             const { colors, materials, patterns } = tagResult.data;
     
             // 각 태그 상태 업데이트
@@ -136,6 +137,8 @@ export default function AddClothes() {
           }
         }catch(error){
           console.error("태깅가져오기 실패",error)
+        }finally{
+          setAiTaggingInProgress(false); 
         }
 
       }

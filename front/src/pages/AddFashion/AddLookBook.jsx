@@ -22,7 +22,7 @@ export default function AddLookBook() {
   const clothesInput = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(location.state?.processedImageURL || '');
   const [tags, setTags] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
