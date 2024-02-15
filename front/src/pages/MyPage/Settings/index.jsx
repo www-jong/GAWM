@@ -86,53 +86,47 @@ export default function Settings() {
 
 	return (
 		<>
-			<CenteredTopBar backtrackTo="/mypage">
+			{/* 계정 설정 */}
+			<ListItem className="mt-4 pt-2 pb-1 text-[#767676] text-sm" noHover div>
 				계정 설정
-			</CenteredTopBar>
-
-			<AdaptiveContainer className="mt-12 mb-24">
-				{/* 계정 설정 */}
-				<ListItem className="pt-2 pb-1 text-[#767676] text-sm" noHover div>
-					계정 설정
+			</ListItem>
+			<ListGroup div>
+				<ListItem div className="cursor-pointer flex flex-row gap-4 items-center py-2" onClick={selectProfileImage}>
+					<span className="grow">프로필 사진 변경</span>
+					<input className="hidden" type="file" accept="image/*" ref={profileImageInput} onChange={changeProfileImage} />
+					<div
+						style={{"--image-url": `url(${import.meta.env.VITE_CLOTHES_BASE_URL}/${profileImg})`}}
+						className={`size-12 aspect-square rounded-full ${profileImg ? "bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat" : "bg-transparent"}`}
+					></div>
 				</ListItem>
-				<ListGroup div>
-					<ListItem div className="cursor-pointer flex flex-row gap-4 items-center" onClick={selectProfileImage}>
-						<span className="grow">프로필 사진 변경</span>
-						<input className="hidden" type="file" accept="image/*" ref={profileImageInput} onChange={changeProfileImage} />
-						<div
-							style={{"--image-url": `url(${import.meta.env.VITE_CLOTHES_BASE_URL}/${profileImg})`}}
-							className={`size-12 aspect-square rounded-full ${profileImg ? "bg-[image:var(--image-url)] bg-cover bg-center bg-no-repeat" : "bg-transparent"}`}
-						></div>
-					</ListItem>
-					{/* 닉네임 변경 */}
-					<ListItem link href="/mypage/settings/nickname" className="flex flex-row gap-4">
-						<span className="grow">닉네임 설정</span>
-						<span className="text-[#767676]">{nickname}</span>
-					</ListItem>
-					<ListItem link href="/mypage/settings/gender" className="flex flex-row gap-4">
-						<span className="grow">성별 설정</span>
-						<span className="text-[#767676]">{gender in genderNames ? genderNames[gender] : ""}</span>
-					</ListItem>
-					<ListItem link href="/mypage/settings/age" className="flex flex-row gap-4">
-						<span className="grow">나이 설정</span>
-						<span className="text-[#767676]">{age ? age : ""}</span>
-					</ListItem>
-				</ListGroup>
-
-				{/* 로그아웃 / 회원탈퇴 */}
-				<ListItem className="mt-4 pt-2 pb-1 text-[#767676] text-sm" noHover div>
-					기타
+				{/* 닉네임 변경 */}
+				<ListItem link href="/mypage/settings/nickname" className="flex flex-row gap-4">
+					<span className="grow">닉네임 설정</span>
+					<span className="text-[#767676]">{nickname}</span>
 				</ListItem>
-				{/* TODO: 로그아웃, 회원탈퇴 링크 추가 */}
-				<ListGroup div>
-					<ListItem div className="cursor-pointer" onClick={onLogout}>
-						로그아웃
-					</ListItem>
-					<ListItem div className="cursor-pointer" onClick={onAccountDeletion}>
-						회원탈퇴
-					</ListItem>
-				</ListGroup>
-			</AdaptiveContainer>
+				<ListItem link href="/mypage/settings/gender" className="flex flex-row gap-4">
+					<span className="grow">성별 설정</span>
+					<span className="text-[#767676]">{gender in genderNames ? genderNames[gender] : ""}</span>
+				</ListItem>
+				<ListItem link href="/mypage/settings/age" className="flex flex-row gap-4">
+					<span className="grow">나이 설정</span>
+					<span className="text-[#767676]">{age ? age : ""}</span>
+				</ListItem>
+			</ListGroup>
+
+			{/* 로그아웃 / 회원탈퇴 */}
+			<ListItem className="mt-4 pt-2 pb-1 text-[#767676] text-sm" noHover div>
+				기타
+			</ListItem>
+			{/* TODO: 로그아웃, 회원탈퇴 링크 추가 */}
+			<ListGroup div>
+				<ListItem div className="cursor-pointer" onClick={onLogout}>
+					로그아웃
+				</ListItem>
+				<ListItem div className="cursor-pointer" onClick={onAccountDeletion}>
+					회원탈퇴
+				</ListItem>
+			</ListGroup>
 		</>
 	)
 }

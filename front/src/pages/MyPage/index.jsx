@@ -36,7 +36,7 @@ export default function MyPage() {
 			<div className="fixed top-0 left-0 right-0 px-2.5 py-1.5 bg-white">
 				<TopBar title={<h1 className="font-bold text-2xl">마이페이지</h1>} />
 			</div>
-			<AdaptiveContainer className="flex flex-col gap-4 mt-12 mb-24">
+			<AdaptiveContainer className="flex flex-col mt-12 mb-24">
 				<ProfileBadge />
 				<Outlet />
 			</AdaptiveContainer>
