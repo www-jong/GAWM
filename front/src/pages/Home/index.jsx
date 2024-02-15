@@ -12,6 +12,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 import { Autoplay, Pagination } from 'swiper/modules';
+import { fetchUserInfo, useUserStore } from "../../stores/user";
 
 /**
  * 홈페이지 component를 생성합니다
@@ -20,7 +21,8 @@ import { Autoplay, Pagination } from 'swiper/modules';
  */
 function Home() {
 	const [liveRooms, setLiveRooms] = useState(undefined);
-	
+	const user = useUserStore();
+
 	useEffect(
 		() => {
 			const fetchLiveRooms = async () => {
@@ -35,6 +37,14 @@ function Home() {
 		},
 		[]
 	);
+	useEffect(
+		() => {
+			fetchUserInfo();
+		},
+		[]
+	);
+
+	console.log(user);
 
 	return (
 		<>

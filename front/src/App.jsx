@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
@@ -39,7 +39,7 @@ function App() {
           <Route path="mypage" element={<MyPage />}>
             <Route index element={<MyPageMenu />} />
             <Route path="settings">
-              <Route index element={<MyPageSettings />} />
+              <Route index element={<Navigate to="/mypage" />} />
               <Route path="nickname" element={<MyPageSettingsPropertySetter />} />
               <Route path="gender" element={<MyPageSettingsPropertySetter />} />
               <Route path="age" element={<MyPageSettingsPropertySetter />} />

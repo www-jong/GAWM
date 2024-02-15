@@ -100,7 +100,7 @@ export default function PropertySetter() {
 					property.name === "age" ? property.value : defaultValues.age
 				);
 			}
-			navigate("/mypage/settings");
+			navigate("/mypage");
 		}
 		catch(error) {
 			if(error?.response?.data?.message)
