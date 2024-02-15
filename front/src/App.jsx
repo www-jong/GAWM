@@ -7,7 +7,6 @@ import StyleLogSelect from "./pages/Closet/History/styleLogSelect.jsx";
 // import VideoRoomComponent from "./pages/Live/VideoRoomComponent.jsx";
 import Browse from "./pages/Browse";
 import Closet from "./pages/Closet";
-import StyleLogSelect from "./pages/Closet/History/styleLogSelect.jsx";
 import StyleLogAdd from "./pages/Closet/History/styleLogAdd.jsx";
 import StyleLogDetail from './pages/Closet/History/stylelogDetail.jsx';
 import StyleLogEdit from './pages/Closet/History/styleLogEdit.jsx';

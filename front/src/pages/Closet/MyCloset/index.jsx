@@ -5,7 +5,6 @@ import ClothesDetail from "./ClothesDetail";
 import { deleteClothes, getAllClothesInfo } from "../../../apis/clothes";
 import AdaptiveContainer from "../../../components/AdaptiveContainer";
 import testData from "./test.json";
-import testData from "./test.json";
 
 /**
  * 내 옷장 페이지 내 옷장 영역을 표시하는 요소를 반환합니다
