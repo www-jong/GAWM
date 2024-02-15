@@ -1,15 +1,15 @@
-import axios from 'axios';
-import React, { useEffect, Component } from 'react';
+import axios from "axios";
+import React, { Component } from "react";
 import "./App.css";
 import UserVideoComponent from "./UserVideoComponent.jsx";
 import { OpenVidu } from "openvidu-browser";
 import UserModel from "./models/user-model.jsx";
-import ChatComponent from "./Chat/ChatComponent.jsx";
-import { userInfo } from "../../apis/user"
-import { fetchUserInfo, useUserStore } from '../../stores/user.js';
+import ChatComponent from "./chat/ChatComponent.jsx";
+// import { useHistory } from "react-router-dom";
+// import { withRouter } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 
 var localUser = new UserModel();
-
 const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
 
@@ -18,8 +18,9 @@ class Live extends Component {
     super(props);
 
     this.state = {
-      mySessionId: "세션이 자동 생성 됩니다!",
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
+      mySessionId: "SessionA",
+      myUserName: "은은한 달",
+      myPoint: 10,
       session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
@@ -29,19 +30,15 @@ class Live extends Component {
       deleted: false,
       token: "initial token",
       localUser: undefined,
-      userId : undefined,
-      userNickname : undefined,
       chatDisplay: "block",
       accessAllowed: false,
     };
-    this.handleLoadUserData();
 
     // Bind this to the event handlers
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-    this.handleLoadSessionId = this.handleLoadSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -49,8 +46,10 @@ class Live extends Component {
     this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
     this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
     this.handleChangeToken = this.handleChangeToken.bind(this);
-    this.handleLoadUserData = this.handleLoadUserData.bind(this);
     this.toggleChat = this.toggleChat.bind(this);
+    this.handleRedirect = this.handleRedirect.bind(this);
+    this.handleBack = this.handleBack.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
   componentDidMount() {
@@ -65,13 +64,12 @@ class Live extends Component {
     this.leaveSession();
   }
 
-  handleLoadSessionId(currentUserId, currentUserNickname) {
-    console.log(currentUserId, currentUserNickname);
-    const liveRoomSession = this.createBase64LiveSessionId(currentUserId, currentUserNickname); //1
-    console.log("liveRoomID: ", liveRoomSession );
-    this.setState({
-      mySessionId: liveRoomSession
-    });
+  handleRedirect() {
+    window.location.href = "/gawm/";
+  }
+
+  handleBack() {
+    this.props.history.push("/gawm");
   }
 
   handleChangeSessionId(e) {
@@ -79,10 +77,16 @@ class Live extends Component {
       mySessionId: e.target.value,
     });
   }
-  
+
   handleChangeLiveName(e) {
     this.setState({
       liveName: e.target.value,
+    });
+  }
+
+  handleChangeLivePoint(e) {
+    this.setState({
+      myPoint: e.target.value,
     });
   }
 
@@ -109,28 +113,9 @@ class Live extends Component {
     });
   }
 
-  handleLoadUserData(e) {
-    let currentUserId;
-    let currentUserNickname;
-
-    const fetchUserInfoPromise = fetchUserInfo();
-
-    fetchUserInfoPromise.then(userData => {
-        // 사용자 정보가 가져와진 후에 필요한 작업을 수행합니다.
-        currentUserNickname = useUserStore.getState().user.nickname;
-        currentUserId = useUserStore.getState().user.userId; 
-        this.handleChangeSessionId(currentUserId, currentUserNickname);
-        // 데이터가 제대로 할당되었는지 확인하기 위해 콘솔에 출력합니다.
-        console.log("1",currentUserNickname, currentUserId);
-    }).catch(error => {
-        console.error('Error fetching user info:', error);
-    });
-    
-
-    this.setState({
-      userId: currentUserId,
-      userNickname: currentUserNickname,
-    });
+  handleCancel() {
+    const navigate = useNavigate();
+    navigate("/landing");
   }
 
   handleMainVideoStream(stream) {
@@ -156,6 +141,7 @@ class Live extends Component {
     event.preventDefault();
     if (this.state.mySessionId && this.state.myUserName) {
       const token = await this.getToken();
+      console.log(token);
       this.setState({
         token: token,
         session: true,
@@ -169,7 +155,8 @@ class Live extends Component {
         session: this.OV.initSession(),
       },
       async () => {
-        var mySession = this.state.session; 
+        var mySession = this.state.session;
+
         mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
           var subscribers = this.state.subscribers;
@@ -246,16 +233,20 @@ class Live extends Component {
 
     this.OV = null;
     this.setState({
-      session: undefined,
-      subscribers: [],
       mySessionId: "SessionA",
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
+      myUserName: "은은한 달",
+      myPoint: 10,
+      session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
-      isPublic: undefined,
-      deleted: undefined,
-      liveName: undefined,
-      chatDisplay: display,
+      subscribers: [],
+      liveName: "26C 라이브",
+      isPublic: true,
+      deleted: false,
+      token: "initial token",
+      localUser: undefined,
+      chatDisplay: "none",
+      accessAllowed: false,
     });
   }
 
@@ -312,6 +303,7 @@ class Live extends Component {
     const liveName = this.state.liveName;
     const deleted = this.state.deleted;
     var chatDisplay = { display: this.state.chatDisplay };
+    // const navigate = useNavigate();
 
     return (
       <div className="container">
@@ -321,9 +313,10 @@ class Live extends Component {
               <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
             </div>
             <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> Join a video session </h1>
+              <h1> 26도씨 라이브 생성 </h1>
+              <h1> 방정보 </h1>
               <form className="form-group" onSubmit={this.joinSession}>
-                <p>
+                {/* <p>
                   <label>Participant: </label>
                   <input
                     className="form-control"
@@ -333,8 +326,8 @@ class Live extends Component {
                     onChange={this.handleChangeUserName}
                     required
                   />
-                </p>
-                <p>
+                </p> */}
+                {/* <p>
                   <label> Session: </label>
                   <input
                     className="form-control"
@@ -342,6 +335,28 @@ class Live extends Component {
                     id="sessionId"
                     value={mySessionId}
                     onChange={this.handleChangeSessionId}
+                    required
+                  />
+                </p> */}
+                <p>
+                  <label> 제목: </label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="liveName"
+                    value={liveName}
+                    onChange={this.handleChangeLiveName}
+                    required
+                  />
+                </p>
+                <p>
+                  <label> 감포인트: </label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    id="livePoint"
+                    value={this.state.myPoint}
+                    onChange={this.handleChangeLivePoint}
                     required
                   />
                 </p>
@@ -356,17 +371,6 @@ class Live extends Component {
                     />
                     <span class="slider"></span>
                   </label>
-                </p>
-                <p>
-                  <label> liveName: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="liveName"
-                    value={liveName}
-                    onChange={this.handleChangeLiveName}
-                    required
-                  />
                 </p>
 
                 <p>
@@ -387,10 +391,25 @@ class Live extends Component {
                     className="btn btn-lg btn-success"
                     name="commit"
                     type="submit"
-                    value="JOIN"
+                    value="라이브 시작"
                   />
                 </p>
               </form>
+              <p className="text-center">
+                <button onClick={this.handleRedirect}>취소</button>
+              </p>
+              {/* <p>
+                <button onClick={this.handleBack}>리다이렉트111</button>
+              </p>
+              <p>
+                <input
+                  className="btn btn-lg btn-success"
+                  name="commit"
+                  type="submit"
+                  value="취소"
+                  onClick={this.handleCancel}
+                />
+              </p> */}
             </div>
           </div>
         ) : null}
@@ -398,7 +417,7 @@ class Live extends Component {
         {this.state.session !== undefined ? (
           <div id="session">
             <div id="session-header">
-              <h1 id="session-title">{liveName}</h1>
+              {/* <h1 id="session-title">{mySessionId}</h1> */}
               <input
                 className="btn btn-large btn-danger"
                 type="button"
@@ -445,26 +464,20 @@ class Live extends Component {
     const sessionId = await this.createSession(
       this.state.mySessionId,
       this.state.liveName,
+      this.state.myPoint,
       this.state.isPublic,
       this.state.deleted
     );
     return await this.createToken(this.state.mySessionId);
   }
 
-   createBase64LiveSessionId(userId, nickname) {
-      var userIdBase64 = window.btoa(unescape(encodeURIComponent( userId )));
-      var nickNameBase64 = window.btoa(unescape(encodeURIComponent( nickname )));
-      var liveSessionId = (userIdBase64 + nickNameBase64);
-      liveSessionId=liveSessionId.replaceAll('=','_').replaceAll('\\','_').replaceAll('+','_');
-      return liveSessionId;
-  }
-
-  async createSession(sessionId, liveName, isPublic, deleted) {
+  async createSession(sessionId, liveName, livePoint, isPublic, deleted) {
     const response = await axios.post(
       APPLICATION_SERVER_URL + "gawm/back/api/sessions",
       {
         customSessionId: sessionId,
         liveName: liveName,
+        livePoint: livePoint,
         isPublic: isPublic,
         deleted: deleted,
       },
@@ -485,9 +498,9 @@ class Live extends Component {
         withCredentials: true,
       }
     );
+    console.log(response);
     return response.data;
   }
 }
-
 
 export default Live;

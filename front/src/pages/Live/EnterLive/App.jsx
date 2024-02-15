@@ -4,7 +4,7 @@ import "./App.css";
 import { OpenVidu } from "openvidu-browser";
 import UserVideoComponent from "../UserVideoComponent.jsx";
 import UserModel from "../models/user-model.jsx";
-import ChatComponent from "../Chat/ChatComponent.jsx";
+import ChatComponent from "../chat/ChatComponent.jsx";
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
@@ -42,7 +42,6 @@ class EnterLive extends Component {
     this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
     this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
     this.handleChangeToken = this.handleChangeToken.bind(this);
-    this.handleChangeSubscribers = this.handleChangeSubscribers.bind(this);
     this.toggleChat = this.toggleChat.bind(this);
     this.onChat = this.onChat.bind(this);
     this.handleChangeSubscribers = this.handleChangeSubscribers.bind(this);
@@ -84,34 +83,6 @@ class EnterLive extends Component {
     });
   }
 
-  handleChangeSubscribers(e){
-
-    this.OV = new OpenVidu();
-
-     this.setState(
-      {
-        session: this.OV.initSession(),
-      });
-      
-    var mySession = this.state.session;
-    console.log(mySession);
-      mySession.on("streamCreated", (event) => {
-      var subscriber = mySession.subscribe(event.stream, undefined);
-      console.log("subscriber: ",subscriber);
-      var subscribers = this.state.subscribers;
-      console.log(subscribers);
-      console.log(subscriber);
-      subscribers.push(subscriber);
-    
-      
-      this.setState({
-        subscribers: subscribers,
-      });
-    });
-    console.log("handleChangeSubscriber: " , this.state.subscribers);
-  }
-
-
   handleChangeDeleted(event) {
     const isChecked = event.target.checked;
     this.setState({ deleted: isChecked });
@@ -149,7 +120,7 @@ class EnterLive extends Component {
     }
   }
 
-   async joinSession() {
+  async joinSession() {
     event.preventDefault();
     if (this.state.mySessionId && this.state.myUserName) {
       const token = await this.getToken();
@@ -162,18 +133,20 @@ class EnterLive extends Component {
 
     this.OV = new OpenVidu();
 
-     this.setState(
+    this.setState(
       {
         session: this.OV.initSession(),
       },
-         () => {
+      async () => {
         var mySession = this.state.session;
-        
-         mySession.on("streamCreated", (event) => {
+
+        mySession.on("streamCreated", (event) => {
           var subscriber = mySession.subscribe(event.stream, undefined);
           var subscribers = this.state.subscribers;
           subscribers.push(subscriber);
 
+          // const data = { name: "subscriber", data: subscriber };
+          // console.log(data);
           if (subscriber.stream != null) {
             console.log("담았다!");
             this.handleMainVideoStream(subscriber);
@@ -198,7 +171,7 @@ class EnterLive extends Component {
 
         mySession
           .connect(this.state.token, { clientData: this.state.myUserName })
-          .then(  () =>  {
+          .then(async () => {
             // let publisher = await this.OV.initPublisherAsync(undefined, {
             //   audioSource: undefined,
             //   videoSource: undefined,
@@ -209,17 +182,16 @@ class EnterLive extends Component {
             //   insertMode: "APPEND",
             //   mirror: false,
             // });
-            
 
             // mySession.publish(publisher);
 
-             localUser.setNickname(this.state.myUserName);
-             localUser.setConnectionId(this.state.session.connection.connectionId);
-             localUser.setScreenShareActive(true);
-             localUser.setStreamManager(publisher);
-             localUser.setType("remote");
-             localUser.setAudioActive(true);
-             localUser.setVideoActive(true);
+            localUser.setNickname(this.state.myUserName);
+            localUser.setConnectionId(this.state.session.connection.connectionId);
+            localUser.setScreenShareActive(true);
+            // localUser.setStreamManager(publisher);
+            localUser.setType("remote");
+            localUser.setAudioActive(true);
+            localUser.setVideoActive(true);
 
             // var devices = await this.OV.getDevices();
             // var videoDevices = devices.filter((device) => device.kind === "videoinput");
@@ -325,9 +297,8 @@ class EnterLive extends Component {
     const isPublic = this.state.isPublic;
     const liveName = this.state.liveName;
     const deleted = this.state.deleted;
-    this.handleChangeSubscribers();
     var chatDisplay = { display: this.state.chatDisplay };
-    console.log("vdvd");
+
     return (
       <div className="container">
         {this.state.session === undefined ? (
@@ -481,12 +452,13 @@ class EnterLive extends Component {
   }
 
   async getToken() {
-    const sessionId = await this.createSession(
-      this.state.mySessionId,
-      this.state.liveName,
-      this.state.isPublic,
-      this.state.deleted
-    );
+    // const sessionId = await this.createSession(
+    //   this.state.mySessionId,
+    //   this.state.liveName,
+    //   this.state.isPublic,
+    //   this.state.deleted
+    // );
+    const sessionId = "SessionA";
     return await this.createToken(this.state.mySessionId);
   }
 

@@ -86,13 +86,11 @@ export default class ChatComponent extends Component {
 
   render() {
     const styleChat = { display: this.props.chatDisplay };
-    console.log("chatCompoenet-subscribers : ",this.props.subscribers);
     return (
       <div id="chatContainer">
         <div id="chatComponent" style={styleChat}>
           <div id="chatToolbar">
             <span>{this.props.user.getStreamManager().stream.session.sessionId} - CHAT</span>
-            <span>{this.props.subscribers.stream.session.sessionId} - CHAT</span>
             <button id="closeButton" onClick={this.close}>
               {/* <HighlightOff color="secondary" /> */}
               Close

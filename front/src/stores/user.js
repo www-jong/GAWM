@@ -21,7 +21,7 @@ export const useUserStore = create(
 			 * - follower_num: 팔로워 수
 			 * - provider: 로그인 서비스 제공자
 			 */
-			"user": null
+			"user": []
 		}
 	)
 );

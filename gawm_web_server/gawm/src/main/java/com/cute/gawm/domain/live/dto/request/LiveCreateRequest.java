@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LiveCreateRequest {
     private String name;
+    private Integer point;
     private boolean isPublic;
 }
