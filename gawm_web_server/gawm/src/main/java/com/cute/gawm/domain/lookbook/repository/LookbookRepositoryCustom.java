@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface LookbookRepositoryCustom {
@@ -12,4 +13,6 @@ public interface LookbookRepositoryCustom {
        PageImpl<Lookbook> findAllLookbookByUserId(int userId, Pageable pageable);
        PageImpl<Lookbook> searchLookbook(String keyword, Pageable pageable);
        List<Lookbook> findTopLookbook(Timestamp startDate, Timestamp endDate);
+       PageImpl<Lookbook> searchLookbookByTag(ArrayList<String> tags, Pageable pageable);
+
 }

@@ -415,6 +415,28 @@ public class LookbookService {
         return new PageImpl<>(responseList, pageable, responseList.size());
     }
 
+
+    public PageImpl<LookbookThumbnailResponse> getSearchLookbookByTag(ArrayList<String> tags, Pageable pageable) {
+        log.info("keyword={}",tags);
+        PageImpl<Lookbook> lookbooks = lookbookRepository.searchLookbookByTag(tags, pageable);
+        List<LookbookThumbnailResponse> responseList = new ArrayList<>();
+        lookbooks.forEach(lookbook -> {
+            List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+            List<String> ImageUrls=lookbookImage.stream().map(Image-> Image.getImage()).collect(Collectors.toList());
+            Integer likeCnt=likesRepository.countByLookbook(lookbook);
+            User user=lookbook.getUser();
+            LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
+                    .lookbookId(lookbook.getLookbookId())
+                    .createdAt(lookbook.getCreatedAt())
+                    .likeCnt(likeCnt)
+                    .userNickname(user.getNickname())
+                    .userProfileImg(user.getProfileImg())
+                    .images(ImageUrls)
+                    .build();
+            responseList.add(build);
+        });
+        return new PageImpl<>(responseList, pageable, responseList.size());
+    }
     @Transactional
     public String manageBookmark(Integer userId, Integer lookbookId) {
         Lookbook lookbook = lookbookRepository.findByLookbookId(lookbookId);

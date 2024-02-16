@@ -120,24 +120,7 @@ public class LiveService {
         );
     }
 
-    @Transactional
-    public void createLive(String session, Integer userId, String name, boolean isPublic, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
-        Live live = liveRepository.findByUserAndIsDeletedFalse(user);
-        if (live != null) {
-            throw new DataMismatchException("해당 유저에게 아직 종료되지 않은 라이브가 존재합니다.");
-        }
-        SessionProperties properties = SessionProperties.fromJson(params).build();
 
-        live = Live.builder()
-                .name(name)
-                .user(user)
-                .session(session)
-                .isPublic(isPublic)
-                .build();
-
-        liveRepository.save(live);
-    }
 
 //    @Transactional
 //    public void deleteLive(Integer userId, LiveDeleteRequest request) { // 유저아이디랑 라이브세션이나 라이브이름으로 삭제하도록
@@ -173,13 +156,33 @@ public class LiveService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(connection.getToken());
 
         String token = builder.build().getQueryParams().getFirst("token");
-        System.out.println(connection.getConnectionId());
-        System.out.println(connection.getIp());
 
-        System.out.println(token);
+        log.info("connection.getConnectionId()={}",connection.getConnectionId());
+        log.info("connection.getIp()={}",connection.getIp());
+        log.info("token",token);
 
 
         return connection;
+    }
+
+    @Transactional
+    public void createLive(String session, Integer userId, String name, Integer point, boolean isPublic, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
+        Live live = liveRepository.findByUserAndIsDeletedFalse(user);
+        if (live != null) {
+            deleteLiveByUserId(userId);
+        }
+        SessionProperties properties = SessionProperties.fromJson(params).build();
+
+        live = Live.builder()
+                .name(name)
+                .user(user)
+                .point(point)
+                .session(session)
+                .isPublic(isPublic)
+                .build();
+
+        liveRepository.save(live);
     }
 
     public String initSession(Integer userId, SessionProperties properties, Map<String, Object> params) throws OpenViduJavaClientException, OpenViduHttpException {
@@ -196,7 +199,17 @@ public class LiveService {
             isPublic = true;
         } else isPublic = false;
         Session session = openvidu.createSession(properties);
+        String customSessionId = (String) params.get("customSessionId");
+        String liveName = (String) params.get("liveName");
+        Integer livePoint = (Integer) params.get("livePoint");
+//        Boolean isPublic = (Boolean) params.get("isPublic");
+        Boolean deleted = (Boolean) params.get("deleted");
+        createLive(session.getSessionId(), userId, liveName, livePoint, isPublic, params);
 
+        log.info("liveName={}",liveName );
+        log.info("livePoint={}",livePoint );
+        log.info("isPublic={}",isPublic );
+        log.info("params={}",params);
 
         return session.getSessionId();
     }

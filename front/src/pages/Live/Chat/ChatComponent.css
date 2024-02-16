@@ -33,7 +33,7 @@
   right: 0;
   bottom: 0;
   margin: auto;
-  height: calc(100% - 30px);
+  height: calc(100% - 300px);
   width: calc(100% - 30px);
   border-radius: 20px;
 }

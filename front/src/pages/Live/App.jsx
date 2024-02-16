@@ -18,30 +18,27 @@ class Live extends Component {
     super(props);
 
     this.state = {
-      mySessionId: "세션이 자동 생성 됩니다!",
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
+      mySessionId: "SessionA",
+      myUserName: "은은한 달",
+      myPoint: 10,
       session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
       subscribers: [],
-      liveName: "26C 라이브 이름",
+      liveName: undefined,
       isPublic: true,
       deleted: false,
       token: "initial token",
       localUser: undefined,
-      userId : undefined,
-      userNickname : undefined,
       chatDisplay: "block",
       accessAllowed: false,
     };
-    this.handleLoadUserData();
 
     // Bind this to the event handlers
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-    this.handleLoadSessionId = this.handleLoadSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -49,8 +46,10 @@ class Live extends Component {
     this.handleChangeLiveName = this.handleChangeLiveName.bind(this);
     this.handleChangeDeleted = this.handleChangeDeleted.bind(this);
     this.handleChangeToken = this.handleChangeToken.bind(this);
-    this.handleLoadUserData = this.handleLoadUserData.bind(this);
     this.toggleChat = this.toggleChat.bind(this);
+    this.handleRedirect = this.handleRedirect.bind(this);
+    this.handleBack = this.handleBack.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
   componentDidMount() {
@@ -65,13 +64,12 @@ class Live extends Component {
     this.leaveSession();
   }
 
-  handleLoadSessionId(currentUserId, currentUserNickname) {
-    console.log(currentUserId, currentUserNickname);
-    const liveRoomSession = this.createBase64LiveSessionId(currentUserId, currentUserNickname); //1
-    console.log("liveRoomID: ", liveRoomSession );
-    this.setState({
-      mySessionId: liveRoomSession
-    });
+  handleRedirect() {
+    window.location.href = "/gawm/";
+  }
+
+  handleBack() {
+    this.props.history.push("/gawm");
   }
 
   handleChangeSessionId(e) {
@@ -79,10 +77,16 @@ class Live extends Component {
       mySessionId: e.target.value,
     });
   }
-  
+
   handleChangeLiveName(e) {
     this.setState({
       liveName: e.target.value,
+    });
+  }
+
+  handleChangeLivePoint(e) {
+    this.setState({
+      myPoint: e.target.value,
     });
   }
 
@@ -109,28 +113,9 @@ class Live extends Component {
     });
   }
 
-  handleLoadUserData(e) {
-    let currentUserId;
-    let currentUserNickname;
-
-    const fetchUserInfoPromise = fetchUserInfo();
-
-    fetchUserInfoPromise.then(userData => {
-        // 사용자 정보가 가져와진 후에 필요한 작업을 수행합니다.
-        currentUserNickname = useUserStore.getState().user.nickname;
-        currentUserId = useUserStore.getState().user.userId; 
-        this.handleChangeSessionId(currentUserId, currentUserNickname);
-        // 데이터가 제대로 할당되었는지 확인하기 위해 콘솔에 출력합니다.
-        console.log("1",currentUserNickname, currentUserId);
-    }).catch(error => {
-        console.error('Error fetching user info:', error);
-    });
-    
-
-    this.setState({
-      userId: currentUserId,
-      userNickname: currentUserNickname,
-    });
+  handleCancel() {
+    const navigate = useNavigate();
+    navigate("/landing");
   }
 
   handleMainVideoStream(stream) {
@@ -246,16 +231,20 @@ class Live extends Component {
 
     this.OV = null;
     this.setState({
-      session: undefined,
-      subscribers: [],
       mySessionId: "SessionA",
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
+      myUserName: "은은한 달",
+      myPoint: 10,
+      session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
-      isPublic: undefined,
-      deleted: undefined,
-      liveName: undefined,
-      chatDisplay: display,
+      subscribers: [],
+      liveName: "26C 라이브",
+      isPublic: true,
+      deleted: false,
+      token: "initial token",
+      localUser: undefined,
+      chatDisplay: "none",
+      accessAllowed: false,
     });
   }
 
@@ -316,89 +305,85 @@ class Live extends Component {
     return (
       <div className="container">
         {this.state.session === undefined ? (
-          <div id="join">
-            <div id="img-div">
-              <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
-            </div>
+
+          <div id="join" >
+    
+          <div className="flex justify-between items-center mb-4">
+          <p className="text-4xl font-bold text-gray-800">26°C 라이브 생성</p>
+          <div className="space-x-1">
+            <span className="bg-red-200 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-400 rounded-full h-3 w-3 inline-block"></span>
+            <span className="bg-red-600 rounded-full h-3 w-3 inline-block"></span>
+          </div>
+        </div>
             <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> Join a video session </h1>
-              <form className="form-group" onSubmit={this.joinSession}>
-                <p>
-                  <label>Participant: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="userName"
-                    value={myUserName}
-                    onChange={this.handleChangeUserName}
-                    required
-                  />
-                </p>
-                <p>
-                  <label> Session: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="sessionId"
-                    value={mySessionId}
-                    onChange={this.handleChangeSessionId}
-                    required
-                  />
-                </p>
-                <p>
-                  <label> isPublic : </label>
-                  <label class="switch">
-                    <input
-                      type="checkbox"
-                      id="isPublic"
-                      checked={this.state.isPublic}
-                      onChange={this.handleChangeIspublic}
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </p>
-                <p>
-                  <label> liveName: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="liveName"
-                    value={liveName}
-                    onChange={this.handleChangeLiveName}
-                    required
-                  />
-                </p>
+              
+              <form className="bg-white rounded-lg p-6 shadow-lg max-w-sm mx-auto" onSubmit={this.joinSession}>
+              <div className="mb-4">
+                <h2 className="text-lg text-gray-800 font-bold mb-2">방 정보</h2>
+                <input
+                  className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="liveName"
+                  type="text"
+                  placeholder="제목을 입력해주세요"
+                  value={liveName}
+                  onChange={this.handleChangeLiveName}
+                  required
+                />
+              </div>
+              <div className="mb-6">
+                <h2 className="text-lg text-gray-800 font-bold mb-2">공개 설정</h2>
+                <select
+                  className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline"
+                  type="text"
+                  id="isPublic"
+                  value={isPublic}
+                  onChange={this.handleChangeIspublic}
+                >
+                  <option>전체 공개</option>
+                  <option>친구 공개</option>
+                </select>
+              </div>
+              <div className="mb-6">
 
-                <p>
-                  <label> 세션 비우기 : </label>
-                  <label class="switch">
-                    <input
-                      type="checkbox"
-                      id="deleted"
-                      checked={this.state.deleted}
-                      onChange={this.handleChangeDeleted}
-                    />
-                    <span class="slider"></span>
-                  </label>
-                </p>
-
-                <p className="text-center">
+              <p>
+              <h2 className="text-lg text-gray-800 font-bold mb-2">감 포인트</h2>
                   <input
-                    className="btn btn-lg btn-success"
+                    className="border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="number"
+                    id="livePoint"
+                    value={this.state.myPoint}
+                    onChange={this.handleChangeLivePoint}
+                    required
+                  />
+                </p>
+                </div>
+                
+                <p className="flex items-center justify-between">
+                  <input
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     name="commit"
                     type="submit"
-                    value="JOIN"
+                    value="라이브 시작"
                   />
+                  <button
+                    className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                    type="button"
+                    onClick={this.handleRedirect}
+                  >
+                    취소
+                  </button>
                 </p>
               </form>
+             
             </div>
           </div>
+      
         ) : null}
 
         {this.state.session !== undefined ? (
           <div id="session">
             <div id="session-header">
-              <h1 id="session-title">{liveName}</h1>
               <input
                 className="btn btn-large btn-danger"
                 type="button"
@@ -423,7 +408,9 @@ class Live extends Component {
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
+              
               ) : null}
+         
               {this.state.mainStreamManager !== undefined && (
                 <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                   <ChatComponent
@@ -435,7 +422,7 @@ class Live extends Component {
                 </div>
               )}
             </div>
-          </div>
+        </div>
         ) : null}
       </div>
     );
@@ -445,26 +432,20 @@ class Live extends Component {
     const sessionId = await this.createSession(
       this.state.mySessionId,
       this.state.liveName,
+      this.state.myPoint,
       this.state.isPublic,
       this.state.deleted
     );
     return await this.createToken(this.state.mySessionId);
   }
 
-   createBase64LiveSessionId(userId, nickname) {
-      var userIdBase64 = window.btoa(unescape(encodeURIComponent( userId )));
-      var nickNameBase64 = window.btoa(unescape(encodeURIComponent( nickname )));
-      var liveSessionId = (userIdBase64 + nickNameBase64);
-      liveSessionId=liveSessionId.replaceAll('=','_').replaceAll('\\','_').replaceAll('+','_');
-      return liveSessionId;
-  }
-
-  async createSession(sessionId, liveName, isPublic, deleted) {
+  async createSession(sessionId, liveName, livePoint, isPublic, deleted) {
     const response = await axios.post(
       APPLICATION_SERVER_URL + "gawm/back/api/sessions",
       {
         customSessionId: sessionId,
         liveName: liveName,
+        livePoint: livePoint,
         isPublic: isPublic,
         deleted: deleted,
       },
@@ -485,9 +466,11 @@ class Live extends Component {
         withCredentials: true,
       }
     );
+    console.log(response);
     return response.data;
   }
 }
 
 
 export default Live;
+
