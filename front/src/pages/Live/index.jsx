@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { useEffect, useState } from "react";
-import { fetchUserInfo, useUserStore } from "../../stores/user.js";
+import { fetchUserInfo, useUserStore } from "../../stores/user";
 import Live from "./App";
 
 function LiveHome() {
