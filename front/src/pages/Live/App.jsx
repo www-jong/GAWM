@@ -19,7 +19,7 @@ class Live extends Component {
     super(props);
 
     this.state = {
-      mySessionId: "sfo7UYWnoqTcqcVlKza9",
+      mySessionId: "SessionA",
       myUserName: "은은한 달",
       myPoint: 10,
       session: undefined,

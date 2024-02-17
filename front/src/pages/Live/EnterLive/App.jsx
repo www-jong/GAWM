@@ -367,8 +367,10 @@ class EnterLive extends Component {
   }
 
   async getToken() {
-    const sessionId = "SessionA";
-    return await this.createToken(this.state.mySessionId);
+    this.setState({
+      mySessionId: this.props.sessionId,
+    });
+    return await this.createToken(this.props.sessionId);
   }
 
   async createSession(sessionId, liveName, isPublic, deleted) {

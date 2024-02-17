@@ -15,11 +15,13 @@ export default function Browse() {
   const [allLooks, setAllLooks] = useState([]);
 
   const [liveRooms, setLiveRooms] = useState([]);
+  const user = useUserStore();
 
   //유저 정보
   useEffect(() => {
     fetchUserInfo();
   }, []);
+  console.log(user.user.nickname);
 
   useEffect(() => {
     const fetchTodayLooks = async () => {
@@ -129,6 +131,7 @@ export default function Browse() {
           {liveRooms.map((room) => (
             <LiveComponent
               key={room.liveId}
+              sessionId={room.session}
               image={room.profileImg}
               title={room.name}
               createdDate={new Date(room.createdAt)}
