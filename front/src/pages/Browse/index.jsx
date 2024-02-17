@@ -39,7 +39,7 @@ export default function Browse() {
   useEffect(() => {
     const fetchLiveRooms = async () => {
       try {
-        const response = await gawmapiAxios.get("/live-room/list/");
+        const response = await gawmapiAxios.get("/live-room/list");
         console.log(response);
         setLiveRooms(response.data.content);
       } catch (error) {
