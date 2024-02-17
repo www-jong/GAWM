@@ -19,7 +19,7 @@ class Live extends Component {
     super(props);
 
     this.state = {
-      mySessionId: "SessionA",
+      mySessionId: "sfo7UYWnoqTcqcVlKza9",
       myUserName: "은은한 달",
       myPoint: 10,
       session: undefined,
@@ -51,6 +51,7 @@ class Live extends Component {
     this.handleRedirect = this.handleRedirect.bind(this);
     this.handleBack = this.handleBack.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.generateRandomString = this.generateRandomString.bind(this);
   }
 
   componentDidMount() {
@@ -427,9 +428,24 @@ class Live extends Component {
     );
   }
 
+  generateRandomString = (length) => {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters.charAt(randomIndex);
+    }
+    return result;
+  };
+
   async getToken() {
+    const randomString = this.generateRandomString(20);
+    console.log("randomString", randomString);
+    this.setState({
+      mySessionId: randomString,
+    });
     const sessionId = await this.createSession(
-      this.state.mySessionId,
+      randomString,
       this.state.liveName,
       this.state.myPoint,
       this.state.isPublic,

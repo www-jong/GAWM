@@ -197,6 +197,10 @@ public class LiveService {
         if (params.get("isPublic").equals(true)) {
             isPublic = true;
         } else isPublic = false;
+
+        String sessionId=(String) params.get("customSessionId");
+        log.info("sessionId={}",sessionId);
+
         Session session = openvidu.createSession(properties);
         String customSessionId = (String) params.get("customSessionId");
         String liveName = (String) params.get("liveName");
