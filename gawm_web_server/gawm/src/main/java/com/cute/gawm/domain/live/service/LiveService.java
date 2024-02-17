@@ -123,11 +123,10 @@ public class LiveService {
 
 
 //    @Transactional
-//    public void deleteLive(Integer userId, LiveDeleteRequest request) { // 유저아이디랑 라이브세션이나 라이브이름으로 삭제하도록
-//        Live live = liveRepository.findByLiveId(liveId);
-//        if (live.getUser().getUserId() != userId) throw new UserNotMatchException("해당 유저에게 라이브 삭제 권한이 존재하지 않습니다.");
-//        liveRepository.deleteByLiveId(liveId);
-//    }
+    public void deleteLive(Integer userId) { // 유저아이디랑 라이브세션이나 라이브이름으로 삭제하도록
+        User user = userRepository.findByUserId(userId);
+        liveRepository.deleteByUser(user);
+    }
 
     @Transactional
     public void deleteLiveByUserId(Integer userId) {

@@ -1,0 +1,6 @@
+#enter{
+  position: relative;
+  width: 6.5rem; /* 26 divided by 4 to convert to rem */
+  height: 6.5rem; /* 26 divided by 4 to convert to rem */
+  border-radius: 1rem; /* 4 divided by 4 to convert to rem */
+}

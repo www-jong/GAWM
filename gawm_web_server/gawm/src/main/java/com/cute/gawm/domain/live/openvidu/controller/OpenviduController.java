@@ -59,13 +59,12 @@ public class OpenviduController {
     }
 
 
-//     @DeleteMapping
-//     public ResponseEntity<?> deleteLive(
-// //            @PathVariable("liveRoomId") String liveRoomId,
-//             @LoginUser SessionUser sessionUser,
-//             @RequestBody(required = false) LiveDeleteRequest request
-//     ) throws OpenViduJavaClientException, OpenViduHttpException {
-//         liveService.deleteLive(sessionUser.getId(), request);
-//         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 삭제 완료");
-//     }
+     @DeleteMapping
+     public ResponseEntity<?> deleteLive(
+             @LoginUser SessionUser sessionUser
+     ) throws OpenViduJavaClientException, OpenViduHttpException {
+        log.info("삭제요청들어옴");
+         liveService.deleteLiveByUserId(sessionUser.getId());
+         return ResponseUtil.buildBasicResponse(HttpStatus.OK, "라이브 삭제 완료");
+     }
 }
