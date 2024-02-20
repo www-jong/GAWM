@@ -1,5 +1,6 @@
 import React from "react";
 import EnterLive from "../Live/EnterLive/App";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function getRelativeTime(from) {
   if (!(from instanceof Date) || isNaN(from)) {
@@ -26,24 +27,41 @@ function getRelativeTime(from) {
 
 function LiveComponent({ sessionId, image, title, createdDate, points, size, href }) {
   const appliedImg = "https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/" + image;
-  return (
-    // <div className="w-26 h-26 rounded-lg relative">
-    //   <img className="w-full h-full object-cover rounded-lg" src={appliedImg} alt={title} />
-    //   <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
-    //     <span className="inline-block text-sm text-white">{title}</span>
-    //     <span className="inline-block text-[0.6rem] text-tertiary">
-    //       {getRelativeTime(createdDate)} · {points} 포인트
-    //     </span>
-    //   </div>
-    // </div>
+  const navigate = useNavigate();
 
-    <EnterLive
-      sessionId={sessionId}
-      image={image}
-      title={title}
-      createdDate={getRelativeTime(createdDate)}
-      points={points}
-    />
+  const navigateToNewPage = () => {
+    const appliedDate = getRelativeTime(createdDate);
+
+    navigate("/enter", {
+      state: {
+        sessionId: sessionId,
+        image: image,
+        title: title,
+        createdDate: appliedDate,
+        points: points,
+      },
+    });
+  };
+
+  return (
+    <div className="w-26 h-26 rounded-lg relative" onClick={navigateToNewPage}>
+      <img className="w-full h-full object-cover rounded-lg" src={appliedImg} alt={title} />
+      <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
+        <span className="inline-block text-sm text-white">{title}</span>
+        <span className="inline-block text-[0.6rem] text-tertiary">
+          {getRelativeTime(createdDate)} · {points} 포인트
+        </span>
+      </div>
+    </div>
+
+    // <EnterLive
+    //   sessionId={sessionId}
+    //   navigate={navigate}
+    //   image={image}
+    //   title={title}
+    //   createdDate={getRelativeTime(createdDate)}
+    //   points={points}
+    // />
   );
 }
 

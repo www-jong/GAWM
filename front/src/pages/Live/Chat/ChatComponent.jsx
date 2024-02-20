@@ -17,6 +17,7 @@ export default class ChatComponent extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props);
     const data = { name: "myStream", data: this.props.myStream };
     console.log(data);
     const session = this.props.user.getStreamManager().stream.session;
@@ -92,7 +93,6 @@ export default class ChatComponent extends Component {
           <div id="chatToolbar">
             <span>{this.props.user.getStreamManager().stream.session.sessionId} - CHAT</span>
             <button id="closeButton" onClick={this.close}>
-              {/* <HighlightOff color="secondary" /> */}
               Close
             </button>
           </div>

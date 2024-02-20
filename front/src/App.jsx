@@ -26,6 +26,7 @@ import EnterLive from "./pages/Live/EnterLive/App.jsx";
 import Image from "./pages/AddFashion/ImageEdit.jsx";
 // import { fetchUserInfo } from "./stores/user";
 import LiveHome from "./pages/Live/index.jsx";
+import LiveRoom from "./pages/Live/EnterLive/LiveRoom.jsx";
 
 function App() {
   return (

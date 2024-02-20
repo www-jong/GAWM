@@ -7,6 +7,7 @@ import UserVideoComponent from "../UserVideoComponent.jsx";
 import UserModel from "../models/user-model.jsx";
 import ChatComponent from "../Chat/ChatComponent.jsx";
 import { useUserStore, fetchUserInfo } from "@/stores/user.js";
+import { useLocation } from "react-router-dom";
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
@@ -14,7 +15,8 @@ const APPLICATION_SERVER_URL =
 function withUser(Component) {
   return function WrappedComponent(props) {
     const user = useUserStore((state) => state.user);
-    return <Component {...props} user={user} />;
+    const location = useLocation();
+    return <Component {...props} user={user} location={location} />;
   };
 }
 
@@ -22,8 +24,10 @@ class EnterLive extends Component {
   constructor(props) {
     super(props);
 
+    const { sessionId, title } = this.props.location.state;
+
     this.state = {
-      mySessionId: this.props.sessionId,
+      mySessionId: sessionId,
       myUserName: this.props.user ? this.props.user.nickname : "none",
       session: undefined,
       mainStreamManager: undefined,
@@ -58,7 +62,7 @@ class EnterLive extends Component {
   }
 
   handleRedirect() {
-    window.location.href = "/gawm/";
+    window.location.href = "/";
   }
 
   componentDidUpdate(prevProps) {
@@ -73,6 +77,7 @@ class EnterLive extends Component {
 
   componentDidMount() {
     window.addEventListener("beforeunload", this.onbeforeunload);
+    this.joinSession();
   }
 
   componentWillUnmount() {
@@ -264,6 +269,8 @@ class EnterLive extends Component {
       chatDisplay: "none",
       accessAllowed: false,
     });
+
+    this.handleRedirect();
   }
 
   async switchCamera() {
@@ -319,21 +326,21 @@ class EnterLive extends Component {
   }
 
   render() {
+    const { image, title, createdDate, points } = this.props.location.state;
     const mySessionId = this.state.mySessionId;
     const myUserName = this.state.myUserName;
     const isPublic = this.state.isPublic;
-    const liveName = this.state.liveName;
     const deleted = this.state.deleted;
     var chatDisplay = { display: this.state.chatDisplay };
 
-    const title = this.props.title;
-    const createdDate = this.props.createdDate;
-    const points = this.props.points;
-    const appliedImg = "https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/" + this.props.image;
+    const title2 = this.state.liveName;
+    // const createdDate = this.state.createdDate;
+    // const points = this.state.points;
+    const appliedImg = "https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/" + image;
 
     return (
       <>
-        {this.state.session === undefined ? (
+        {/* {this.state.session === undefined ? (
           <div id="enter" onClick={this.joinSession}>
             <img className="w-full h-full object-cover rounded-lg" src={appliedImg} alt={title} />
             <div className="absolute bottom-0 left-0 right-0 h-9 bg-black opacity-70 rounded-b-lg leading-[0.5rem] px-0.5">
@@ -343,7 +350,7 @@ class EnterLive extends Component {
               </span>
             </div>
           </div>
-        ) : null}
+        ) : null} */}
         {this.state.session !== undefined ? (
           <div id="session">
             <div id="session-header">
@@ -394,9 +401,9 @@ class EnterLive extends Component {
 
   async getToken() {
     this.setState({
-      mySessionId: this.props.sessionId,
+      mySessionId: this.props.location.state.sessionId,
     });
-    return await this.createToken(this.props.sessionId);
+    return await this.createToken(this.props.location.state.sessionId);
   }
 
   async createSession(sessionId, liveName, isPublic, deleted) {
