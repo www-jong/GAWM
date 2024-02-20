@@ -326,17 +326,8 @@ class EnterLive extends Component {
   }
 
   render() {
-    const { image, title, createdDate, points } = this.props.location.state;
     const mySessionId = this.state.mySessionId;
-    const myUserName = this.state.myUserName;
-    const isPublic = this.state.isPublic;
-    const deleted = this.state.deleted;
     var chatDisplay = { display: this.state.chatDisplay };
-
-    const title2 = this.state.liveName;
-    // const createdDate = this.state.createdDate;
-    // const points = this.state.points;
-    const appliedImg = "https://gwwmbucket.s3.ap-northeast-2.amazonaws.com/" + image;
 
     return (
       <>
@@ -361,13 +352,6 @@ class EnterLive extends Component {
                 id="buttonLeaveSession"
                 onClick={this.leaveSession}
                 value="Leave session"
-              />
-              <input
-                className="btn btn-large btn-success"
-                type="button"
-                id="buttonSwitchCamera"
-                onClick={this.switchCamera}
-                value="Switch Camera"
               />
             </div>
             <div id="video-container" className="col-md-6">
