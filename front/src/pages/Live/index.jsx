@@ -1,8 +1,21 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
+import axios from "axios";
+import React, { Component } from "react";
+import { useEffect, useState } from "react";
+import { fetchUserInfo, useUserStore } from "../../stores/user";
 import Live from "./App";
-import registerServiceWorker from "./registerServiceWorker";
 
-ReactDOM.render(<Live />, document.getElementById("root"));
-registerServiceWorker();
+function LiveHome() {
+  const user = useUserStore();
+  console.log(user.user.nickname);
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  return (
+    <>
+      <Live />
+    </>
+  );
+}
+export default LiveHome;

@@ -10,8 +10,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70%;
-  width: 70%;
+  height: 100vw;
+  width: 100vw;
 }
 
 .switch {
@@ -108,7 +108,6 @@ transform: translateX(26px);
 
 .text-4xl {
   font-size: 1.30rem;
-  font-family: 
 }
 
 .font-bold {

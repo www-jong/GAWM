@@ -7,6 +7,7 @@ import axios from "axios";
 import introduce1 from "@/assets/images/main_introduce1.svg";
 import introduce2 from "@/assets/images/main_introduce2.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { gawmApiAxios } from "../../utilities/http-commons";
 
 import "./index.css";
 import "swiper/css";
@@ -14,6 +15,8 @@ import "swiper/css/pagination";
 
 import { Autoplay, Pagination } from "swiper/modules";
 import { fetchUserInfo, useUserStore } from "../../stores/user";
+import LiveComponent from "../Browse/LiveComponent";
+const gawmapiAxios = gawmApiAxios();
 
 /**
  * 홈페이지 component를 생성합니다
@@ -25,18 +28,20 @@ function Home() {
   const user = useUserStore();
 
   useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
     const fetchLiveRooms = async () => {
       try {
-        const response = await gawmapiAxios.get("/live-room/follow/");
+        const response = await gawmapiAxios.get("/live-room/follow");
         setLiveRooms(response.data.content);
       } catch (error) {
+        console.error("/live-room/follow 실패!!");
         setLiveRooms(null);
       }
     };
     fetchLiveRooms();
-  }, []);
-  useEffect(() => {
-    fetchUserInfo();
   }, []);
 
   console.log(user.user.nickname);
@@ -82,6 +87,7 @@ function Home() {
             ? liveRooms.map((room) => (
                 <LiveComponent
                   key={room.liveId}
+                  sessionId={room.session}
                   image={room.profileImg}
                   title={room.name}
                   createdDate={new Date(room.createdAt)}
