@@ -40,6 +40,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,10 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -71,6 +70,7 @@ public class LookbookService {
     private final FollowingRepository followingRepository;
     private final LikesRepository likesRepository;
     private final FollowService followService;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public LookbookResponse getLookbook(final int sessionUserId,final int lookbookId) {
         User sessionUser = userRepository.findById(sessionUserId).orElseThrow(() -> new UserNotFoundException("해당 유저가 존재하지 않습니다."));
@@ -204,6 +204,8 @@ public class LookbookService {
 
         user.addPoint(10);
         userRepository.save(user);
+
+        redisTemplate.opsForZSet().add("toplist", Integer.toString(lookbookId), 0);
 
         return lookbookId;
     }
@@ -350,6 +352,7 @@ public class LookbookService {
         lookbookImageRepository.deleteByLookbook(lookbook);
 
         lookbookRepository.deleteByLookbookId(lookbookId);
+        redisTemplate.opsForZSet().remove("toplist", Integer.toString(lookbookId));
     }
 
     public PageImpl<LookbookThumbnailResponse> getFollowingLookbooks(Integer userId, Pageable pageable) {
@@ -484,6 +487,8 @@ public class LookbookService {
         User author=lookbook.getUser();
         author.minusPoint(5);
         userRepository.save(author);
+
+        redisTemplate.opsForZSet().incrementScore("toplist",Integer.toString(lookbook.getLookbookId()), -1);
     }
 
     @Transactional
@@ -496,6 +501,8 @@ public class LookbookService {
         User author=lookbook.getUser();
         author.addPoint(5);
         userRepository.save(author);
+
+        redisTemplate.opsForZSet().incrementScore("toplist",Integer.toString(lookbook.getLookbookId()), 1);
     }
 
     public List<LookbookThumbnailResponse> getTopLookbooks() {
@@ -525,5 +532,36 @@ public class LookbookService {
         return responseList;
     }
 
+    @Transactional
+    public List<LookbookThumbnailResponse> getTopLookbooksByRedis(){
+        Set<ZSetOperations.TypedTuple<String>> toplist = redisTemplate.opsForZSet().reverseRangeWithScores("toplist", 0, 14);
+        List<LookbookThumbnailResponse> responseList = new ArrayList<>();
+        for (ZSetOperations.TypedTuple<String> tuple : toplist) {
+            //tuple.getValue()
+            Lookbook lookbook=lookbookRepository.findByLookbookId(Integer.parseInt(tuple.getValue()));
+            List<LookbookImage> lookbookImage = lookbookImageRepository.findAllByLookbook_LookbookId(lookbook.getLookbookId());
+            List<String> ImageUrls=lookbookImage.stream().map(Image-> Image.getImage()).collect(Collectors.toList());
+            Integer likeCnt=likesRepository.countByLookbook(lookbook);
+            User user=lookbook.getUser();
+            LookbookThumbnailResponse build = LookbookThumbnailResponse.builder()
+                    .lookbookId(lookbook.getLookbookId())
+                    .createdAt(lookbook.getCreatedAt())
+                    .isPublic(lookbook.isPublic())
+                    .likeCnt(likeCnt)
+                    .userNickname(user.getNickname())
+                    .userProfileImg(user.getProfileImg())
+                    .images(ImageUrls)
+                    .build();
+            responseList.add(build);
+        }
+        return responseList;
+    }
 
+    public void fetchRedis() {
+        List<Lookbook> list = lookbookRepository.findAll();
+        list.forEach(lookbook -> {
+            Integer likeCnt=likesRepository.countByLookbook(lookbook);
+            redisTemplate.opsForZSet().add("toplist", Integer.toString(lookbook.getLookbookId()), likeCnt);
+        });
+    }
 }
