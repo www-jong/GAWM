@@ -62,7 +62,7 @@ public class LookbookController {
 
     @GetMapping("/top_list")
     public ResponseEntity<?> getTopLookbookList() {
-        List<LookbookThumbnailResponse> topLookbooks = lookbookService.getTopLookbooks();
+        List<LookbookThumbnailResponse> topLookbooks = lookbookService.getTopLookbooksByRedis();
         return ResponseUtil.buildBasicResponse(HttpStatus.OK, topLookbooks);
     }
 
@@ -194,6 +194,11 @@ public class LookbookController {
                 HttpStatus.OK,
                 likeStatus
         );
+    }
+
+    @GetMapping("/redis")
+    public void fetchRedis4LookbookLike(){
+        lookbookService.fetchRedis();
     }
 
 

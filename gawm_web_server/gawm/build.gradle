@@ -56,6 +56,9 @@ dependencies {
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 	//OpenVidu
 	implementation 'io.openvidu:openvidu-java-client:2.29.0'
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'io.lettuce:lettuce-core:6.1.5.RELEASE'
 }
 
 tasks.named('test') {
