@@ -81,4 +81,4 @@
 
 <td><a href="https://ssafy.atlassian.net/projects/S10P12E203"/>Jira</a></td>
 
-<td><a href="[https://www.notion.so/CUTE-35f9c90629564333a1af2f509156a3b8](https://www.notion.so/SSAFY-10-E203-35f9c90629564333a1af2f509156a3b8?pvs=21)"/>Notion</a></td>
+<td><a href="https://unruly-nigella-3d3.notion.site/SSAFY-10-E203-35f9c90629564333a1af2f509156a3b8?pvs=74"/>Notion</a></td>
